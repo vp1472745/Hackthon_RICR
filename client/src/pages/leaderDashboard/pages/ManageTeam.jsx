@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   UserPlus, 
@@ -8,53 +8,97 @@ import {
   Phone, 
   User,
   Crown,
-  CheckCircle,
-  XCircle,
   AlertTriangle,
-  MessageSquare
+  RefreshCw,
+  Loader
 } from 'lucide-react';
+import { userAPI } from '../../../configs/api';
+import { toast } from 'react-toastify';
 
 const ManageTeam = () => {
+  // Leader profile and team data
+  const [leaderProfile, setLeaderProfile] = useState(null);
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // UI states
   const [showAddMember, setShowAddMember] = useState(false);
-  const [teamMembers, setTeamMembers] = useState([
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      phone: '+91 9876543210',
-      role: 'Team Leader',
-      skills: ['React', 'Node.js', 'Python'],
-      status: 'confirmed',
-      joinedDate: '2025-09-20',
-      avatar: 'JD'
-    }
-  ]);
-  
   const [newMember, setNewMember] = useState({
-    name: '',
+    fullName: '',
     email: '',
     phone: '',
-    skills: ''
+    collegeName: '',
+    course: '',
+    collegeBranch: '',
+    collegeSemester: '',
+    GitHubProfile: ''
   });
   
   const [editingMember, setEditingMember] = useState(null);
   const [errors, setErrors] = useState({});
 
-  const maxTeamSize = 4;
-  const canAddMembers = teamMembers.length < maxTeamSize;
+  const maxTeamSize = 5; // Leader + 4 members
+  const canAddMembers = (teamMembers.length + 1) < maxTeamSize; // +1 for leader
+
+  // Fetch leader profile and team data
+  const fetchLeaderData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Try authenticated leader profile first
+      const response = await userAPI.getLeaderProfile();
+      
+      if (response.data && response.data.leader) {
+        setLeaderProfile(response.data.leader);
+        setTeamMembers(response.data.teamMembers || []);
+        
+        toast.success('Team data loaded successfully!');
+      }
+    } catch (error) {
+      console.error('Error fetching leader data:', error);
+      
+      // Fallback to localStorage or user by ID
+      const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser') || '{}');
+      if (hackathonUser.user && hackathonUser.user._id) {
+        try {
+          const userResponse = await userAPI.getUserById(hackathonUser.user._id);
+          if (userResponse.data && userResponse.data.user) {
+            setLeaderProfile(userResponse.data.user);
+            setTeamMembers(userResponse.data.user.teamInfo?.members || []);
+            toast.success('Team data loaded from user profile!');
+            return;
+          }
+        } catch (fallbackError) {
+          console.error('Fallback fetch failed:', fallbackError);
+        }
+      }
+      
+      setError('Failed to load team data');
+      toast.error('Failed to load team data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load team data on component mount
+  useEffect(() => {
+    fetchLeaderData();
+  }, []);
 
   const validateMemberForm = (member) => {
     const newErrors = {};
     
-    if (!member.name.trim()) {
-      newErrors.name = 'Name is required';
+    if (!member.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
     }
     
     if (!member.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email)) {
       newErrors.email = 'Please enter a valid email address';
-    } else if (teamMembers.some(m => m.email === member.email && m.id !== editingMember?.id)) {
+    } else if (teamMembers.some(m => m.email === member.email && m._id !== editingMember?._id)) {
       newErrors.email = 'Email already exists in team';
     }
     
@@ -68,86 +112,127 @@ const ManageTeam = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddMember = () => {
+  const handleAddMember = async () => {
     if (!validateMemberForm(newMember)) return;
     
-    const member = {
-      id: Date.now(),
-      ...newMember,
-      role: 'Team Member',
-      skills: newMember.skills.split(',').map(s => s.trim()).filter(s => s),
-      status: 'pending',
-      joinedDate: new Date().toISOString().split('T')[0],
-      avatar: newMember.name.split(' ').map(n => n[0]).join('').toUpperCase()
-    };
-    
-    setTeamMembers([...teamMembers, member]);
-    setNewMember({ name: '', email: '', phone: '', skills: '' });
+    try {
+      setLoading(true);
+      
+      const memberData = {
+        ...newMember,
+        teamId: leaderProfile?.teamId?._id || leaderProfile?.teamId,
+        leaderId: leaderProfile?._id
+      };
+      
+      const response = await userAPI.addMember(memberData);
+      
+      if (response.data) {
+        // Refresh team data
+        await fetchLeaderData();
+        resetForm();
+        toast.success('Team member added successfully!');
+      }
+    } catch (error) {
+      console.error('Error adding member:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to add team member';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setNewMember({
+      fullName: '',
+      email: '',
+      phone: '',
+      collegeName: '',
+      course: '',
+      collegeBranch: '',
+      collegeSemester: '',
+      GitHubProfile: ''
+    });
     setShowAddMember(false);
+    setEditingMember(null);
     setErrors({});
   };
 
   const handleEditMember = (member) => {
     setEditingMember(member);
     setNewMember({
-      name: member.name,
-      email: member.email,
-      phone: member.phone,
-      skills: member.skills.join(', ')
+      fullName: member.fullName || '',
+      email: member.email || '',
+      phone: member.phone || '',
+      collegeName: member.collegeName || '',
+      course: member.course || '',
+      collegeBranch: member.collegeBranch || '',
+      collegeSemester: member.collegeSemester || '',
+      GitHubProfile: member.GitHubProfile || ''
     });
     setShowAddMember(true);
   };
 
-  const handleUpdateMember = () => {
+  const handleUpdateMember = async () => {
     if (!validateMemberForm(newMember)) return;
     
-    setTeamMembers(teamMembers.map(member =>
-      member.id === editingMember.id
-        ? {
-            ...member,
-            ...newMember,
-            skills: newMember.skills.split(',').map(s => s.trim()).filter(s => s),
-            avatar: newMember.name.split(' ').map(n => n[0]).join('').toUpperCase()
-          }
-        : member
-    ));
-    
-    setEditingMember(null);
-    setNewMember({ name: '', email: '', phone: '', skills: '' });
-    setShowAddMember(false);
-    setErrors({});
+    try {
+      setLoading(true);
+      
+      const updateData = {
+        ...newMember,
+        leaderId: leaderProfile?._id
+      };
+      
+      const response = await userAPI.editMember(editingMember._id, updateData);
+      
+      if (response.data) {
+        // Refresh team data
+        await fetchLeaderData();
+        resetForm();
+        toast.success('Team member updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating member:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to update team member';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRemoveMember = (memberId) => {
-    if (window.confirm('Are you sure you want to remove this team member?')) {
-      setTeamMembers(teamMembers.filter(member => member.id !== memberId));
+  const handleRemoveMember = async (member) => {
+    if (window.confirm(`Are you sure you want to remove ${member.fullName} from the team?`)) {
+      try {
+        setLoading(true);
+        
+        const removeData = {
+          memberId: member._id,
+          teamId: leaderProfile?.teamId?._id || leaderProfile?.teamId,
+          leaderId: leaderProfile?._id
+        };
+        
+        const response = await userAPI.removeMember(removeData);
+        
+        if (response.data) {
+          // Refresh team data
+          await fetchLeaderData();
+          toast.success('Team member removed successfully!');
+        }
+      } catch (error) {
+        console.error('Error removing member:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to remove team member';
+        toast.error(errorMessage);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const cancelEdit = () => {
-    setEditingMember(null);
-    setNewMember({ name: '', email: '', phone: '', skills: '' });
-    setShowAddMember(false);
-    setErrors({});
+    resetForm();
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'confirmed': return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'pending': return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
-      case 'declined': return <XCircle className="w-5 h-5 text-red-500" />;
-      default: return null;
-    }
-  };
 
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'confirmed': return 'Confirmed';
-      case 'pending': return 'Invitation Pending';
-      case 'declined': return 'Declined';
-      default: return 'Unknown';
-    }
-  };
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
@@ -205,27 +290,31 @@ const ManageTeam = () => {
       {/* Add/Edit Member Form */}
       {showAddMember && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            {editingMember ? 'Edit Team Member' : 'Add New Team Member'}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">
+              {editingMember ? 'Edit Team Member' : 'Add New Team Member'}
+            </h3>
+            {loading && <Loader className="w-5 h-5 animate-spin text-[#0B2A4A]" />}
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
               <input
                 type="text"
-                value={newMember.name}
-                onChange={(e) => setNewMember({...newMember, name: e.target.value})}
+                value={newMember.fullName}
+                onChange={(e) => setNewMember({...newMember, fullName: e.target.value})}
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent ${
-                  errors.name ? 'border-red-500' : 'border-gray-300'
+                  errors.fullName ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter full name"
+                disabled={loading}
               />
-              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+              {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
               <input
                 type="email"
                 value={newMember.email}
@@ -234,12 +323,13 @@ const ManageTeam = () => {
                   errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter email address"
+                disabled={loading}
               />
               {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
               <input
                 type="tel"
                 value={newMember.phone}
@@ -248,18 +338,70 @@ const ManageTeam = () => {
                   errors.phone ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter phone number"
+                disabled={loading}
               />
               {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Skills (comma-separated)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">College Name</label>
               <input
                 type="text"
-                value={newMember.skills}
-                onChange={(e) => setNewMember({...newMember, skills: e.target.value})}
+                value={newMember.collegeName}
+                onChange={(e) => setNewMember({...newMember, collegeName: e.target.value})}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
-                placeholder="e.g., React, Python, UI/UX Design"
+                placeholder="Enter college name"
+                disabled={loading}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Course</label>
+              <input
+                type="text"
+                value={newMember.course}
+                onChange={(e) => setNewMember({...newMember, course: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
+                placeholder="Enter course (e.g., B.Tech CSE)"
+                disabled={loading}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">College Branch</label>
+              <input
+                type="text"
+                value={newMember.collegeBranch}
+                onChange={(e) => setNewMember({...newMember, collegeBranch: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
+                placeholder="Enter branch/department"
+                disabled={loading}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+              <input
+                type="number"
+                value={newMember.collegeSemester}
+                onChange={(e) => setNewMember({...newMember, collegeSemester: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
+                placeholder="Enter current semester"
+                min="1"
+                max="10"
+                disabled={loading}
+              />
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">GitHub Profile (Optional)</label>
+              <input
+                type="url"
+                value={newMember.GitHubProfile}
+                onChange={(e) => setNewMember({...newMember, GitHubProfile: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
+                placeholder="https://github.com/username"
+                disabled={loading}
               />
             </div>
           </div>
@@ -267,13 +409,16 @@ const ManageTeam = () => {
           <div className="flex gap-3 mt-6">
             <button
               onClick={editingMember ? handleUpdateMember : handleAddMember}
-              className="px-6 py-2 bg-[#0B2A4A] text-white rounded-lg hover:bg-[#0d2d4f] transition-colors"
+              disabled={loading}
+              className="flex items-center gap-2 px-6 py-2 bg-[#0B2A4A] text-white rounded-lg hover:bg-[#0d2d4f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              {loading && <Loader className="w-4 h-4 animate-spin" />}
               {editingMember ? 'Update Member' : 'Add Member'}
             </button>
             <button
               onClick={cancelEdit}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              disabled={loading}
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -284,112 +429,174 @@ const ManageTeam = () => {
       {/* Team Members List */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800">Team Members</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-800">Team Members</h3>
+            <button 
+              onClick={fetchLeaderData}
+              disabled={loading}
+              className="p-2 text-gray-500 hover:text-[#0B2A4A] transition-colors disabled:opacity-50"
+              title="Refresh team data"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
         
-        <div className="divide-y divide-gray-200">
-          {teamMembers.map((member) => (
-            <div key={member.id} className="p-6 hover:bg-gray-50 transition-colors">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold ${
-                    member.role === 'Team Leader' 
-                      ? 'bg-gradient-to-br from-yellow-400 to-orange-500' 
-                      : 'bg-gradient-to-br from-blue-400 to-blue-600'
-                  }`}>
-                    {member.role === 'Team Leader' ? (
+        {loading ? (
+          <div className="p-8 text-center">
+            <Loader className="w-8 h-8 animate-spin text-[#0B2A4A] mx-auto mb-4" />
+            <p className="text-gray-600">Loading team data...</p>
+          </div>
+        ) : error ? (
+          <div className="p-8 text-center">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button 
+              onClick={fetchLeaderData}
+              className="px-4 py-2 bg-[#0B2A4A] text-white rounded-lg hover:bg-[#0d2d4f] transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-200">
+            {/* Team Leader */}
+            {leaderProfile && (
+              <div className="p-6 bg-gradient-to-r from-yellow-50 to-orange-50">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold bg-gradient-to-br from-yellow-400 to-orange-500">
                       <Crown className="w-6 h-6" />
-                    ) : (
-                      member.avatar
-                    )}
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h4 className="font-semibold text-gray-800">{member.name}</h4>
-                      {member.role === 'Team Leader' && (
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="font-semibold text-gray-800">{leaderProfile.fullName}</h4>
                         <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
-                          Leader
+                          Team Leader
                         </span>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4" />
-                        {member.email}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4" />
-                        {member.phone}
-                      </div>
-                    </div>
-                    
-                    {member.skills && member.skills.length > 0 && (
-                      <div className="mt-3">
-                        <div className="flex flex-wrap gap-2">
-                          {member.skills.map((skill, index) => (
-                            <span
-                              key={index}
-                              className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-                            >
-                              {skill}
-                            </span>
-                          ))}
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 mt-2">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          {leaderProfile.email}
                         </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          {leaderProfile.phone}
+                        </div>
+                        {leaderProfile.collegeName && (
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            {leaderProfile.collegeName}
+                          </div>
+                        )}
+                        {leaderProfile.course && (
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            {leaderProfile.course}
+                          </div>
+                        )}
                       </div>
-                    )}
-                    
-                    <div className="flex items-center gap-4 mt-3">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(member.status)}
-                        <span className="text-sm text-gray-600">{getStatusText(member.status)}</span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        Joined {new Date(member.joinedDate).toLocaleDateString()}
-                      </span>
                     </div>
                   </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  {member.role !== 'Team Leader' && (
-                    <>
-                      <button
-                        onClick={() => handleEditMember(member)}
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                        title="Edit member"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Send message"
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleRemoveMember(member.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Remove member"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </>
-                  )}
                 </div>
               </div>
-            </div>
-          ))}
-          
-          {teamMembers.length === 0 && (
-            <div className="p-12 text-center">
-              <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">No team members yet</h3>
-              <p className="text-gray-500">Add team members to get started</p>
-            </div>
-          )}
-        </div>
+            )}
+
+            {/* Team Members */}
+            {teamMembers.map((member) => (
+              <div key={member._id} className="p-6 hover:bg-gray-50 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold bg-gradient-to-br from-blue-400 to-blue-600">
+                      {member.fullName ? member.fullName.charAt(0).toUpperCase() : 'M'}
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="font-semibold text-gray-800">{member.fullName}</h4>
+                        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                          {member.role || 'Member'}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 mt-2">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          {member.email}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          {member.phone}
+                        </div>
+                        {member.collegeName && (
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            {member.collegeName}
+                          </div>
+                        )}
+                        {member.course && (
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            {member.course}
+                          </div>
+                        )}
+                      </div>
+
+                      {member.GitHubProfile && (
+                        <div className="mt-2">
+                          <a 
+                            href={member.GitHubProfile} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[#0B2A4A] hover:underline text-sm"
+                          >
+                            GitHub Profile
+                          </a>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center gap-4 mt-3">
+                        <span className="text-xs text-gray-500">
+                          Joined {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : 'Recently'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEditMember(member)}
+                      disabled={loading}
+                      className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                      title="Edit member"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleRemoveMember(member)}
+                      disabled={loading}
+                      className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
+                      title="Remove member"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Empty state for no members */}
+            {teamMembers.length === 0 && (
+              <div className="p-8 text-center text-gray-500">
+                <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">No team members added yet</p>
+                <p className="text-xs mt-1">Add team members to build your hackathon team</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Guidelines */}

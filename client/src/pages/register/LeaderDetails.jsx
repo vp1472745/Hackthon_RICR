@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowRight, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ProgressBar from './ProgressBar.jsx';
 import { authAPI } from '../../configs/api.js';
 
@@ -79,7 +81,7 @@ const LeaderDetails = () => {
       localStorage.setItem('registrationData', JSON.stringify(registrationData));
       
       // Show success message
-      alert('OTPs sent successfully to your email and phone! Please proceed to verification.');
+      toast.success(' OTPs sent successfully to your email and phone! Please proceed to verification.');
       
       // Navigate to verification step
       navigate('/register/verification');
@@ -93,31 +95,14 @@ const LeaderDetails = () => {
         // Handle specific errors
         if (error.response.status === 409) {
           // User already exists
-          alert(`Error: ${errorMessage}`);
+          toast.error(`Error: ${errorMessage}`);
           
-          // If user exists but not verified, allow to proceed
-          if (error.response.data.existingUser) {
-            const existingUser = error.response.data.existingUser;
-            if (!existingUser.isEmailVerified || !existingUser.isPhoneVerified) {
-              const confirmProceed = window.confirm(
-                'User already exists but verification is incomplete. Would you like to proceed to verification?'
-              );
-              if (confirmProceed) {
-                localStorage.setItem('registrationData', JSON.stringify({
-                  leaderEmail: existingUser.email,
-                  leaderPhone: existingUser.phone,
-                  isEmailVerified: existingUser.isEmailVerified,
-                  isPhoneVerified: existingUser.isPhoneVerified
-                }));
-                navigate('/register/verification');
-              }
-            }
-          }
+
         } else {
-          alert(`Registration failed: ${errorMessage}`);
+          toast.error(` Registration failed: ${errorMessage}`);
         }
       } else {
-        alert('Registration failed. Please check your internet connection and try again.');
+        toast.error(' Registration failed. Please check your internet connection and try again.');
       }
     } finally {
       setLoading(false);
@@ -231,6 +216,18 @@ const LeaderDetails = () => {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };

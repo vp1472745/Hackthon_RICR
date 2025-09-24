@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SideBar from './components/sideBar';
-import Overview from './pages/Overview';
+import Overview from './pages/overView/Overview';
 import ProjectTheme from './pages/ProjectTheme';
 import ProblemStatements from './pages/ProblemStatements';
 import ManageTeam from './pages/ManageTeam';

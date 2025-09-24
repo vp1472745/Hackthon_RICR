@@ -67,18 +67,24 @@ const Login = () => {
       if (response.data.message) {
         setLoginMessage('Login successful! Redirecting to dashboard...');
         
+        // Store authentication token if provided
+        if (response.data.token) {
+          localStorage.setItem('authToken', response.data.token);
+        }
+        
         // Store user session data
         localStorage.setItem('hackathonUser', JSON.stringify({
           teamCode: formData.teamCode,
           email: formData.email,
           user: response.data.user,
           team: response.data.team,
+          token: response.data.token,
           loginTime: new Date().toISOString()
         }));
 
         // Redirect to dashboard after success message
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate('/leader-dashboard');
         }, 1500);
       }
     } catch (error) {
