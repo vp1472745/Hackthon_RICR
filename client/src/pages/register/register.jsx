@@ -9,13 +9,13 @@ const Register = () => {
     leaderName: '',
     leaderEmail: '',
     leaderPhone: '',
-    
+
     // Step 2: Verification
     emailOtp: '',
     phoneOtp: '',
     isEmailVerified: false,
     isPhoneVerified: false,
-    
+
     // Step 3: Payment
     paymentMethod: 'phonepe',
     upiId: '',
@@ -39,38 +39,38 @@ const Register = () => {
 
   const validateStep1 = () => {
     const newErrors = {};
-    
+
     if (!formData.leaderName.trim()) {
       newErrors.leaderName = 'Team leader name is required';
     }
-    
+
     if (!formData.leaderEmail.trim()) {
       newErrors.leaderEmail = 'Email is required';
     } else if (!validateEmail(formData.leaderEmail)) {
       newErrors.leaderEmail = 'Please enter a valid email address';
     }
-    
+
     if (!formData.leaderPhone.trim()) {
       newErrors.leaderPhone = 'Phone number is required';
     } else if (!validatePhone(formData.leaderPhone)) {
       newErrors.leaderPhone = 'Please enter a valid 10-digit Indian phone number';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateStep2 = () => {
     const newErrors = {};
-    
+
     if (!formData.isEmailVerified) {
       newErrors.emailOtp = 'Please verify your email';
     }
-    
+
     if (!formData.isPhoneVerified) {
       newErrors.phoneOtp = 'Please verify your phone number';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -167,7 +167,7 @@ const Register = () => {
     try {
       // Simulate payment gateway integration
       // In real implementation, this would call payment gateway API
-      
+
       // Step 1: Initiate payment
       const paymentData = {
         amount: 1000,
@@ -181,17 +181,17 @@ const Register = () => {
       };
 
       console.log('Initiating payment:', paymentData);
-      
+
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 3000));
-      
+
       // Simulate successful payment
       const mockTransactionId = 'TXN' + Date.now();
-      
-      setFormData(prev => ({ 
-        ...prev, 
+
+      setFormData(prev => ({
+        ...prev,
         paymentStatus: 'success',
-        transactionId: mockTransactionId 
+        transactionId: mockTransactionId
       }));
 
       // Auto-complete registration after successful payment
@@ -248,7 +248,7 @@ const Register = () => {
               <h3 className="text-xl font-semibold text-[#0B2A4A] mb-4">
                 Team Leader Information
               </h3>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Full Name <span className="text-red-500">*</span>
@@ -257,9 +257,8 @@ const Register = () => {
                   type="text"
                   value={formData.leaderName}
                   onChange={(e) => handleInputChange('leaderName', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${
-                    errors.leaderName ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${errors.leaderName ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="Enter your full name"
                 />
                 {errors.leaderName && (
@@ -275,9 +274,8 @@ const Register = () => {
                   type="email"
                   value={formData.leaderEmail}
                   onChange={(e) => handleInputChange('leaderEmail', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${
-                    errors.leaderEmail ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${errors.leaderEmail ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="Enter your email address"
                 />
                 {errors.leaderEmail && (
@@ -297,9 +295,8 @@ const Register = () => {
                     type="tel"
                     value={formData.leaderPhone}
                     onChange={(e) => handleInputChange('leaderPhone', e.target.value)}
-                    className={`flex-1 px-4 py-3 border rounded-r-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${
-                      errors.leaderPhone ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`flex-1 px-4 py-3 border rounded-r-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${errors.leaderPhone ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="Enter 10-digit phone number"
                     maxLength="10"
                   />
@@ -330,7 +327,7 @@ const Register = () => {
                   )}
                 </div>
                 <p className="text-sm text-gray-600 mb-3">{formData.leaderEmail}</p>
-                
+
                 {!formData.isEmailVerified ? (
                   <div className="space-y-3">
                     <button
@@ -340,7 +337,7 @@ const Register = () => {
                     >
                       {loading ? 'Sending...' : 'Send Email OTP'}
                     </button>
-                    
+
                     <div className="flex space-x-2">
                       <input
                         type="text"
@@ -376,7 +373,7 @@ const Register = () => {
                   )}
                 </div>
                 <p className="text-sm text-gray-600 mb-3">+91{formData.leaderPhone}</p>
-                
+
                 {!formData.isPhoneVerified ? (
                   <div className="space-y-3">
                     <button
@@ -386,7 +383,7 @@ const Register = () => {
                     >
                       {loading ? 'Sending...' : 'Send SMS OTP'}
                     </button>
-                    
+
                     <div className="flex space-x-2">
                       <input
                         type="text"
@@ -470,7 +467,7 @@ const Register = () => {
                 <>
                   <div className="border border-gray-200 rounded-lg p-4">
                     <h4 className="font-semibold text-[#0B2A4A] mb-4">Select Payment Method</h4>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                       {[
                         { id: 'phonepe', name: 'PhonePe', color: 'bg-purple-100 border-purple-300' },
@@ -481,11 +478,10 @@ const Register = () => {
                         <button
                           key={method.id}
                           onClick={() => handleInputChange('paymentMethod', method.id)}
-                          className={`p-3 rounded-lg border-2 transition-all duration-200 ${
-                            formData.paymentMethod === method.id
+                          className={`p-3 rounded-lg border-2 transition-all duration-200 ${formData.paymentMethod === method.id
                               ? 'border-[#0B2A4A] bg-[#0B2A4A] text-white'
                               : `${method.color} hover:border-[#1D5B9B]`
-                          }`}
+                            }`}
                         >
                           <div className="text-center">
                             <div className="text-lg font-semibold">{method.name}</div>
@@ -504,9 +500,8 @@ const Register = () => {
                           type="text"
                           value={formData.upiId}
                           onChange={(e) => handleInputChange('upiId', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${
-                            errors.upiId ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${errors.upiId ? 'border-red-500' : 'border-gray-300'
+                            }`}
                           placeholder="yourname@phonepe / yourname@paytm / yourname@upi"
                         />
                         {errors.upiId && (
@@ -529,9 +524,9 @@ const Register = () => {
                             Processing Payment...
                           </div>
                         ) : (
-                          `Pay ₹1,000 via ${formData.paymentMethod === 'phonepe' ? 'PhonePe' : 
-                                           formData.paymentMethod === 'paytm' ? 'Paytm' : 
-                                           formData.paymentMethod === 'googlepay' ? 'Google Pay' : 'UPI'}`
+                          `Pay ₹1,000 via ${formData.paymentMethod === 'phonepe' ? 'PhonePe' :
+                            formData.paymentMethod === 'paytm' ? 'Paytm' :
+                              formData.paymentMethod === 'googlepay' ? 'Google Pay' : 'UPI'}`
                         )}
                       </button>
                     </div>

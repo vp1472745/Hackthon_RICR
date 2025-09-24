@@ -43,9 +43,7 @@ const userSchema = new mongoose.Schema({
     collegeSemester: {
         type: Number,
         required: true,
-        min: 1,
-        max: 8,
-        default: 1,
+        default: 0,
     },
     GitHubProfile: {
         type: String,

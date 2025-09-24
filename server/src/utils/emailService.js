@@ -1,32 +1,13 @@
 import nodemailer from 'nodemailer';
 
-
 const sendEmail = async (to, subject, text) => {
-    let transporter;
-
-    // Try Gmail first
-    if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
-        transporter = nodemailer.createTransport({
-            service: "Gmail",
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.GMAIL_USER,
-                pass: process.env.GMAIL_PASS,
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
-    } else {
-        // Fallback to test account
-        console.log('Gmail not configured, using test email account...');
-        transporter = await createTestAccount();
-        if (!transporter) {
-            throw new Error('Failed to create email transporter');
-        }
-    }
+    const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_PASS,
+        },
+    });
 
     const mailOptions = {
         from: process.env.GMAIL_USER,
@@ -36,19 +17,11 @@ const sendEmail = async (to, subject, text) => {
     };
 
     try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully:", info.messageId);
-
-        // For test accounts, show preview URL
-        if (nodemailer.getTestMessageUrl(info)) {
-            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-        }
-
+        await transporter.sendMail(mailOptions);
+        console.log("Email sent successfully");
         return true;
     } catch (error) {
         console.error("Error sending email:", error);
-
-
         return false;
     }
 };
@@ -86,4 +59,4 @@ export const sendOTPEmail = async (to, otp) => {
     return sendEmail(to, subject, text);
 };
 
-export default { sendOTPEmail };
+

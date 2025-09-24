@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { sendOTPEmail } from '../utils/emailService.js';
 import { sendOTPPhone } from '../utils/phoneService.js';
 import Otp from '../models/otpModel.js';
-import Team from '../models/TeamModel.js'; // Make sure to import your Team model at the top
+import Team from '../models/TeamModel.js';
 
 export const SendOTP = async (req, res, next) => {
     try {
@@ -108,8 +108,7 @@ export const Register = async (req, res, next) => {
         // Create the team
         const newTeam = await Team.create({
             teamName: nextTeamCode + " Team",
-            teamCode: nextTeamCode,
-            teamemail: email  // Add team leader's email
+            teamCode: nextTeamCode
         });
 
         const newUser = await User.create({
@@ -127,62 +126,44 @@ export const Register = async (req, res, next) => {
     }
 }
 
-
 export const Login = async (req, res, next) => {
     try {
-        const { teamCode, teamemail } = req.body;
+        const { teamCode, email } = req.body;
+        if (!teamCode || !email) {
+            const error = new Error('All fields are required');
+            error.statusCode = 400;
+            return next(error);
+        }
+        // Login logic here
 
-        // ✅ Validation
-        if (!teamCode || !teamemail) {
-            return res.status(400).json({
-                success: false,
-                message: "Team Code and Team Email are required"
-            });
+        const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+            const error = new Error('Invalid credentials');
+            error.statusCode = 401;
+            return next(error);
         }
 
-        // ✅ Email format check
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(teamemail)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid email format"
-            });
+        const existingTeam = await Team.findOne({ teamCode: teamCode });
+        if (!existingTeam) {
+            const error = new Error('Invalid Team ID');
+            error.statusCode = 401;
+            return next(error);
         }
 
-        // ✅ Team find by code and email
-        const team = await Team.findOne({
-            teamCode: teamCode,
-            teamemail: teamemail.toLowerCase()
-        });
-
-        if (!team) {
-            return res.status(401).json({
-                success: false,
-                message: "Invalid Team Code or Email"
-            });
+        if(existingUser.teamId.toString() !== existingTeam._id.toString()){
+            const error = new Error('Invalid Team ID Email combination');
+            error.statusCode = 401;
+            return next(error);
         }
 
-        // ✅ Success Response
-        return res.status(200).json({
-            success: true,
-            message: "Team Login Successful",
-            team: {
-                id: team._id,
-                teamName: team.teamName,
-                teamCode: team.teamCode,
-                teamemail: team.teamemail,
-                teamTheme: team.teamTheme,
-                teamProblemStatement: team.teamProblemStatement,
-                projectGithubLink: team.projectGithubLink
-            }
-        });
+        await generateAuthToken(existingUser, existingTeam, res);
 
+        res.status(200).json({ message: 'Login successful', user: existingUser, team: existingTeam });
     } catch (error) {
-        console.error("Team Login Error:", error);
-        next(error); // Global error handler को pass कर दो
+        next(error);
     }
-};
 
+}
 
 export const Logout = (req, res, next) => {
     try {

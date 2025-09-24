@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config(); // make sure .env is loaded
 
-const MONGO_URL = process.env.MONGO_URL || process.env.MONGO_URI || process.env.DB_URI;
+const MONGO_URL = process.env.MONGO_URL;
 
 if (!MONGO_URL) {
   throw new Error("MONGO_URL environment variable not set. Check your .env and dotenv.config() position.");
