@@ -9,8 +9,8 @@ import {
   ChevronRight,
   ChevronDown
 } from 'lucide-react';
-import TeamManagement from '../userdashboard/Team/TeamPage.jsx';
-import Contact from './contact.jsx';
+
+
 
 const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -31,6 +31,12 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
       description: 'Dashboard Overview'
     },
     {
+      id: 'projectTheme',
+      title: 'Project Theme',
+      icon: Target,
+      description: 'Select Challenge Theme'
+    },
+    {
       id: 'problemStatement',
       title: 'Problem Statement',
       icon: FileText,
@@ -38,19 +44,19 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
     },
     {
       id: 'team',
-      title: 'Add Team Members',
+      title: 'Manage Team',
       icon: Users,
-      description: 'Manage Team Members'
+      description: 'Team Members'
     },
     {
       id: 'result',
-      title: 'Result',
+      title: 'Results',
       icon: Trophy,
       description: 'Competition Results'
     },
     {
       id: 'contact',
-      title: 'Contact',
+      title: 'Help Desk',
       icon: Phone,
       description: 'Support & Help'
     }

@@ -4,6 +4,7 @@ import { sendOTPEmail } from '../utils/emailService.js';
 import { sendOTPPhone } from '../utils/phoneService.js';
 import Otp from '../models/otpModel.js';
 import Team from '../models/TeamModel.js';
+import { generateAuthToken } from '../utils/genAuthToken.js';
 
 export const SendOTP = async (req, res, next) => {
     try {

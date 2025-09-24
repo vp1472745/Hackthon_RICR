@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Lock, LogIn, AlertCircle, CheckCircle, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { authAPI } from '../../configs/api.js';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -57,33 +58,21 @@ const Login = () => {
     setLoginMessage('');
 
     try {
-      // Simulate API call for authentication
-      // In real implementation, this would call your backend API
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call backend API for authentication
+      const response = await authAPI.login({
+        teamCode: formData.teamCode,
+        email: formData.email
+      });
 
-      // Mock authentication logic
-      // Replace this with actual API call
-      const mockCredentials = [
-        { teamCode: 'FM001', email: 'team1@example.com' },
-        { teamCode: 'FM002', email: 'team2@example.com' },
-        { teamCode: 'FM003', email: 'leader@test.com' }
-      ];
-
-      console.log('Login attempt:', { teamCode: formData.teamCode, email: formData.email });
-      
-      const isValidUser = mockCredentials.some(
-        cred => cred.teamCode === formData.teamCode && cred.email === formData.email
-      );
-
-      console.log('Is valid user:', isValidUser);
-
-      if (isValidUser) {
+      if (response.data.message) {
         setLoginMessage('Login successful! Redirecting to dashboard...');
         
-        // Store user session (in real app, store JWT token)
+        // Store user session data
         localStorage.setItem('hackathonUser', JSON.stringify({
           teamCode: formData.teamCode,
           email: formData.email,
+          user: response.data.user,
+          team: response.data.team,
           loginTime: new Date().toISOString()
         }));
 
@@ -91,12 +80,16 @@ const Login = () => {
         setTimeout(() => {
           navigate('/dashboard');
         }, 1500);
-      } else {
-        setLoginMessage('Invalid Team Code or Email. Please try again.');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setLoginMessage('Login failed. Please try again later.');
+      
+      if (error.response?.data) {
+        const errorMessage = error.response.data.message;
+        setLoginMessage(`Error: ${errorMessage}`);
+      } else {
+        setLoginMessage('Login failed. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }

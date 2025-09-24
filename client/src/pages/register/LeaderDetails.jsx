@@ -62,33 +62,30 @@ const LeaderDetails = () => {
     
     setLoading(true);
     try {
-      // Call backend API to register user
-      const response = await authAPI.registerUser({
-        leaderName: formData.leaderName,
-        leaderEmail: formData.leaderEmail,
-        leaderPhone: formData.leaderPhone
+      // Call backend API to send OTP
+      await authAPI.sendOTP({
+        fullName: formData.leaderName,
+        email: formData.leaderEmail,
+        phone: formData.leaderPhone
       });
 
-      if (response.data.success) {
-        // Store user data and API response in localStorage
-        const registrationData = {
-          ...formData,
-          userId: response.data.user.id,
-          isEmailVerified: response.data.user.isEmailVerified,
-          isPhoneVerified: response.data.user.isPhoneVerified,
-          registrationStatus: response.data.user.registrationStatus
-        };
-        
-        localStorage.setItem('registrationData', JSON.stringify(registrationData));
-        
-        // Show success message
-        alert('Registration successful! Please proceed to verification.');
-        
-        // Navigate to verification step
-        navigate('/register/verification');
-      }
+      // Store form data for next step
+      const registrationData = {
+        fullName: formData.leaderName,
+        email: formData.leaderEmail,
+        phone: formData.leaderPhone
+      };
+      
+      localStorage.setItem('registrationData', JSON.stringify(registrationData));
+      
+      // Show success message
+      alert('OTPs sent successfully to your email and phone! Please proceed to verification.');
+      
+      // Navigate to verification step
+      navigate('/register/verification');
+      
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Send OTP error:', error);
       
       if (error.response?.data) {
         const errorMessage = error.response.data.message;
