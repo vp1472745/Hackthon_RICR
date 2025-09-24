@@ -2,9 +2,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import connectDB from './config/db.js';
+import connectDB from '../server/src/config/db.js';
 import cors from 'cors';
 import AuthRouter from './src/routes/authRoutes.js';
+import UserRoute from './src/routes/userRoute.js';
 
 const app = express();
 
@@ -13,6 +14,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', AuthRouter);
+app.use('/api/user', UserRoute);
+
 
 app.get('/', (req, res) => {
     res.send('API is running...');

@@ -1,7 +1,7 @@
 import express from 'express';
 
 const router = express.Router();
-import { SendOTP, Register, Login, Logout } from '../controller/authController';
+import { SendOTP, Register, Login, Logout } from '../controller/authController.js';
 
 
 router.post("/sendOTP", SendOTP);

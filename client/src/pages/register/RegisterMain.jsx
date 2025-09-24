@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LeaderDetails from './LeaderDetails.jsx';
-import Verification from './Verification.jsx';
+import Verification from './Verification_new.jsx';
 import Payment from './Payment.jsx';
 
 const RegisterMain = () => {

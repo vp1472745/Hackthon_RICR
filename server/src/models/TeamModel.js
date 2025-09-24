@@ -9,6 +9,10 @@ const teamSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    teamemail:{
+        type: String,
+        required: true,
+    },
     teamTheme: {
         type: String,
         default: "General",

@@ -12,20 +12,17 @@ const api = axios.create({
 
 // Auth API functions
 export const authAPI = {
-    // Step 1: Register user
-    registerUser: (userData) => api.post('/auth/register', userData),
+    // Step 1: Send OTP to user
+    sendOTP: (userData) => api.post('/auth/SendOTP', userData),
     
-    // Step 2: OTP functions
-    sendEmailOtp: (email) => api.post('/auth/send-email-otp', { email }),
-    sendPhoneOtp: (phone) => api.post('/auth/send-phone-otp', { phone }),
-    verifyEmailOtp: (email, otp) => api.post('/auth/verify-email-otp', { email, otp }),
-    verifyPhoneOtp: (phone, otp) => api.post('/auth/verify-phone-otp', { phone, otp }),
+    // Step 2: Register user with OTP verification
+    register: (userData) => api.post('/auth/Register', userData),
     
-    // Step 3: Complete registration
-    completeRegistration: (data) => api.post('/auth/complete-registration', data),
+    // Step 3: Login user
+    login: (loginData) => api.post('/auth/login', loginData),
     
-    // Get user status
-    getUserStatus: (email) => api.get(`/auth/user/${encodeURIComponent(email)}`)
+    // Step 4: Logout user
+    logout: () => api.post('/auth/logout')
 };
 
 export default api;

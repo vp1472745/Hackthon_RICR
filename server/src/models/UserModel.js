@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 1,
-        max: 5,
+        max: 8,
         default: 1,
     },
     GitHubProfile: {
