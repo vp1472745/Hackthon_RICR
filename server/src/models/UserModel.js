@@ -17,10 +17,12 @@ const userSchema = new mongoose.Schema({
     collegeName: {
         type: String,
         required: true,
+        default: "Sample College",
     },
     course: {
         type: String,
         required: true,
+        default: "Sample Course",
     },
     role: {
         type: String,
@@ -31,19 +33,23 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Team",
         required: true,
+        default: null
     },
     collegeBranch: {
         type: String,
         required: true,
+        default: "Sample Branch",
     },
     collegeSemester: {
         type: Number,
         required: true,
         min: 1,
         max: 5,
+        default: 1,
     },
     GitHubProfile: {
         type: String,
+        default: "",
     },
 }, { timestamps: true });
 

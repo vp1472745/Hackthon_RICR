@@ -11,14 +11,20 @@ const teamSchema = new mongoose.Schema({
     },
     teamTheme: {
         type: String,
-        required: true,
+        default: "General",
     },
     teamProblemStatement: {
         type: String,
-        required: true,
+        default: "No Problem Statement Provided",
+    },
+    PaymentID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Payment",
+        default: null,
     },
     projectGithubLink: {
         type: String,
+        default: "",
     },
 }, { timestamps: true });
 
