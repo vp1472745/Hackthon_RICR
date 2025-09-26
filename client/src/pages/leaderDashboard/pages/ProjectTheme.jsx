@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Lightbulb, 
-  CheckCircle, 
-  Clock, 
-  Star
-} from 'lucide-react';
+import { Lightbulb, CheckCircle, Star } from 'lucide-react';
 import { projectThemeAPI, teamAPI } from '../../../configs/api';
 
 const ProjectTheme = () => {
@@ -15,7 +10,6 @@ const ProjectTheme = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Get teamId from cookies (token-based login)
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -23,14 +17,13 @@ const ProjectTheme = () => {
     return null;
   }
   const teamId = getCookie('teamId');
+
   useEffect(() => {
-    console.log('[ProjectTheme] Loaded. teamId from cookie:', teamId);
     if (!teamId) {
       alert('Team ID not found! Please log in again.');
     }
   }, [teamId]);
 
-  // Fetch all themes from backend
   useEffect(() => {
     const fetchThemes = async () => {
       try {
@@ -46,16 +39,14 @@ const ProjectTheme = () => {
     fetchThemes();
   }, []);
 
-  // Always fetch current team theme from backend so tick persists after refresh
   useEffect(() => {
     if (!teamId) return;
     const fetchTeamTheme = async () => {
       try {
         const res = await teamAPI.getTeamDetails(teamId);
         setSelectedTheme(res.data.teamTheme || null);
-        console.log('[ProjectTheme] Team details fetched. teamTheme:', res.data.teamTheme);
       } catch (err) {
-        console.error('[ProjectTheme] Error fetching team details:', err);
+        console.error(err);
       }
     };
     fetchTeamTheme();
@@ -68,32 +59,16 @@ const ProjectTheme = () => {
   };
 
   const confirmSelection = async () => {
-    console.log('ConfirmSelection called with:', { teamId, pendingSelection });
-    if (!teamId || !pendingSelection) {
-      alert('Missing teamId or theme selection!');
-      return;
-    }
+    if (!teamId || !pendingSelection) return;
     setLoading(true);
     try {
       await projectThemeAPI.selectThemeForTeam(teamId, pendingSelection);
-      setSelectedTheme(pendingSelection); // Show tick immediately
+      setSelectedTheme(pendingSelection);
       setShowConfirmation(false);
       setPendingSelection(null);
-      // After a short delay, fetch from backend to ensure sync
-      setTimeout(async () => {
-        try {
-          const res = await teamAPI.getTeamDetails(teamId);
-          setSelectedTheme(res.data.teamTheme || pendingSelection);
-        } catch (err) {
-          console.error('Error fetching team after selection:', err);
-        }
-      }, 500);
     } catch (err) {
-      let msg = 'Failed to select theme';
-      if (err?.response?.data?.message) msg += ': ' + err.response.data.message;
-      setError(msg);
-      alert(msg);
-      console.error('Theme selection error:', err);
+      console.error(err);
+      alert('Failed to select theme');
     }
     setLoading(false);
   };
@@ -129,7 +104,7 @@ const ProjectTheme = () => {
             </p>
           </div>
           {selectedTheme && (
-            <div className="text-right">
+            <div className="text-right flex flex-col items-end">
               <div className="flex items-center gap-2 text-green-600">
                 <CheckCircle className="w-5 h-5" />
                 <span className="font-medium">Theme Selected</span>
@@ -150,53 +125,55 @@ const ProjectTheme = () => {
 
       {/* Theme Selection Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {themes.map((theme) => {
+        {themes.map(theme => {
+          const isSelected = selectedTheme === theme.themeName;
           return (
             <div
               key={theme._id}
-              className={`bg-white rounded-xl shadow-sm border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${
-                selectedTheme === theme.themeName
+              className={`relative bg-white rounded-xl shadow-sm border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${
+                isSelected
                   ? 'border-green-500 ring-2 ring-green-200'
                   : 'border-gray-200 hover:border-[#0B2A4A]'
               }`}
               onClick={() => handleThemeSelect(theme.themeName)}
             >
-              {/* Header */}
+              {/* Selected Indicator */}
+              {isSelected && (
+                <div className="absolute top-3 right-3 text-green-500">
+                  <CheckCircle className="w-6 h-6" />
+                </div>
+              )}
+
               <div className="p-6 pb-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
                     <Lightbulb className="w-6 h-6 text-white" />
                   </div>
-                  {selectedTheme === theme.themeName && (
-                    <CheckCircle className="w-6 h-6 text-green-500" />
-                  )}
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-2">{theme.themeName}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">{theme.themeDescription}</p>
               </div>
-              {/* Content */}
-              <div className="px-6 pb-4">
-                <div className="flex items-center gap-2">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(theme.difficulty)}`}>
-                    {theme.difficulty || 'N/A'}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                    <span className="text-xs text-gray-600">{theme.popularity ? `${theme.popularity}% popular` : ''}</span>
-                  </div>
+
+              <div className="px-6 pb-4 flex items-center justify-between">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(theme.difficulty)}`}>
+                  {theme.difficulty || 'N/A'}
+                </span>
+                <div className="flex items-center gap-1">
+                  <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                  <span className="text-xs text-gray-600">{theme.popularity ? `${theme.popularity}% popular` : ''}</span>
                 </div>
               </div>
-              {/* Action Button */}
+
               <div className="p-4 pt-0">
                 <button
                   className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-                    selectedTheme === theme.themeName
+                    isSelected
                       ? 'bg-green-100 text-green-700 cursor-default'
                       : 'bg-[#0B2A4A] text-white hover:bg-[#0d2d4f]'
                   }`}
-                  disabled={selectedTheme === theme.themeName}
+                  disabled={isSelected}
                 >
-                  {selectedTheme === theme.themeName ? 'Selected' : 'Select Theme'}
+                  {isSelected ? 'Selected' : 'Select Theme'}
                 </button>
               </div>
             </div>
@@ -216,9 +193,7 @@ const ProjectTheme = () => {
                     <Lightbulb className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <div className="font-medium text-gray-800">
-                      {pendingSelection}
-                    </div>
+                    <div className="font-medium text-gray-800">{pendingSelection}</div>
                   </div>
                 </div>
               </div>

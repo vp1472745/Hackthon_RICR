@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MultiStepModal from './pop/MultiStepModal.jsx';
 import SideBar from './components/sideBar';
 import Overview from './pages/overView/Overview';
 import ProjectTheme from './pages/ProjectTheme';
@@ -49,7 +50,11 @@ const LeaderDashboard = () => {
           ? 'ml-12 sm:ml-16' 
           : 'ml-56 sm:ml-64'
       }`}>
-        
+        {/* Multi-step Modal always visible */}
+        {/* Modal open state controlled here */}
+        {typeof window !== 'undefined' && (
+          <MultiStepModal isOpen={true} onClose={() => {}} />
+        )}
         {/* Page Content */}
         <div className="flex-1 overflow-auto">
           <div className="min-h-full">

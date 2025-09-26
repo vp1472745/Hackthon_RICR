@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { 
   Target, 
-  Timer,
-  Play,
   FileText,
   CheckCircle,
   AlertTriangle
 } from 'lucide-react';
-
-import { teamAPI } from '../../../../configs/api';
+import { teamAPI, problemStatementAPI } from '../../../../configs/api';
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -17,8 +14,11 @@ function getCookie(name) {
   return null;
 }
 
-const RightSidePanel = ({ timeLeft }) => {
+const RightSidePanel = () => {
   const [selectedTheme, setSelectedTheme] = useState(null);
+  const [problem, setProblem] = useState(null);
+  const [loadingProblem, setLoadingProblem] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const teamId = getCookie('teamId');
@@ -26,55 +26,49 @@ const RightSidePanel = ({ timeLeft }) => {
       setSelectedTheme(null);
       return;
     }
+
+    // Fetch team details
     teamAPI.getTeamDetails(teamId)
       .then(res => {
-        setSelectedTheme(res.data.teamTheme || null);
+        const theme = res.data.teamTheme || null;
+        setSelectedTheme(theme);
+
+        // Fetch problem statement if theme is selected
+        if (theme) {
+          fetchProblemStatement(teamId);
+        }
       })
       .catch(() => setSelectedTheme(null));
   }, []);
 
+  const fetchProblemStatement = async (teamId) => {
+    setLoadingProblem(true);
+    setError('');
+    try {
+      const res = await problemStatementAPI.getByTeam(teamId);
+      let problemData = null;
+
+      // Check multiple response formats
+      if (res.data.problemStatements && res.data.problemStatements.length > 0) {
+        problemData = res.data.problemStatements[0];
+      } else if (res.data.problems && res.data.problems.length > 0) {
+        problemData = res.data.problems[0];
+      } else if (res.data.problemStatement) {
+        problemData = res.data.problemStatement;
+      } else if (res.data.problem) {
+        problemData = res.data.problem;
+      }
+
+      setProblem(problemData);
+    } catch (err) {
+      console.error('Error fetching problem statement:', err);
+      setError('Failed to load problem statement');
+    }
+    setLoadingProblem(false);
+  };
+
   return (
     <div className="space-y-6">
-      {/* Countdown Timer */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Timer className="w-6 h-6 text-[#0B2A4A]" />
-          <h2 className="text-lg font-semibold text-gray-800">Hackathon Countdown</h2>
-        </div>
-
-        {/* Timer Display */}
-        <div className="grid grid-cols-4 gap-3 mb-6">
-          <div className="text-center p-3 bg-gradient-to-br from-[#0B2A4A] to-blue-600 rounded-lg text-white">
-            <div className="text-2xl font-bold">{timeLeft.days}</div>
-            <div className="text-xs opacity-80">Days</div>
-          </div>
-          <div className="text-center p-3 bg-gradient-to-br from-[#0B2A4A] to-blue-600 rounded-lg text-white">
-            <div className="text-2xl font-bold">{timeLeft.hours}</div>
-            <div className="text-xs opacity-80">Hours</div>
-          </div>
-          <div className="text-center p-3 bg-gradient-to-br from-[#0B2A4A] to-blue-600 rounded-lg text-white">
-            <div className="text-2xl font-bold">{timeLeft.minutes}</div>
-            <div className="text-xs opacity-80">Minutes</div>
-          </div>
-          <div className="text-center p-3 bg-gradient-to-br from-[#0B2A4A] to-blue-600 rounded-lg text-white">
-            <div className="text-2xl font-bold">{timeLeft.seconds}</div>
-            <div className="text-xs opacity-80">Seconds</div>
-          </div>
-        </div>
-
-        {/* Start Button (Disabled) */}
-        <button 
-          disabled
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed"
-        >
-          <Play className="w-5 h-5" />
-          Start Hackathon (Coming Soon)
-        </button>
-        
-        <p className="text-center text-xs text-gray-500 mt-2">
-          Button will be enabled when hackathon begins
-        </p>
-      </div>
 
       {/* Selected Theme */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -115,28 +109,15 @@ const RightSidePanel = ({ timeLeft }) => {
           <h2 className="text-lg font-semibold text-gray-800">Problem Statement</h2>
         </div>
 
-        {selectedTheme ? (
+        {loadingProblem ? (
+          <div className="text-center text-gray-600">Loading problem statement...</div>
+        ) : error ? (
+          <div className="text-center text-red-600">{error}</div>
+        ) : selectedTheme && problem ? (
           <div className="space-y-4">
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Challenge Overview</h3>
-              <p className="text-sm text-gray-600 mb-3">
-                Your selected theme: <span className="font-semibold text-[#0B2A4A]">{selectedTheme}</span>
-              </p>
-              <div className="text-sm text-gray-600">
-                <p className="mb-2">Key Requirements:</p>
-                <ul className="list-disc list-inside space-y-1 text-xs">
-                  <li>Innovative solution addressing real-world problems</li>
-                  <li>Technical implementation with proper documentation</li>
-                  <li>Working prototype or MVP</li>
-                  <li>Clear presentation and demonstration</li>
-                </ul>
-              </div>
-            </div>
-            
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-xs text-blue-800 font-medium">
-                💡 Tip: Review the detailed problem statement in the Project Theme section for complete guidelines.
-              </p>
+              <h3 className="font-medium text-gray-900 mb-2">{problem.PStitle}</h3>
+              <p className="text-sm text-gray-600">{problem.PSdescription}</p>
             </div>
           </div>
         ) : (

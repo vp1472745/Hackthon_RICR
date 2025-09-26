@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
-  Home,
-  FileText,
-  Target,
-  Trophy,
-  Phone,
-  Users,
+  LayoutDashboard,
+  Layers,
+  BookOpen,
+  Award,
+  Headset,
+  UserSquare,
   ChevronRight,
   ChevronDown
 } from 'lucide-react';
@@ -27,37 +27,37 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
     {
       id: 'overview',
       title: 'Overview',
-      icon: Home,
+      icon: LayoutDashboard,
       description: 'Dashboard Overview'
     },
     {
       id: 'projectTheme',
       title: 'Project Theme',
-      icon: Target,
+      icon: Layers,
       description: 'Select Challenge Theme'
     },
     {
       id: 'problemStatement',
       title: 'Problem Statement',
-      icon: FileText,
+      icon: BookOpen,
       description: 'Challenge Details'
     },
     {
       id: 'team',
       title: 'Manage Team',
-      icon: Users,
+      icon: UserSquare,
       description: 'Team Members'
     },
     {
       id: 'result',
       title: 'Results',
-      icon: Trophy,
+      icon: Award,
       description: 'Competition Results'
     },
     {
       id: 'contact',
       title: 'Help Desk',
-      icon: Phone,
+      icon: Headset,
       description: 'Support & Help'
     }
   ];
@@ -74,7 +74,7 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
             <div className="flex items-center space-x-2">
               {/* Team Image/Avatar */}
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#0B2A4A] to-[#1D5B9B] rounded-full flex items-center justify-center text-white font-bold">
-                <Users size={16} className="sm:w-5 sm:h-5" />
+                <UserSquare size={16} className="sm:w-5 sm:h-5" />
               </div>
               {/* Team Name */}
               <div className="min-w-0">
@@ -97,17 +97,8 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
           </button>
         </div>
 
-        {/* Team Image (when expanded) - Made smaller */}
-        {!isCollapsed && (
-          <div className="mt-2 sm:mt-3">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center mx-auto cursor-pointer hover:bg-gray-100 transition-colors duration-200">
-              <div className="text-center">
-                <Users size={16} className="text-gray-400 mx-auto mb-1 sm:w-5 sm:h-5" />
-                <p className="text-xs text-gray-500 hidden sm:block">Team Photo</p>
-              </div>
-            </div>
-          </div>
-        )}
+       
+     
       </div>
 
       {/* Navigation Menu */}

@@ -1,7 +1,6 @@
 import Team from "../models/TeamModel.js";
 
-import Theme from "../models/projectTheme.js";
-
+import Theme from '../models/projectTheme.js';
 
 
 // Controller for selecting a theme for a team

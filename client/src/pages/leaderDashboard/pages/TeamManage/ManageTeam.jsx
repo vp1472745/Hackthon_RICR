@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, UserPlus, AlertTriangle } from 'lucide-react';
+import { Users, UserPlus, AlertTriangle, CheckCircle, Circle, Clock } from 'lucide-react';
 import { userAPI } from '../../../../configs/api';
 import { toast } from 'react-toastify';
 import AddMember from './AddMember';
@@ -8,7 +8,6 @@ import TeamStats from './TeamStats';
 import EditMember from './editMember';
 import ViewMember from './viewMember';
 import DeleteMember from './deleteMember';
-
 
 const ManageTeam = () => {
   // Leader profile and team data
@@ -55,6 +54,52 @@ const ManageTeam = () => {
         setTeamMembers(response.data.teamMembers || []);
         
         toast.success('Team data loaded successfully!');
+        
+ 
+        const getTeamProgress = () => {
+          const apiTeamMembers = JSON.parse(localStorage.getItem('apiTeamMembers')) || [];
+          const registrationData = JSON.parse(localStorage.getItem('registrationData')) || {};
+          const leaderProfile = JSON.parse(localStorage.getItem('leaderProfile')) || null;
+          let teamMembers = [];
+          if (apiTeamMembers.length > 0) teamMembers = apiTeamMembers;
+          else if (registrationData.teamMembers) teamMembers = registrationData.teamMembers;
+          else if (leaderProfile?.teamInfo?.members) teamMembers = leaderProfile.teamInfo.members;
+          const currentCount = teamMembers.length;
+          const requiredCount = 4;
+          const stepProgress = Math.min(currentCount / requiredCount, 1) * 100;
+          return { current: currentCount, required: requiredCount, isComplete: currentCount >= requiredCount, stepProgress };
+        };
+
+        const getStepStatus = (isCompleted, progress) => {
+          if (isCompleted) {
+            return { icon: CheckCircle, color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-200' };
+          } else if (progress > 0) {
+            return { icon: Clock, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' };
+          } else {
+            return { icon: Circle, color: 'text-gray-400', bgColor: 'bg-gray-50', borderColor: 'border-gray-200' };
+          }
+        };
+
+        const ManageTeamCard = () => {
+          const teamProgress = getTeamProgress();
+          const status = getStepStatus(teamProgress.isComplete, teamProgress.stepProgress);
+          const StatusIcon = status.icon;
+          return (
+            <div className={`flex flex-col justify-between w-full bg-white rounded-lg border ${status.borderColor} shadow-sm ${status.bgColor} p-4 mb-6 transition-all`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Users className={`w-7 h-7 ${status.color} mr-2`} />
+                  <span className="font-semibold text-base">Add 3 Team Members</span>
+                </div>
+                <span className={`flex items-center gap-1 text-xs ${status.color}`}>
+                  <StatusIcon className="w-4 h-4" />
+                  {`${teamProgress.current}/${teamProgress.required} members`}
+                </span>
+              </div>
+              <div className="text-sm text-gray-600 mt-2">Build your complete hackathon team (3 members + you = 4 total)</div>
+            </div>
+          );
+        };
       }
     } catch (error) {
       console.error('Error fetching leader data:', error);

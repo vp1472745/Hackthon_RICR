@@ -13,6 +13,7 @@ const ProblemStatements = () => {
 
   useEffect(() => {
     const fetchProblem = async () => {
+      console.log('teamId:', teamId);
       if (!teamId) {
         setProblem(null);
         setLoading(false);
@@ -20,13 +21,25 @@ const ProblemStatements = () => {
       }
       setLoading(true);
       try {
-        // Use the correct endpoint: /api/problem/team/:teamId
+        // Try main endpoint
         const res = await problemStatementAPI.getByTeam(teamId);
-        setProblem(res.data.problemStatements && res.data.problemStatements.length > 0 ? res.data.problemStatements[0] : null);
+        console.log('API response:', res.data);
+        let problem = null;
+        if (res.data.problemStatements && Array.isArray(res.data.problemStatements) && res.data.problemStatements.length > 0) {
+          problem = res.data.problemStatements[0];
+        } else if (res.data.problems && Array.isArray(res.data.problems) && res.data.problems.length > 0) {
+          problem = res.data.problems[0];
+        } else if (res.data.problemStatement) {
+          problem = res.data.problemStatement;
+        } else if (res.data.problem) {
+          problem = res.data.problem;
+        }
+        setProblem(problem);
         setLoading(false);
-      } catch {
+      } catch (err) {
         setError('Failed to load problem statement');
         setLoading(false);
+        console.error('Fetch error:', err);
       }
     };
     fetchProblem();

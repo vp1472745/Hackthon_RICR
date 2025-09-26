@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ProgressBar from './progressBar';
-import TeamLeaderCard from './TeamLeaderCard';
-import TeamMembersCard from './TeamMembersCard';
 import RightSidePanel from './RightSidePanel';
 import { userAPI } from '../../../../configs/api';
 import { toast } from 'react-toastify';
+import TeamProfileCard from './TeamProfileCard';
+
 
 const Overview = () => {
   // Get data from localStorage
@@ -31,23 +31,23 @@ const Overview = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // First try authenticated API call
       const response = await userAPI.getLeaderProfile();
-      
+
       if (response.data && response.data.leader) {
         setLeaderProfile(response.data.leader);
         setApiTeamMembers(response.data.teamMembers || []);
-        
+
         // Store in localStorage for offline use
         localStorage.setItem('leaderProfile', JSON.stringify(response.data.leader));
         localStorage.setItem('apiTeamMembers', JSON.stringify(response.data.teamMembers || []));
-        
+
         toast.success('Leader profile loaded successfully!');
       }
     } catch (error) {
       console.error('Error fetching leader profile:', error);
-      
+
       // Try alternative approach - get user by ID from localStorage
       const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser') || '{}');
       if (hackathonUser.user && hackathonUser.user._id) {
@@ -57,7 +57,7 @@ const Overview = () => {
           if (userResponse.data && userResponse.data.user) {
             setLeaderProfile(userResponse.data.user);
             setApiTeamMembers(userResponse.data.user.teamInfo?.members || []);
-            
+
             toast.success('Profile loaded from user data!');
             return; // Exit early on success
           }
@@ -65,16 +65,16 @@ const Overview = () => {
           console.error('Fallback fetch failed:', fallbackError);
         }
       }
-      
+
       // Final fallback to localStorage data
       setError('Using offline data');
       toast.warning('Using offline profile data');
-      
+
       const storedProfile = localStorage.getItem('leaderProfile');
       const storedMembers = localStorage.getItem('apiTeamMembers');
       if (storedProfile) setLeaderProfile(JSON.parse(storedProfile));
       if (storedMembers) setApiTeamMembers(JSON.parse(storedMembers));
-      
+
       // If no stored data, use hackathonUser data
       if (!storedProfile && hackathonUser.user) {
         setLeaderProfile(hackathonUser.user);
@@ -88,17 +88,17 @@ const Overview = () => {
   // Calculate countdown to hackathon
   useEffect(() => {
     const hackathonDate = new Date('2024-12-31T09:00:00'); // Set your hackathon date
-    
+
     const updateTimer = () => {
       const now = new Date().getTime();
       const distance = hackathonDate.getTime() - now;
-      
+
       if (distance > 0) {
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
+
         setTimeLeft({ days, hours, minutes, seconds });
       } else {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -132,23 +132,19 @@ const Overview = () => {
         {/* Left Side - Team Profiles */}
         <div className="space-y-6">
           {/* Team Leader Profile */}
-          <TeamLeaderCard 
+          <TeamProfileCard
             leaderProfile={leaderProfile}
             teamData={teamData}
+            apiTeamMembers={apiTeamMembers}
+            teamMembers={teamMembers}
             loading={loading}
             error={error}
             fetchLeaderProfile={fetchLeaderProfile}
           />
-
-          {/* Team Members */}
-          <TeamMembersCard 
-            apiTeamMembers={apiTeamMembers}
-            teamMembers={teamMembers}
-          />
         </div>
 
         {/* Right Side - Timer and Theme Info */}
-        <RightSidePanel 
+        <RightSidePanel
           timeLeft={timeLeft}
           selectedTheme={selectedTheme}
         />
