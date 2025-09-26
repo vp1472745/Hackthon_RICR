@@ -73,6 +73,15 @@ const Login = () => {
           localStorage.setItem('authToken', response.data.token);
         }
 
+        // Store user session data
+        localStorage.setItem('hackathonUser', JSON.stringify({
+          teamCode: formData.teamCode,
+          email: formData.email,
+          user: response.data.user,
+          team: response.data.team,
+          token: response.data.token,
+          loginTime: new Date().toISOString()
+        }));
 
         // Debug log for login response
         console.log('Login response:', response.data);
