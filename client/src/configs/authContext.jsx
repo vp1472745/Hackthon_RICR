@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
 		localStorage.removeItem("authToken");
 		setIsAuthenticated(false);
 		setLeaderName("");
-		navigate("/login");
+		navigate("/");
 	};
 
 	return (

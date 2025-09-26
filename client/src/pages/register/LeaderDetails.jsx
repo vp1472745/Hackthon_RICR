@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import ProgressBar from './ProgressBar.jsx';
 import { authAPI } from '../../configs/api.js';
 
@@ -204,7 +203,7 @@ const LeaderDetails = () => {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Registering...
+                  Sending Verification Code...
                 </>
               ) : (
                 <>
@@ -216,18 +215,6 @@ const LeaderDetails = () => {
           </div>
         </div>
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </div>
   );
 };

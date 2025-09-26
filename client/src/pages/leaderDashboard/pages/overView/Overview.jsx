@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import ProgressBar from './progressBar';
 import RightSidePanel from './RightSidePanel';
 import { userAPI } from '../../../../configs/api';
 import { toast } from 'react-toastify';
 import TeamProfileCard from './TeamProfileCard';
+import HackathonTimer from './HackathonTimer';
 
 
 const Overview = () => {
@@ -36,14 +36,13 @@ const Overview = () => {
       const response = await userAPI.getLeaderProfile();
 
       if (response.data && response.data.leader) {
-        setLeaderProfile(response.data.leader);
-        setApiTeamMembers(response.data.teamMembers || []);
+        const { leader, team } = response.data;
+        setLeaderProfile(leader);
+        setApiTeamMembers(team?.members || []);
 
         // Store in localStorage for offline use
-        localStorage.setItem('leaderProfile', JSON.stringify(response.data.leader));
-        localStorage.setItem('apiTeamMembers', JSON.stringify(response.data.teamMembers || []));
-
-        toast.success('Leader profile loaded successfully!');
+        localStorage.setItem('leaderProfile', JSON.stringify(leader));
+        localStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
       }
     } catch (error) {
       console.error('Error fetching leader profile:', error);
@@ -125,7 +124,7 @@ const Overview = () => {
 
 
       {/* Progress Bar Section */}
-      <ProgressBar />
+      <HackathonTimer />
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

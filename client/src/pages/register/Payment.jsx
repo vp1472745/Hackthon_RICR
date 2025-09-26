@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, CreditCard, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import ProgressBar from './ProgressBar.jsx';
 
 const Payment = () => {
@@ -37,7 +35,7 @@ const Payment = () => {
       
       return () => clearTimeout(timer);
     } else if (paymentCompleted && countdown === 0) {
-      navigate('/leader-dashboard');
+      navigate('/login');
     }
   }, [paymentCompleted, countdown, navigate]);
 
@@ -139,7 +137,7 @@ const Payment = () => {
               </div>
 
               <button
-                onClick={() => navigate('/leader-dashboard')}
+                onClick={() => navigate('/login')}
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
               >
                 Go to Dashboard Now
@@ -154,18 +152,7 @@ const Payment = () => {
           </div>
         </div>
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+     
     </div>
   );
 };

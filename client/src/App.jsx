@@ -6,14 +6,28 @@ import Home from "./pages/home.jsx";
 import RegisterMain from "../src/pages/register/RegisterMain.jsx";
 import Login from "./pages/login/login.jsx";
 import LeaderDashboard from "./pages/leaderDashboard/leaderDashboard.jsx";
-
+import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 function App() {
     return (
         <Router>
+            <ToastContainer
+                        position="top-right"
+                        autoClose={3000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
+                    />
             <AuthProvider>
                 <Routes>
+                    
                     {/* Routes with navbar */}
                     <Route path="/*" element={
                         <>

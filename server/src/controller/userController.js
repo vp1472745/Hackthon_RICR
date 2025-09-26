@@ -9,7 +9,14 @@ export const getUserById = async (req, res, next) => {
     const { userId } = req.params;
     
     const user = await User.findById(userId)
-      .populate('teamId', 'teamName teamCode themeId createdAt');
+      .populate({
+        path: 'teamId',
+        select: 'teamName teamCode teamTheme teamProblemStatement',
+        populate: [
+          { path: 'teamTheme', select: 'themeName themeDescription' },
+          { path: 'teamProblemStatement', select: 'PStitle PSdescription' }
+        ]
+      });
     
     if (!user) {
       const error = new Error('User not found');
@@ -53,33 +60,38 @@ export const getUserById = async (req, res, next) => {
 // ===================== Leader Controllers =====================
 
 // Leader fetches own profile with complete team info
-export const getLeaderProfile = async (req, res, next) => {
+export const getLeaderProfile = async (req, res) => {
   try {
-    const leaderId = req.user._id; // set by auth middleware
-    const leader = await User.findById(leaderId).populate('teamId', 'teamName teamCode themeId createdAt');
-
-    if (!leader || leader.role !== 'Leader') {
-      const error = new Error('Unauthorized or Leader not found');
-      error.statusCode = 403;
-      return next(error);
+    const leaderId = req.user.id; // Assuming `req.user` contains the authenticated user's info
+    if (!leaderId) {
+      return res.status(400).json({ message: 'Leader ID is required' });
     }
 
-    // Fetch all team members
-    let teamMembers = [];
-    if (leader.teamId) {
-      teamMembers = await User.find({ teamId: leader.teamId })
-        .select('fullName email phone role collegeName course collegeBranch collegeSemester GitHubProfile createdAt')
-        .sort({ role: 1, createdAt: 1 }); // Leader first
+    // Fetch leader profile from the database
+    const leader = await User.findById(leaderId)
+      .populate({
+        path: 'teamId',
+        select: 'teamName teamCode teamTheme teamProblemStatement',
+        populate: [
+          { path: 'teamTheme', select: 'themeName themeDescription' },
+          { path: 'teamProblemStatement', select: 'PStitle PSdescription' }
+        ]
+      });
+    if (!leader) {
+      return res.status(404).json({ message: 'Leader profile not found' });
     }
 
+    // Return the leader profile with populated team, theme, and problem statement details
     res.status(200).json({
-      message: 'Leader profile with team members retrieved successfully',
-      leader,
-      teamMembers
+      message: 'Leader profile retrieved successfully',
+      leader: {
+        ...leader.toObject(),
+        team: leader.teamId || null
+      }
     });
-
   } catch (error) {
-    next(error);
+    console.error('Error fetching leader profile:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
@@ -308,6 +320,39 @@ export const getMemberProfile = async (req, res, next) => {
       teamMembers
     });
 
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Controller to update termsAccepted field for a user
+export const updateTermsAccepted = async (req, res, next) => {
+  try {
+    const userId = req.user._id; // Assuming the user is authenticated and their ID is available in req.user
+    const { termsAccepted } = req.body;
+
+    if (typeof termsAccepted !== 'boolean') {
+      const error = new Error('Invalid input. termsAccepted must be a boolean value.');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { termsAccepted },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    res.status(200).json({
+      message: 'Terms and conditions updated successfully',
+      user: updatedUser
+    });
   } catch (error) {
     next(error);
   }

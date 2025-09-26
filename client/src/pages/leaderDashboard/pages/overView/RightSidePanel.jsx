@@ -20,26 +20,16 @@ const RightSidePanel = () => {
   const [loadingProblem, setLoadingProblem] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const teamId = getCookie('teamId');
-    if (!teamId) {
-      setSelectedTheme(null);
-      return;
+ 
+  const fetchThemeName = async (themeId) => {
+    try {
+      const res = await teamAPI.getThemeName(themeId); // Assuming this API exists
+      setSelectedTheme(res.data.themeName || 'Unknown Theme');
+    } catch (err) {
+      console.error('Error fetching theme name:', err);
+      setSelectedTheme('Unknown Theme');
     }
-
-    // Fetch team details
-    teamAPI.getTeamDetails(teamId)
-      .then(res => {
-        const theme = res.data.teamTheme || null;
-        setSelectedTheme(theme);
-
-        // Fetch problem statement if theme is selected
-        if (theme) {
-          fetchProblemStatement(teamId);
-        }
-      })
-      .catch(() => setSelectedTheme(null));
-  }, []);
+  };
 
   const fetchProblemStatement = async (teamId) => {
     setLoadingProblem(true);
@@ -84,10 +74,6 @@ const RightSidePanel = () => {
               <span className="font-medium text-gray-900">Theme Selected</span>
             </div>
             <h3 className="font-semibold text-lg text-[#0B2A4A] mb-2">{selectedTheme}</h3>
-            <p className="text-sm text-gray-600">
-              Great choice! You've successfully selected your hackathon theme. 
-              Make sure to review the problem statement and requirements.
-            </p>
           </div>
         ) : (
           <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">

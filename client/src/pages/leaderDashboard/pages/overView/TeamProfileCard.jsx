@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { User, Users, Mail, Phone, Trophy, Timer, Play } from 'lucide-react';
 
-const HACKATHON_START = new Date('2025-11-06T12:00:00+05:30'); // 6 Nov 12pm IST
 
-function getIndiaTime() {
-  // Get current time in IST
-  const now = new Date();
-  // Convert to IST (UTC+5:30)
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-  return new Date(utc + (5.5 * 60 * 60 * 1000));
-}
 
 const TeamProfileCard = ({
   leaderProfile,
@@ -21,27 +13,7 @@ const TeamProfileCard = ({
   fetchLeaderProfile,
   setActiveSection
 }) => {
-  // Hackathon countdown state
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-
-  useEffect(() => {
-    const updateTimer = () => {
-      const now = getIndiaTime();
-      const distance = HACKATHON_START.getTime() - now.getTime();
-      if (distance > 0) {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        setTimeLeft({ days, hours, minutes, seconds });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      }
-    };
-    const timer = setInterval(updateTimer, 1000);
-    updateTimer();
-    return () => clearInterval(timer);
-  }, []);
+ 
 
   // Combine leader and members, filter out duplicate leader if present
   const leader = leaderProfile || teamData?.user || teamData;
@@ -52,36 +24,7 @@ const TeamProfileCard = ({
   return (
     <>
       {/* Hackathon Countdown Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Timer className="w-6 h-6 text-[#0B2A4A]" />
-          <h2 className="text-lg font-semibold text-gray-800">Hackathon Countdown</h2>
-        </div>
-        <div className="grid grid-cols-4 gap-3 mb-4">
-          <div className="text-center p-3 bg-gradient-to-br from-[#0B2A4A] to-blue-600 rounded-lg text-white">
-            <div className="text-2xl font-bold">{timeLeft.days}</div>
-            <div className="text-xs opacity-80">Days</div>
-          </div>
-          <div className="text-center p-3 bg-gradient-to-br from-[#0B2A4A] to-blue-600 rounded-lg text-white">
-            <div className="text-2xl font-bold">{timeLeft.hours}</div>
-            <div className="text-xs opacity-80">Hours</div>
-          </div>
-          <div className="text-center p-3 bg-gradient-to-br from-[#0B2A4A] to-blue-600 rounded-lg text-white">
-            <div className="text-2xl font-bold">{timeLeft.minutes}</div>
-            <div className="text-xs opacity-80">Minutes</div>
-          </div>
-          <div className="text-center p-3 bg-gradient-to-br from-[#0B2A4A] to-blue-600 rounded-lg text-white">
-            <div className="text-2xl font-bold">{timeLeft.seconds}</div>
-            <div className="text-xs opacity-80">Seconds</div>
-          </div>
-        </div>
-        <div className="text-center text-sm text-gray-700 mb-2">
-          Hackathon starts on <span className="font-semibold text-[#0B2A4A]">6 November 12:00 PM IST</span>
-        </div>
-        <div className="text-center text-xs text-gray-500">
-          Time left until hackathon begins
-        </div>
-      </div>
+      
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         {/* Team Profile Section */}
         <div className="flex items-center justify-between mb-4">

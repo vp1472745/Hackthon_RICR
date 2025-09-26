@@ -1,0 +1,27 @@
+{
+    "_id": "68d6cb81a925c89f2b4e4714",
+    "fullName": "vineet ",
+    "email": "vineetpancheshwar1611@gmail.com",
+    "phone": "6268923703",
+    "collegeName": "visyt",
+    "course": "Diploma",
+    "role": "Leader",
+    "teamId": {
+        "_id": "68d6cb81a925c89f2b4e4712",
+        "teamName": "RICR-FM-0001 Team",
+        "teamCode": "RICR-FM-0001",
+        "teamTheme": {
+            "_id": "68d52b908e1c85b01cc8ee8c",
+            "themeName": "Blockchain",
+            "themeDescription": "Innovative solutions using blockchain technology for security and transparency."
+        },
+        "teamProblemStatement": null
+    },
+    "collegeBranch": "Industrial Engineering",
+    "collegeSemester": 6,
+    "GitHubProfile": "N/A",
+    "createdAt": "2025-09-26T17:21:05.480Z",
+    "updatedAt": "2025-09-26T19:41:54.749Z",
+    "__v": 0,
+    "termsAccepted": true
+    }

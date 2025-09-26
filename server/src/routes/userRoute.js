@@ -7,7 +7,9 @@ import {
   addTeamMember,
   removeTeamMember,
   editTeamMemberByLeader,
-  getMemberProfile
+  getMemberProfile,
+  updateTermsAccepted
+
 } from '../controller/userController.js';
 import { authenticateToken, authenticateLeader } from '../middlewares/auth.js';
 
@@ -28,6 +30,9 @@ router.put('/leader/profile', authenticateLeader, updateLeaderProfile);
 
 // Delete leader's own profile
 router.delete('/leader/profile', authenticateLeader, deleteLeaderProfile);
+
+// Update terms acceptance
+router.put('/update-terms', authenticateToken, updateTermsAccepted);
 
 // ===================== Team Management Routes (Leader Only) =====================
 

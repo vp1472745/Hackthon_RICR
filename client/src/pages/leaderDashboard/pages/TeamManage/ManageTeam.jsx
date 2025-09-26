@@ -48,11 +48,12 @@ const ManageTeam = () => {
       
       // Try authenticated leader profile first
       const response = await userAPI.getLeaderProfile();
-      
+
       if (response.data && response.data.leader) {
-        setLeaderProfile(response.data.leader);
-        setTeamMembers(response.data.teamMembers || []);
-        
+        const { leader, team } = response.data;
+        setLeaderProfile(leader);
+        setTeamMembers(team?.members || []);
+
         toast.success('Team data loaded successfully!');
         
  

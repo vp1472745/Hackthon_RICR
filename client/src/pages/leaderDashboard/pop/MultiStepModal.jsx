@@ -16,6 +16,11 @@ const MultiStepModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [modalOpen, setModalOpen] = useState(isOpen);
+  const [isStep1Saved, setIsStep1Saved] = useState(false);
+  const [isNextDisabled, setIsNextDisabled] = useState(false); // New state to track Next button state
+  const [isStep2Saved, setIsStep2Saved] = useState(false); // Track Step2 save status
+  const [isStep3Saved, setIsStep3Saved] = useState(false); // Track Step3 save status
+  const [isStep4Saved, setIsStep4Saved] = useState(false); // Track Step4 save status
 
   const StepComponent = stepComponents[step];
 
@@ -25,6 +30,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
   };
 
   const handleNext = () => {
+    if ((step === 0 && !isStep1Saved) || (step === 2 && !isStep3Saved) || (step === 3 && !isStep4Saved) || isNextDisabled) return; // Prevent moving to the next step if conditions are not met
     if (step < stepComponents.length - 1) setStep(step + 1);
   };
 
@@ -42,7 +48,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl mx-4 p-6 relative">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[85vh] overflow-y-auto mx-4 p-6 relative">
         {/* Stepper */}
         <div className="flex items-center justify-center mb-8 gap-5">
           {steps.map((s, idx) => (
@@ -65,8 +71,16 @@ const MultiStepModal = ({ isOpen, onClose }) => {
           ))}
         </div>
         {/* Step Content */}
-        <StepComponent data={formData} onChange={handleChange} />
-        <div className="mt-6 flex justify-between gap-2">
+        <StepComponent
+          data={formData}
+          onChange={handleChange}
+          setIsStep1Saved={setIsStep1Saved}
+          setIsStep2Saved={setIsStep2Saved} // Pass the setter to Step2
+          setIsNextDisabled={setIsNextDisabled}
+          setIsStep3Saved={setIsStep3Saved}
+          setIsStep4Saved={setIsStep4Saved} // Pass the setter to Step4
+        />
+        <div className="mt-3 flex justify-between gap-2">
           <button
             className={`px-5 py-2 rounded-lg font-semibold transition-colors ${step === 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-[#0B2A4A] hover:bg-gray-200'}`}
             onClick={handleBack}
@@ -76,29 +90,21 @@ const MultiStepModal = ({ isOpen, onClose }) => {
           </button>
           {step < stepComponents.length - 1 ? (
             <button
-              className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className={`px-5 py-2 rounded-lg font-semibold transition-colors ${(step === 0 && !isStep1Saved) || (step === 2 && !isStep3Saved) || (step === 3 && !isStep4Saved) || isNextDisabled ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
               onClick={handleNext}
+              disabled={(step === 0 && !isStep1Saved) || (step === 2 && !isStep3Saved) || (step === 3 && !isStep4Saved) || isNextDisabled} // Disable Next button if conditions are not met
             >
               Next
             </button>
           ) : (
             <button
-              className="bg-green-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+              className={`px-5 py-2 rounded-lg font-semibold transition-colors ${!isStep4Saved ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
               onClick={handleSave}
+              disabled={!isStep4Saved} // Disable Save button if terms are not accepted
             >
               Save
             </button>
           )}
-        </div>
-        <div className="absolute top-2 right-2">
-          <button
-            className="text-gray-400 hover:text-gray-700 text-xl font-bold"
-            onClick={() => { setModalOpen(false); if (onClose) onClose(); }}
-            disabled={step < stepComponents.length - 1}
-            title={step < stepComponents.length - 1 ? 'Complete all steps to close' : 'Close'}
-          >
-            &times;
-          </button>
         </div>
       </div>
     </div>

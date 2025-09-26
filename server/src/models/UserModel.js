@@ -17,12 +17,12 @@ const userSchema = new mongoose.Schema({
     collegeName: {
         type: String,
         required: true,
-        default: "Sample College",
+        default: "N/A",
     },
     course: {
         type: String,
         required: true,
-        default: "Sample Course",
+        default: "N/A",
     },
     role: {
         type: String,
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
     collegeBranch: {
         type: String,
         required: true,
-        default: "Sample Branch",
+        default: "N/A",
     },
     collegeSemester: {
         type: Number,
@@ -47,8 +47,13 @@ const userSchema = new mongoose.Schema({
     },
     GitHubProfile: {
         type: String,
-        default: "",
+        default: "N/A",
     },
+   termsAccepted : {
+        type: Boolean,
+        required: true,
+       default: false
+    }
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
