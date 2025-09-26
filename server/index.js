@@ -4,8 +4,13 @@ dotenv.config();
 import express from 'express';
 import connectDB from '../server/src/config/db.js';
 import cors from 'cors';
+
 import AuthRouter from './src/routes/authRoutes.js';
 import UserRoute from './src/routes/userRoute.js';
+import ProjectThemeRouter from './src/routes/projectThemeRoute.js';
+import TeamRoute from './src/routes/teamRoute.js';
+import ProblemStatementRoute from './src/routes/problemStatementRoute.js';
+
 
 const app = express();
 
@@ -15,6 +20,12 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', AuthRouter);
 app.use('/api/user', UserRoute);
+app.use('/api/theme', ProjectThemeRouter);
+
+
+
+app.use('/api/team', TeamRoute);
+app.use('/api/problem', ProblemStatementRoute);
 
 
 app.get('/', (req, res) => {
@@ -22,9 +33,21 @@ app.get('/', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
+    console.error('Error occurred:', {
+        message: err.message,
+        stack: err.stack,
+        statusCode: err.statusCode,
+        url: req.url,
+        method: req.method,
+        body: req.body,
+        headers: req.headers
+    });
     const errorMessage = err.message || 'Internal Server Error';
     const statusCode = err.statusCode || 500;
-    res.status(statusCode).send(errorMessage);
+    res.status(statusCode).json({
+        error: errorMessage,
+        statusCode: statusCode
+    });
 });
 
 const PORT = process.env.PORT || 4500;

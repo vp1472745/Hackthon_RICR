@@ -1,6 +1,55 @@
 import User from '../models/UserModel.js';
 import Team from '../models/TeamModel.js';
 
+// ===================== General User Controllers =====================
+
+// Get user by ID with team information (public route)
+export const getUserById = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    
+    const user = await User.findById(userId)
+      .populate('teamId', 'teamName teamCode themeId createdAt');
+    
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+    
+    // Get team members if user has a team
+    let teamInfo = null;
+    if (user.teamId) {
+      const teamMembers = await User.find({ teamId: user.teamId })
+        .select('fullName email phone role collegeName course collegeBranch collegeSemester GitHubProfile createdAt')
+        .sort({ role: 1, createdAt: 1 });
+      
+      const leader = teamMembers.find(member => member.role === 'Leader');
+      const members = teamMembers.filter(member => member.role === 'Member');
+      
+      teamInfo = {
+        team: user.teamId,
+        leader: leader || null,
+        members: members || [],
+        totalMembers: teamMembers.length,
+        maxCapacity: 4, // Updated to 4 total members (1 leader + 3 members)
+        availableSlots: Math.max(0, 4 - teamMembers.length)
+      };
+    }
+    
+    res.status(200).json({
+      message: 'User retrieved successfully',
+      user: {
+        ...user.toObject(),
+        teamInfo: teamInfo
+      }
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+};
+
 // ===================== Leader Controllers =====================
 
 // Leader fetches own profile with complete team info
@@ -91,12 +140,27 @@ export const deleteLeaderProfile = async (req, res, next) => {
 // Add team member
 export const addTeamMember = async (req, res, next) => {
   try {
+    if (!req.user) {
+      const error = new Error('User not authenticated');
+      error.statusCode = 401;
+      return next(error);
+    }
+
     const leaderId = req.user._id;
     const { teamId, fullName, email, phone, collegeName, course, collegeBranch, collegeSemester, GitHubProfile } = req.body;
 
+
+
     const leader = await User.findById(leaderId);
-    if (!leader || leader.role !== 'Leader' || leader.teamId.toString() !== teamId) {
+    if (!leader || leader.role !== 'Leader') {
       const error = new Error('Unauthorized. Only team leader can add members.');
+      error.statusCode = 403;
+      return next(error);
+    }
+
+    // Check if teamId matches or if leader doesn't have a team yet
+    if (leader.teamId && teamId && leader.teamId.toString() !== teamId) {
+      const error = new Error('Team ID mismatch. You can only add members to your own team.');
       error.statusCode = 403;
       return next(error);
     }
@@ -114,9 +178,17 @@ export const addTeamMember = async (req, res, next) => {
       return next(error);
     }
 
-    const currentMembers = await User.countDocuments({ teamId });
+    // Use leader's teamId if teamId not provided or doesn't match
+    const finalTeamId = teamId || leader.teamId;
+    if (!finalTeamId) {
+      const error = new Error('No team found. Leader must be part of a team to add members.');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const currentMembers = await User.countDocuments({ teamId: finalTeamId });
     if (currentMembers >= 5) {
-      const error = new Error('Team is full. Maximum 5 members allowed.');
+      const error = new Error('Team is full. Maximum 5 members allowed (1 leader + 4 members).');
       error.statusCode = 400;
       return next(error);
     }
@@ -128,7 +200,7 @@ export const addTeamMember = async (req, res, next) => {
       collegeName: collegeName || "Sample College",
       course: course || "Sample Course",
       role: 'Member',
-      teamId,
+      teamId: finalTeamId,
       collegeBranch: collegeBranch || "Sample Branch",
       collegeSemester: collegeSemester || 0,
       GitHubProfile: GitHubProfile || ""

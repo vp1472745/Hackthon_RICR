@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../configs/authContext";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isAuthenticated, leaderName, logout } = useAuth();
 
   // Handle scroll effect
   useEffect(() => {
@@ -30,13 +32,25 @@ const Navbar = () => {
           </h1>
         </div>
         </Link>
-        <div className="flex justify-center items-center">
-          <Link 
-            to="/login" 
-            className="bg-[#2A6EBB] hover:bg-[#1D5B9B] text-white rounded-md px-4 py-1 transition-colors duration-200"
-          >
-            Login
-          </Link>
+        <div className="flex justify-center items-center gap-3">
+          {isAuthenticated && leaderName && (
+            <span className="text-[#0C2340] font-semibold mr-2 hidden sm:inline">Welcome, {leaderName}</span>
+          )}
+          {isAuthenticated ? (
+            <button
+              onClick={logout}
+              className="bg-red-500 hover:bg-red-600 text-white rounded-md px-4 py-1 transition-colors duration-200"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link 
+              to="/login" 
+              className="bg-[#2A6EBB] hover:bg-[#1D5B9B] text-white rounded-md px-4 py-1 transition-colors duration-200"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </nav>

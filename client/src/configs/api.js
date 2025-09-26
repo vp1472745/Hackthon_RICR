@@ -1,3 +1,5 @@
+
+
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:4500/api';
@@ -87,5 +89,42 @@ export const teamAPI = {
     // Update team information
     updateTeam: (teamId, teamData) => api.put(`/team/${teamId}`, teamData)
 };
+
+
+
+
+
+export const projectThemeAPI = {
+    // Fetch all themes
+    getAllThemes: () => api.get('/theme'),
+    // Select a theme for a team
+    selectThemeForTeam: (teamId, themeName) => api.put(`/theme/select/${teamId}`, { themeName }),
+};
+
+
+
+
+
+
+// Problem Statement API functions
+export const problemStatementAPI = {
+    // Get all problem statements for a theme
+    getByTheme: (themeId) => api.get(`/problems?theme=${themeId}`),
+    // Get all problem statements (optionally filtered by teamId)
+    getAll: (params) => api.get('/problem', { params }),
+    // Get all problem statements for a team
+    getByTeam: (teamId) => api.get(`/problem/team/${teamId}`),
+    // Create a new problem statement
+    create: (data) => api.post('/problem/', data),
+    // Edit a problem statement
+    edit: (id, data) => api.put(`/problem/${id}`, data),
+    // Delete a problem statement
+    delete: (id) => api.delete(`/problemt/${id}`),
+};
+
+
+
+
+
 
 export default api;

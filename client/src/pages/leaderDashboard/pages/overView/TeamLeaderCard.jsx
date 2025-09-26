@@ -72,33 +72,10 @@ const TeamLeaderCard = ({
                 <Phone className="w-4 h-4" />
                 <span>{leaderProfile?.phone || teamData.phone || 'Not provided'}</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <GraduationCap className="w-4 h-4" />
-                <span>{leaderProfile?.collegeName || teamData.college || 'Not provided'}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <MapPin className="w-4 h-4" />
-                <span>{leaderProfile?.course || teamData.course || 'Not provided'}</span>
-              </div>
-              {leaderProfile?.collegeBranch && (
-                <div className="flex items-center gap-2 text-gray-600">
-                  <GraduationCap className="w-4 h-4" />
-                  <span>{leaderProfile.collegeBranch}</span>
-                </div>
-              )}
-              {leaderProfile?.GitHubProfile && (
-                <div className="flex items-center gap-2 text-gray-600">
-                  <FileText className="w-4 h-4" />
-                  <a 
-                    href={leaderProfile.GitHubProfile} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-[#0B2A4A] hover:underline"
-                  >
-                    GitHub Profile
-                  </a>
-                </div>
-              )}
+  
+              
+           
+     
             </div>
             
             {/* Leader Badge */}

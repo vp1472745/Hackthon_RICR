@@ -22,48 +22,37 @@ const TeamMembersCard = ({ apiTeamMembers, teamMembers }) => {
 
       <div className="space-y-4">
         {(apiTeamMembers.length > 0 || teamMembers.length > 0) ? (
-          (apiTeamMembers.length > 0 ? apiTeamMembers : teamMembers).map((member, index) => (
-            <div key={member._id || index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-              {/* Member Avatar */}
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-semibold">
-                  {(member.fullName || member.name || 'M').charAt(0).toUpperCase()}
-                </span>
-              </div>
-              
-              {/* Member Details */}
-              <div className="flex-1">
-                <h4 className="font-medium text-gray-900">
-                  {member.fullName || member.name || `Member ${index + 1}`}
-                </h4>
-                <div className="text-sm text-gray-600 space-y-1">
-                  {member.email && (
-                    <div className="flex items-center gap-1">
-                      <Mail className="w-3 h-3" />
-                      <span>{member.email}</span>
-                    </div>
-                  )}
-                  {(member.collegeName || member.college) && (
-                    <div className="flex items-center gap-1 mt-1">
-                      <GraduationCap className="w-3 h-3" />
-                      <span>{member.collegeName || member.college}</span>
-                    </div>
-                  )}
-                  {member.course && (
-                    <div className="flex items-center gap-1 mt-1">
-                      <MapPin className="w-3 h-3" />
-                      <span>{member.course}</span>
-                    </div>
-                  )}
-                  {member.role && (
-                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full mt-1">
-                      {member.role}
-                    </span>
-                  )}
+          (apiTeamMembers.length > 0 ? apiTeamMembers : teamMembers)
+            .filter(member => member.role !== 'Leader')
+            .map((member, index) => (
+              <div key={member._id || index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                {/* Member Avatar */}
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-semibold">
+                    {(member.fullName || member.name || 'M').charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                {/* Member Details */}
+                <div className="flex-1">
+                  <h4 className="font-medium text-gray-900">
+                    {member.fullName || member.name || `Member ${index + 1}`}
+                  </h4>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    {member.email && (
+                      <div className="flex items-center gap-1">
+                        <Mail className="w-3 h-3" />
+                        <span>{member.email}</span>
+                      </div>
+                    )}
+                    {member.role && (
+                      <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full mt-1">
+                        {member.role}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            ))
         ) : (
           <div className="text-center py-8 text-gray-500">
             <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />

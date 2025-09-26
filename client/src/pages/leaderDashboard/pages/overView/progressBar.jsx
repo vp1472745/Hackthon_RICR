@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   Users, 
@@ -15,23 +15,67 @@ import {
 const ProgressBar = () => {
   const [expandedStep, setExpandedStep] = useState(null);
   const [isMainDropdownOpen, setIsMainDropdownOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Get data from localStorage
   const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser')) || {};
+  const leaderProfile = JSON.parse(localStorage.getItem('leaderProfile')) || null;
+  const apiTeamMembers = JSON.parse(localStorage.getItem('apiTeamMembers')) || [];
   const registrationData = JSON.parse(localStorage.getItem('registrationData')) || {};
   const selectedTheme = localStorage.getItem('selectedTheme');
   
+  // Listen for localStorage changes to refresh progress
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshTrigger(prev => prev + 1);
+    };
+
+    // Listen for custom storage events
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('localStorageUpdate', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageUpdate', handleStorageChange);
+    };
+  }, []);
+  
   // Step 1: Profile Completion (33.33%)
   const isProfileComplete = () => {
-    return hackathonUser.name && hackathonUser.email && hackathonUser.phone && 
-           hackathonUser.college && hackathonUser.course;
+    // Check both hackathonUser and leaderProfile for different data sources
+    if (leaderProfile) {
+      // API-based data structure
+      return leaderProfile.fullName && leaderProfile.email && leaderProfile.phone && 
+             leaderProfile.collegeName && leaderProfile.course;
+    } else if (hackathonUser.user) {
+      // Token-based user structure
+      return hackathonUser.user.fullName && hackathonUser.user.email && hackathonUser.user.phone && 
+             hackathonUser.user.collegeName && hackathonUser.user.course;
+    } else {
+      // Direct hackathonUser structure (fallback)
+      return hackathonUser.name && hackathonUser.email && hackathonUser.phone && 
+             hackathonUser.college && hackathonUser.course;
+    }
   };
 
   // Step 2: Team Members (33.33% with incremental progress)
   const getTeamProgress = () => {
-    const teamMembers = registrationData.teamMembers || [];
+    // Check multiple data sources for team members
+    let teamMembers = [];
+    
+    if (apiTeamMembers && apiTeamMembers.length > 0) {
+      // Use API team members (most reliable)
+      teamMembers = apiTeamMembers;
+    } else if (registrationData.teamMembers) {
+      // Use registration data
+      teamMembers = registrationData.teamMembers;
+    } else if (leaderProfile && leaderProfile.teamInfo && leaderProfile.teamInfo.members) {
+      // Use leader profile team info
+      teamMembers = leaderProfile.teamInfo.members;
+    }
+    
     const currentCount = teamMembers.length;
-    const requiredCount = 3;
+    const requiredCount = 4; // 1 leader + 3 members = 4 total, but only counting members here
     const stepProgress = Math.min(currentCount / requiredCount, 1) * 100;
     
     return {
@@ -76,6 +120,22 @@ const ProgressBar = () => {
   const teamProgress = getTeamProgress();
   const themeSelected = isThemeSelected();
   const overallProgress = calculateOverallProgress();
+  
+  // Use refreshTrigger to ensure reactivity to localStorage changes
+  refreshTrigger; // This forces re-evaluation when localStorage changes
+  
+  // Debug: Log progress calculation results
+  console.log('ProgressBar Results:', {
+    profileComplete,
+    teamProgress,
+    themeSelected,
+    overallProgress,
+    dataStatus: {
+      hasHackathonUser: !!hackathonUser.user || !!Object.keys(hackathonUser).length,
+      hasLeaderProfile: !!leaderProfile,
+      teamMembersCount: apiTeamMembers?.length || 0
+    }
+  });
 
   const steps = [
     {
@@ -84,16 +144,42 @@ const ProgressBar = () => {
       description: 'Fill in all your personal details as team leader',
       icon: User,
       isCompleted: profileComplete,
-      progress: profileComplete ? 100 : (Object.keys(hackathonUser).length > 0 ? 60 : 0),
+      progress: profileComplete ? 100 : (() => {
+        // Calculate partial progress based on completed fields
+        const fields = [
+          leaderProfile?.fullName || hackathonUser.user?.fullName || hackathonUser.name,
+          leaderProfile?.email || hackathonUser.user?.email || hackathonUser.email,
+          leaderProfile?.phone || hackathonUser.user?.phone || hackathonUser.phone,
+          leaderProfile?.collegeName || hackathonUser.user?.collegeName || hackathonUser.college,
+          leaderProfile?.course || hackathonUser.user?.course || hackathonUser.course
+        ];
+        const completedFields = fields.filter(field => !!field).length;
+        return Math.round((completedFields / fields.length) * 100);
+      })(),
       status: profileComplete ? 'Complete' : 'Incomplete',
       weight: 33.33,
       moreDetails: {
         requirements: [
-          { item: 'Full Name', completed: !!hackathonUser.name },
-          { item: 'Email Address', completed: !!hackathonUser.email },
-          { item: 'Phone Number', completed: !!hackathonUser.phone },
-          { item: 'College/University', completed: !!hackathonUser.college },
-          { item: 'Course/Branch', completed: !!hackathonUser.course }
+          { 
+            item: 'Full Name', 
+            completed: !!(leaderProfile?.fullName || hackathonUser.user?.fullName || hackathonUser.name)
+          },
+          { 
+            item: 'Email Address', 
+            completed: !!(leaderProfile?.email || hackathonUser.user?.email || hackathonUser.email)
+          },
+          { 
+            item: 'Phone Number', 
+            completed: !!(leaderProfile?.phone || hackathonUser.user?.phone || hackathonUser.phone)
+          },
+          { 
+            item: 'College/University', 
+            completed: !!(leaderProfile?.collegeName || hackathonUser.user?.collegeName || hackathonUser.college)
+          },
+          { 
+            item: 'Course/Branch', 
+            completed: !!(leaderProfile?.course || hackathonUser.user?.course || hackathonUser.course)
+          }
         ],
         tips: [
           'Make sure your email is valid for important updates',
@@ -115,9 +201,18 @@ const ProgressBar = () => {
       moreDetails: {
         requirements: [
           { item: 'Team Leader (You)', completed: true },
-          { item: 'Team Member 1', completed: (registrationData.teamMembers?.length || 0) >= 1 },
-          { item: 'Team Member 2', completed: (registrationData.teamMembers?.length || 0) >= 2 },
-          { item: 'Team Member 3', completed: (registrationData.teamMembers?.length || 0) >= 3 }
+          { 
+            item: 'Team Member 1', 
+            completed: (apiTeamMembers?.length || registrationData.teamMembers?.length || leaderProfile?.teamInfo?.members?.length || 0) >= 1 
+          },
+          { 
+            item: 'Team Member 2', 
+            completed: (apiTeamMembers?.length || registrationData.teamMembers?.length || leaderProfile?.teamInfo?.members?.length || 0) >= 2 
+          },
+          { 
+            item: 'Team Member 3', 
+            completed: (apiTeamMembers?.length || registrationData.teamMembers?.length || leaderProfile?.teamInfo?.members?.length || 0) >= 3 
+          }
         ],
         tips: [
           'Each member needs their own registration',
@@ -231,32 +326,7 @@ const ProgressBar = () => {
           </div>
         </div>
 
-        {/* Main Progress Bar */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-700">Overall Progress</span>
-            <span className="text-sm text-gray-600">{completedSteps}/{totalSteps} steps completed</span>
-          </div>
-          <div 
-            className="w-full bg-gray-200 rounded-full h-4"
-            role="progressbar"
-            aria-valuenow={overallProgress}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`Profile completion progress: ${Math.round(overallProgress)} percent complete`}
-          >
-            <div 
-              className="bg-gradient-to-r from-[#0B2A4A] to-blue-600 h-4 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
-              style={{ width: `${overallProgress}%` }}
-            >
-              {/* Animated shine effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
-            </div>
-          </div>
-          <div className="mt-1 text-center">
-            <span className="text-xs text-gray-500">{Math.round(overallProgress)}% Complete</span>
-          </div>
-        </div>
+
 
         {/* Main Dropdown for All Steps and Details */}
         <div className="mt-6">

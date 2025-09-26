@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Target, 
   Timer,
@@ -8,7 +8,31 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
-const RightSidePanel = ({ timeLeft, selectedTheme }) => {
+import { teamAPI } from '../../../../configs/api';
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
+const RightSidePanel = ({ timeLeft }) => {
+  const [selectedTheme, setSelectedTheme] = useState(null);
+
+  useEffect(() => {
+    const teamId = getCookie('teamId');
+    if (!teamId) {
+      setSelectedTheme(null);
+      return;
+    }
+    teamAPI.getTeamDetails(teamId)
+      .then(res => {
+        setSelectedTheme(res.data.teamTheme || null);
+      })
+      .catch(() => setSelectedTheme(null));
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* Countdown Timer */}

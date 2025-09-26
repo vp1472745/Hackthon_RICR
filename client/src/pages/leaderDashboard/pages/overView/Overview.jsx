@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ProgressBar from '../progressBar';
+import ProgressBar from './progressBar';
 import TeamLeaderCard from './TeamLeaderCard';
 import TeamMembersCard from './TeamMembersCard';
 import RightSidePanel from './RightSidePanel';
@@ -122,23 +122,7 @@ const Overview = () => {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-1">
-              Welcome back, {teamData.name || 'Team Leader'}!
-            </h1>
-            <p className="text-gray-600">
-              Track your hackathon progress and manage your team from here.
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">FutureMaze Hackathon 2025</div>
-            <div className="font-semibold text-[#0B2A4A]">Team Dashboard</div>
-          </div>
-        </div>
-      </div>
+
 
       {/* Progress Bar Section */}
       <ProgressBar />

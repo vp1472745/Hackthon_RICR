@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { User, Lock, LogIn, AlertCircle, CheckCircle, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../configs/api.js';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -66,12 +67,12 @@ const Login = () => {
 
       if (response.data.message) {
         setLoginMessage('Login successful! Redirecting to dashboard...');
-        
+
         // Store authentication token if provided
         if (response.data.token) {
           localStorage.setItem('authToken', response.data.token);
         }
-        
+
         // Store user session data
         localStorage.setItem('hackathonUser', JSON.stringify({
           teamCode: formData.teamCode,
@@ -81,6 +82,20 @@ const Login = () => {
           token: response.data.token,
           loginTime: new Date().toISOString()
         }));
+
+        // Debug log for login response
+        console.log('Login response:', response.data);
+
+        // Store teamId in cookie for cross-page access (expires in 2 days)
+        const teamId = response.data.team?._id || response.data.teamId;
+        if (teamId) {
+          document.cookie = `teamId=${teamId}; path=/; max-age=${2*24*60*60}`;
+        } else {
+          alert('No teamId found in login response! Theme selection will not work.');
+        }
+
+        // Dispatch custom event to update AuthContext immediately
+        window.dispatchEvent(new Event('authChange'));
 
         // Redirect to dashboard after success message
         setTimeout(() => {
@@ -103,7 +118,26 @@ const Login = () => {
 
   // Handle forgot password
   const handleForgotPassword = () => {
-    alert('Team Code Recovery:\n\nPlease contact the event organizers with your registered email for team code recovery:\n\nEmail: futuremaze@ricr.ac.in\nPhone: +91 99999 99999\n\nNote: Only registered team leaders can request team code recovery.');
+    toast.info(
+      <div className="flex flex-col gap-3">
+        <h4 className="font-semibold text-blue-800">Team Code Recovery</h4>
+        <p className="text-sm">Please contact the event organizers with your registered email for team code recovery:</p>
+        <div className="text-sm space-y-1">
+          <p><strong>Email:</strong> futuremaze@ricr.ac.in</p>
+          <p><strong>Phone:</strong> +91 99999 99999</p>
+        </div>
+        <p className="text-xs text-gray-600">Note: Only registered team leaders can request team code recovery.</p>
+      </div>,
+      {
+        position: "top-center",
+        autoClose: 8000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        className: 'toast-info-large'
+      }
+    );
   };
 
   return (

@@ -10,12 +10,14 @@ const teamSchema = new mongoose.Schema({
         required: true,
     },
     teamTheme: {
-        type: String,
-        default: "General",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Theme',
+        default: null,
     },
     teamProblemStatement: {
-        type: String,
-        default: "No Problem Statement Provided",
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'ProblemStatement',
+        default: null,
     },
     PaymentID: {
         type: mongoose.Schema.Types.ObjectId,

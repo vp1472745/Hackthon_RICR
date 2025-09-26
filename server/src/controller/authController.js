@@ -128,14 +128,13 @@ export const Register = async (req, res, next) => {
 }
 
 export const Login = async (req, res, next) => {
-    try {
-        const { teamCode, email } = req.body;
-        if (!teamCode || !email) {
-            const error = new Error('All fields are required');
-            error.statusCode = 400;
-            return next(error);
-        }
-        // Login logic here
+  try {
+    const { teamCode, email } = req.body;
+    if (!teamCode || !email) {
+      const error = new Error('All fields are required');
+      error.statusCode = 400;
+      return next(error);
+    }
 
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
@@ -144,27 +143,29 @@ export const Login = async (req, res, next) => {
             return next(error);
         }
 
-        const existingTeam = await Team.findOne({ teamCode: teamCode });
-        if (!existingTeam) {
-            const error = new Error('Invalid Team ID');
+        // Find the team by the user's teamId
+        const userTeam = await Team.findById(existingUser.teamId);
+        if (!userTeam) {
+            const error = new Error('Team not found for user');
             error.statusCode = 401;
             return next(error);
         }
 
-        if(existingUser.teamId.toString() !== existingTeam._id.toString()){
+        // Check if the teamCode matches
+        if (userTeam.teamCode !== teamCode) {
             const error = new Error('Invalid Team ID Email combination');
             error.statusCode = 401;
             return next(error);
         }
 
-        await generateAuthToken(existingUser, existingTeam, res);
+        // generate token, set cookie, and return token in body too
+        const token = generateAuthToken(existingUser, userTeam, res);
 
-        res.status(200).json({ message: 'Login successful', user: existingUser, team: existingTeam });
-    } catch (error) {
-        next(error);
-    }
-
-}
+        res.status(200).json({ message: 'Login successful', user: existingUser, team: userTeam, token });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const Logout = (req, res, next) => {
     try {

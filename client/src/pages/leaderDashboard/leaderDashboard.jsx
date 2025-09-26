@@ -3,7 +3,7 @@ import SideBar from './components/sideBar';
 import Overview from './pages/overView/Overview';
 import ProjectTheme from './pages/ProjectTheme';
 import ProblemStatements from './pages/ProblemStatements';
-import ManageTeam from './pages/ManageTeam';
+import ManageTeam from './pages/TeamManage/ManageTeam';
 import HelpDesk from './pages/HelpDesk';
 import Result from './pages/Result';
 
