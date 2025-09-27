@@ -1,7 +1,5 @@
 import User from '../models/UserModel.js';
-import Team from '../models/TeamModel.js';
 
-// ===================== General User Controllers =====================
 
 // Get user by ID with team information (public route)
 export const getUserById = async (req, res, next) => {
@@ -28,7 +26,7 @@ export const getUserById = async (req, res, next) => {
     let teamInfo = null;
     if (user.teamId) {
       const teamMembers = await User.find({ teamId: user.teamId })
-        .select('fullName email phone role collegeName course collegeBranch collegeSemester GitHubProfile createdAt')
+        .select('_id fullName email phone role collegeName course collegeBranch collegeSemester GitHubProfile termsAccepted createdAt updatedAt')
         .sort({ role: 1, createdAt: 1 });
       
       const leader = teamMembers.find(member => member.role === 'Leader');
@@ -57,97 +55,6 @@ export const getUserById = async (req, res, next) => {
   }
 };
 
-// ===================== Leader Controllers =====================
-
-// Leader fetches own profile with complete team info
-export const getLeaderProfile = async (req, res) => {
-  try {
-    const leaderId = req.user.id; // Assuming `req.user` contains the authenticated user's info
-    if (!leaderId) {
-      return res.status(400).json({ message: 'Leader ID is required' });
-    }
-
-    // Fetch leader profile from the database
-    const leader = await User.findById(leaderId)
-      .populate({
-        path: 'teamId',
-        select: 'teamName teamCode teamTheme teamProblemStatement',
-        populate: [
-          { path: 'teamTheme', select: 'themeName themeDescription' },
-          { path: 'teamProblemStatement', select: 'PStitle PSdescription' }
-        ]
-      });
-    if (!leader) {
-      return res.status(404).json({ message: 'Leader profile not found' });
-    }
-
-    // Return the leader profile with populated team, theme, and problem statement details
-    res.status(200).json({
-      message: 'Leader profile retrieved successfully',
-      leader: {
-        ...leader.toObject(),
-        team: leader.teamId || null
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching leader profile:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-};
-
-// Leader updates own profile
-export const updateLeaderProfile = async (req, res, next) => {
-  try {
-    const leaderId = req.user._id;
-    const updateData = req.body;
-
-    delete updateData.role; // role cannot be changed
-    delete updateData.teamId; // team cannot be changed here
-
-    const updatedLeader = await User.findByIdAndUpdate(
-      leaderId,
-      updateData,
-      { new: true, runValidators: true }
-    ).populate('teamId', 'teamName teamCode');
-
-    res.status(200).json({
-      message: 'Leader profile updated successfully',
-      profile: updatedLeader
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Leader deletes own profile
-export const deleteLeaderProfile = async (req, res, next) => {
-  try {
-    const leaderId = req.user._id;
-    const leader = await User.findById(leaderId);
-
-    if (!leader || leader.role !== 'Leader') {
-      const error = new Error('Unauthorized or Leader not found');
-      error.statusCode = 403;
-      return next(error);
-    }
-
-    // Check if leader has team members
-    const teamMembers = await User.countDocuments({ teamId: leader.teamId, role: 'Member' });
-    if (teamMembers > 0) {
-      const error = new Error('Cannot delete leader with active team members. Remove members first.');
-      error.statusCode = 400;
-      return next(error);
-    }
-
-    await User.findByIdAndDelete(leaderId);
-    res.status(200).json({ message: 'Leader profile deleted successfully' });
-
-  } catch (error) {
-    next(error);
-  }
-};
-
-// ===================== Team Management by Leader =====================
 
 // Add team member
 export const addTeamMember = async (req, res, next) => {
@@ -292,38 +199,7 @@ export const editTeamMemberByLeader = async (req, res, next) => {
   }
 };
 
-// ===================== Member Controllers =====================
 
-// Member fetches own profile and team info
-export const getMemberProfile = async (req, res, next) => {
-  try {
-    const memberId = req.user._id;
-    const member = await User.findById(memberId).populate('teamId', 'teamName teamCode');
-
-    if (!member) {
-      const error = new Error('User not found');
-      error.statusCode = 404;
-      return next(error);
-    }
-
-    // Get other team members info
-    let teamMembers = [];
-    if (member.teamId) {
-      teamMembers = await User.find({ teamId: member.teamId })
-        .select('fullName email role createdAt')
-        .sort({ role: 1, createdAt: 1 });
-    }
-
-    res.status(200).json({
-      message: 'Member profile retrieved successfully',
-      member,
-      teamMembers
-    });
-
-  } catch (error) {
-    next(error);
-  }
-};
 
 // Controller to update termsAccepted field for a user
 export const updateTermsAccepted = async (req, res, next) => {

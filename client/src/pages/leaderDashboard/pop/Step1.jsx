@@ -15,8 +15,6 @@ import { toast } from 'react-toastify';
 
 const Step1 = ({ setIsStep1Saved }) => {
   const [leader, setLeader] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState('');
   const [formData, setFormData] = useState({});
 
   // Added validation to disable Save button if required fields are empty
@@ -109,28 +107,7 @@ const Step1 = ({ setIsStep1Saved }) => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <Loader className="w-10 h-10 animate-spin text-[#0B2A4A] mb-4" />
-        <p className="text-gray-500">Loading leader profile...</p>
-      </div>
-    );
-  }
 
-  if (errorMsg) {
-    return (
-      <div className="text-center py-8">
-        <div className="text-red-600 mb-3">{errorMsg}</div>
-        <button
-          className="px-4 py-2 bg-[#0B2A4A] text-white rounded"
-          onClick={() => window.location.reload()}
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
 
   if (!leader) {
     return (

@@ -7,6 +7,8 @@ import {
   FaQuestionCircle,
   FaClock
 } from "react-icons/fa";
+
+
 function HeroPage() {
   return (
     <section className="relative flex items-center justify-center px-4  py-4 md:py-6 lg-py-0 bg-gradient-to-br from-[#F8FAFC] to-[#E6F0FA]">

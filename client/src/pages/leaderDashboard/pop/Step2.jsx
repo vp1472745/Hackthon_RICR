@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Loader } from 'lucide-react';
 import { IoIosSave } from 'react-icons/io';
 import { X } from 'lucide-react';
 

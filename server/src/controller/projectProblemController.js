@@ -2,7 +2,6 @@
 import mongoose from 'mongoose';
 import ProblemStatement from '../models/problemStatementModel.js';
 import Team from '../models/TeamModel.js';
-import Theme from '../models/projectTheme.js'; // अगर ThemeModel अलग नाम से है तो path adjust करो
 
 // Create a new problem statement
 export const createProblemStatement = async (req, res) => {
@@ -21,44 +20,6 @@ export const createProblemStatement = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
-// Edit (update) a problem statement
-export const editProblemStatement = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { PStitle, PSdescription, PSTheme } = req.body;
-
-    if (PSTheme && !mongoose.Types.ObjectId.isValid(String(PSTheme))) {
-      return res.status(400).json({ success: false, message: 'Invalid PSTheme id' });
-    }
-
-    const updated = await ProblemStatement.findByIdAndUpdate(
-      id,
-      { PStitle, PSdescription, PSTheme: PSTheme ? mongoose.Types.ObjectId(PSTheme) : undefined },
-      { new: true }
-    ).populate('PSTheme');
-
-    if (!updated) return res.status(404).json({ success: false, message: 'Problem statement not found' });
-    res.json({ success: true, problem: updated });
-  } catch (error) {
-    console.error('editProblemStatement error:', error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// Delete a problem statement
-export const deleteProblemStatement = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const deleted = await ProblemStatement.findByIdAndDelete(id);
-    if (!deleted) return res.status(404).json({ success: false, message: 'Problem statement not found' });
-    res.json({ success: true, message: 'Problem statement deleted' });
-  } catch (error) {
-    console.error('deleteProblemStatement error:', error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
 
 // Get all problem statements for a team's theme
 export const getAllProblemStatements = async (req, res) => {

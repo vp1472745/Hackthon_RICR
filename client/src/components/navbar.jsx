@@ -15,6 +15,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  
   return (
     <nav
       className={`bg-white sticky top-0 z-50 transition-all duration-300 ${

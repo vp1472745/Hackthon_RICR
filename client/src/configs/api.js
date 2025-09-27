@@ -10,6 +10,7 @@ const api = axios.create({
     },
 });
 
+
 // Add request interceptor to include auth token
 api.interceptors.request.use(
     (config) => {
@@ -56,45 +57,19 @@ export const authAPI = {
 
 // User API functions
 export const userAPI = {
+
     // General user operations
     getUserById: (userId) => api.get(`/user/${userId}`),
-    getAllUsers: (params) => api.get('/user/all', { params }),
-    updateUser: (userId, userData) => api.put(`/user/update/${userId}`, userData),
-    deleteUser: (userId) => api.delete(`/user/delete/${userId}`),
-
-    // Leader profile operations
-    getLeaderProfile: () => api.get('/user/leader/profile'),
-    updateLeaderProfile: async (updatedData) => api.put('/user/leader/profile', updatedData), 
-    deleteLeaderProfile: () => api.delete('/user/leader/profile'),
-
+   
     // Team member management by leader
     addMember: (memberData) => api.post('/user/leader/add-member', memberData),
     removeMember: (memberData) => api.delete('/user/leader/remove-member', { data: memberData }),
     editMember: (memberId, memberData) => api.put(`/user/leader/edit-member/${memberId}`, memberData),
 
-    // Member profile operations
-    getMemberProfile: () => api.get('/user/member/profile'),
-
-    // Team operations
-    getTeamProfile: (teamId) => api.get(`/user/team/${teamId}/profile`),
-    getTeamStats: (teamId) => api.get(`/user/team/${teamId}/stats`),
-
     // Update terms accepted
     updateTermsAccepted: () => api.put('/user/update-terms', { termsAccepted: true }),
+
 };
-
-// Team API functions (for future use)
-export const teamAPI = {
-    // Get team details
-    getTeamDetails: (teamId) => api.get(`/team/${teamId}`),
-
-    // Update team information
-    updateTeam: (teamId, teamData) => api.put(`/team/${teamId}`, teamData)
-};
-
-
-
-
 
 export const projectThemeAPI = {
     // Fetch all themes
@@ -102,10 +77,6 @@ export const projectThemeAPI = {
     // Select a theme for a team
     selectThemeForTeam: (teamId, themeName) => api.put(`/theme/select/${teamId}`, { themeName }),
 };
-
-
-
-
 
 
 // Problem Statement API functions

@@ -8,7 +8,7 @@ import cors from 'cors';
 import AuthRouter from './src/routes/authRoutes.js';
 import UserRoute from './src/routes/userRoute.js';
 import ProjectThemeRouter from './src/routes/projectThemeRoute.js';
-import TeamRoute from './src/routes/teamRoute.js';
+
 import ProblemStatementRoute from './src/routes/problemStatementRoute.js';
 
 
@@ -24,7 +24,7 @@ app.use('/api/theme', ProjectThemeRouter);
 
 
 
-app.use('/api/team', TeamRoute);
+
 app.use('/api/problem', ProblemStatementRoute);
 
 

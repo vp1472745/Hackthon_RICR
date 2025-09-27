@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import MultiStepModal from './pop/MultiStepModal.jsx';
-import SideBar from './components/sideBar';
-import Overview from './pages/overView/Overview';
-import ProjectTheme from './pages/ProjectTheme';
-import ProblemStatements from './pages/ProblemStatements';
-import ManageTeam from './pages/TeamManage/ManageTeam';
-import HelpDesk from './pages/HelpDesk';
-import Result from './pages/Result';
+import SideBar from '../../components/sideBar.jsx';
+import Overview from './overView/Overview.jsx';
+import ProjectTheme from './ProjectTheme.jsx';
+import ProblemStatements from './ProblemStatements.jsx';
+import ManageTeam from './TeamManage/ManageTeam.jsx';
+import HelpDesk from './HelpDesk.jsx';
+import Result from './Result.jsx';
 import { userAPI } from '../../configs/api';
 
 const LeaderDashboard = () => {

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import RightSidePanel from './RightSidePanel';
-import { userAPI } from '../../../../configs/api';
+import { userAPI } from '../../../configs/api';
 import { toast } from 'react-toastify';
 import TeamProfileCard from './TeamProfileCard';
 import HackathonTimer from './HackathonTimer';
-
+import { Users, Target, Award, RefreshCw, AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';
 
 const Overview = () => {
   // Get data from localStorage
@@ -17,6 +17,7 @@ const Overview = () => {
   const [apiTeamMembers, setApiTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -26,67 +27,98 @@ const Overview = () => {
     seconds: 0
   });
 
+  // Stats state
+  const [teamStats, setTeamStats] = useState({
+    totalMembers: 0,
+    teamComplete: false,
+    themeSelected: false,
+    registrationComplete: false
+  });
+
   // Fetch leader profile from API
   const fetchLeaderProfile = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // First try authenticated API call
       const response = await userAPI.getLeaderProfile();
 
       if (response.data && response.data.leader) {
         const { leader, team } = response.data;
         setLeaderProfile(leader);
         setApiTeamMembers(team?.members || []);
-
-        // Store in localStorage for offline use
+        
         localStorage.setItem('leaderProfile', JSON.stringify(leader));
         localStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
+        
+        updateTeamStats(leader, team?.members || []);
       }
     } catch (error) {
       console.error('Error fetching leader profile:', error);
 
-      // Try alternative approach - get user by ID from localStorage
       const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser') || '{}');
       if (hackathonUser.user && hackathonUser.user._id) {
         try {
-          // Try to fetch user by ID as a fallback
           const userResponse = await userAPI.getUserById(hackathonUser.user._id);
           if (userResponse.data && userResponse.data.user) {
             setLeaderProfile(userResponse.data.user);
             setApiTeamMembers(userResponse.data.user.teamInfo?.members || []);
-
-            toast.success('Profile loaded from user data!');
-            return; // Exit early on success
+            updateTeamStats(userResponse.data.user, userResponse.data.user.teamInfo?.members || []);
+            toast.success('Profile loaded successfully!');
+            return;
           }
         } catch (fallbackError) {
           console.error('Fallback fetch failed:', fallbackError);
         }
       }
 
-      // Final fallback to localStorage data
       setError('Using offline data');
-      toast.warning('Using offline profile data');
-
       const storedProfile = localStorage.getItem('leaderProfile');
       const storedMembers = localStorage.getItem('apiTeamMembers');
-      if (storedProfile) setLeaderProfile(JSON.parse(storedProfile));
-      if (storedMembers) setApiTeamMembers(JSON.parse(storedMembers));
-
-      // If no stored data, use hackathonUser data
-      if (!storedProfile && hackathonUser.user) {
+      
+      if (storedProfile) {
+        const profile = JSON.parse(storedProfile);
+        setLeaderProfile(profile);
+        if (storedMembers) {
+          const members = JSON.parse(storedMembers);
+          setApiTeamMembers(members);
+          updateTeamStats(profile, members);
+        }
+      } else if (hackathonUser.user) {
         setLeaderProfile(hackathonUser.user);
-        toast.info('Using login session data');
+        updateTeamStats(hackathonUser.user, []);
       }
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  // Update team statistics
+  const updateTeamStats = (profile, members) => {
+    const totalMembers = members.length + 1;
+    const teamComplete = totalMembers >= 4;
+    const themeSelected = !!selectedTheme;
+    const registrationComplete = !!(registrationData && Object.keys(registrationData).length > 0);
+
+    setTeamStats({
+      totalMembers,
+      teamComplete,
+      themeSelected,
+      registrationComplete
+    });
+  };
+
+  // Handle manual refresh
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchLeaderProfile();
+    toast.info('Data refreshed successfully!');
   };
 
   // Calculate countdown to hackathon
   useEffect(() => {
-    const hackathonDate = new Date('2024-12-31T09:00:00'); // Set your hackathon date
+    const hackathonDate = new Date('2024-12-31T09:00:00');
 
     const updateTimer = () => {
       const now = new Date().getTime();
@@ -105,12 +137,33 @@ const Overview = () => {
     };
 
     const timer = setInterval(updateTimer, 1000);
-    updateTimer(); // Initial call
+    updateTimer();
 
     return () => clearInterval(timer);
   }, []);
 
+  // Update stats when dependencies change
+  useEffect(() => {
+    if (leaderProfile) {
+      updateTeamStats(leaderProfile, apiTeamMembers);
+    }
+  }, [leaderProfile, apiTeamMembers, selectedTheme, registrationData]);
 
+  // Update selectedTheme dynamically from localStorage
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('selectedTheme');
+    if (storedTheme) {
+      setTeamStats((prevStats) => ({
+        ...prevStats,
+        themeSelected: true
+      }));
+    } else {
+      setTeamStats((prevStats) => ({
+        ...prevStats,
+        themeSelected: false
+      }));
+    }
+  }, []);
 
   // Fetch leader profile on component mount
   useEffect(() => {
@@ -120,17 +173,38 @@ const Overview = () => {
   const teamMembers = registrationData.teamMembers || [];
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
+      {/* Header Section */}
+      
 
+      {/* Error Banner */}
+      {error && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="font-medium text-yellow-800">Offline Mode</p>
+            <p className="text-sm text-yellow-700 mt-1">
+              You're viewing cached data. Some information might not be up to date.
+            </p>
+          </div>
+          <button 
+            onClick={handleRefresh}
+            className="text-yellow-800 hover:text-yellow-900 text-sm font-medium"
+          >
+            Try Again
+          </button>
+        </div>
+      )}
 
       {/* Progress Bar Section */}
-      <HackathonTimer />
+      <div className="mb-8">
+        <HackathonTimer />
+      </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Side - Team Profiles */}
-        <div className="space-y-6">
-          {/* Team Leader Profile */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        {/* Left Side - Team Profiles (2/3 width) */}
+        <div className="xl:col-span-2">
           <TeamProfileCard
             leaderProfile={leaderProfile}
             teamData={teamData}
@@ -142,12 +216,16 @@ const Overview = () => {
           />
         </div>
 
-        {/* Right Side - Timer and Theme Info */}
-        <RightSidePanel
-          timeLeft={timeLeft}
-          selectedTheme={selectedTheme}
-        />
+        {/* Right Side Panel (1/3 width) */}
+        <div className="xl:col-span-1">
+          <RightSidePanel
+            timeLeft={timeLeft}
+            selectedTheme={selectedTheme}
+            teamStats={teamStats}
+          />
+        </div>
       </div>
+
 
     </div>
   );

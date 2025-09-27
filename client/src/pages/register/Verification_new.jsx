@@ -14,7 +14,6 @@ const Verification = () => {
     phoneOTP: ''
   });
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState({ email: false, phone: false });
   const [verificationComplete, setVerificationComplete] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
@@ -57,7 +56,7 @@ const Verification = () => {
     // Show toast for validation errors
     if (Object.keys(newErrors).length > 0) {
       const firstError = Object.values(newErrors)[0];
-      toast.error(`❌ ${firstError}`);
+      toast.error(` ${firstError}`);
     }
     
     return Object.keys(newErrors).length === 0;
@@ -86,10 +85,10 @@ const Verification = () => {
         phone: registrationData.phone
       });
       
-      toast.success(`✅ ${type === 'email' ? 'Email' : 'Phone'} OTP resent successfully!`);
+      toast.success(` ${type === 'email' ? 'Email' : 'Phone'} OTP resent successfully!`);
     } catch (error) {
       console.error(`Resend ${type} OTP error:`, error);
-      toast.error(`❌ Failed to resend ${type} OTP. Please try again.`);
+      toast.error(` Failed to resend ${type} OTP. Please try again.`);
     } finally {
       setResending(prev => ({ ...prev, [type]: false }));
     }
@@ -98,7 +97,7 @@ const Verification = () => {
   const handleVerify = async () => {
     if (!validateForm() || !registrationData) {
       if (!registrationData) {
-        toast.error('❌ Registration data not found. Please restart the registration process.');
+        toast.error(' Registration data not found. Please restart the registration process.');
         navigate('/register');
       }
       return;
@@ -142,33 +141,15 @@ const Verification = () => {
         // Show success message
         const teamCode = response.data.team?.teamCode || 'Unknown';
         toast.success(`🎉 Registration successful! Team created: ${teamCode}`);
-        
+    
         // Mark verification as complete
         setVerificationComplete(true);
       } else {
-        toast.error('❌ Invalid response from server. Please try again.');
+        toast.error(' Invalid response from server. Please try again.');
       }
     } catch (error) {
       console.error('Verification error:', error);
-      
-      if (error.response?.data) {
-        const errorMessage = error.response.data.message || 'Unknown error occurred';
-        
-        // Handle specific errors - ensure errorMessage is a string
-        if (typeof errorMessage === 'string' && errorMessage.includes('Email OTP')) {
-          setErrors(prev => ({ ...prev, emailOTP: errorMessage }));
-        } else if (typeof errorMessage === 'string' && errorMessage.includes('Phone OTP')) {
-          setErrors(prev => ({ ...prev, phoneOTP: errorMessage }));
-        } else {
-          toast.error(`❌ Error: ${errorMessage}`);
-        }
-      } else if (error.response?.status === 400) {
-        toast.error('❌ Invalid OTP. Please check your OTPs and try again.');
-      } else if (error.message) {
-        toast.error(`❌ Network Error: ${error.message}`);
-      } else {
-        toast.error('❌ Verification failed. Please try again.');
-      }
+
     } finally {
       setLoading(false);
     }

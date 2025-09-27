@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { User, Users, Mail, Phone, Trophy, Timer, Play } from 'lucide-react';
-
-
-
 const TeamProfileCard = ({
   leaderProfile,
   teamData,
@@ -13,18 +10,17 @@ const TeamProfileCard = ({
   fetchLeaderProfile,
   setActiveSection
 }) => {
- 
 
-  // Combine leader and members, filter out duplicate leader if present
-  const leader = leaderProfile || teamData?.user || teamData;
-  const members = (apiTeamMembers.length > 0 ? apiTeamMembers : teamMembers)
-    .filter(m => m.role !== 'Leader');
-  
+// Combine leader and members, filter out duplicate leader if present
+const leader = leaderProfile || teamData?.user || teamData;
+const members = (apiTeamMembers.length > 0 ? apiTeamMembers : teamMembers)
+.filter(m => m.role !== 'Leader');
+
 
   return (
     <>
       {/* Hackathon Countdown Section */}
-      
+
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         {/* Team Profile Section */}
         <div className="flex items-center justify-between mb-4">
