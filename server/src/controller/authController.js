@@ -1,6 +1,6 @@
 import User from '../models/UserModel.js';
 import bcrypt from 'bcryptjs';
-import { sendOTPEmail } from '../utils/emailService.js';
+import { sendOTPEmail, sendCredentialsEmail } from '../utils/emailService.js';
 import { sendOTPPhone } from '../utils/phoneService.js';
 import Otp from '../models/otpModel.js';
 import Team from '../models/TeamModel.js';
@@ -120,21 +120,42 @@ export const Register = async (req, res, next) => {
             teamId: newTeam._id
         });
 
-        res.status(201).json({ message: 'Team created successfully', team: newTeam , user: newUser });
+
+
+        res.status(201).json({ message: 'Team created successfully', team: newTeam, user: newUser });
 
     } catch (error) {
         next(error);
     }
 }
 
-export const Login = async (req, res, next) => {
-  try {
-    const { teamCode, email } = req.body;
-    if (!teamCode || !email) {
-      const error = new Error('All fields are required');
-      error.statusCode = 400;
-      return next(error);
+
+export const SendCredentials = async (req, res, next) => {
+    try {
+        const { email, teamCode } = req.body;
+        if (!email || !teamCode) {
+            const error = new Error('Email and Team Code are required');
+            error.statusCode = 400;
+            return next(error);
+        }
+
+        // Send email with login details
+        await sendCredentialsEmail(email, teamCode);
+
+        res.status(200).json({ message: 'Login details sent to email' });
+    } catch (error) {
+        next(error);
     }
+};
+
+export const Login = async (req, res, next) => {
+    try {
+        const { teamCode, email } = req.body;
+        if (!teamCode || !email) {
+            const error = new Error('All fields are required');
+            error.statusCode = 400;
+            return next(error);
+        }
 
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
@@ -162,9 +183,9 @@ export const Login = async (req, res, next) => {
         const token = generateAuthToken(existingUser, userTeam, res);
 
         res.status(200).json({ message: 'Login successful', user: existingUser, team: userTeam, token });
-  } catch (error) {
-    next(error);
-  }
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const Logout = (req, res, next) => {

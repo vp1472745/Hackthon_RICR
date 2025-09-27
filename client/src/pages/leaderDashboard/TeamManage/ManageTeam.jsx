@@ -33,7 +33,7 @@ const ManageTeam = () => {
     collegeSemester: '',
     GitHubProfile: ''
   });
-  
+
   const [editingMember, setEditingMember] = useState(null);
   const [viewingMember, setViewingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
@@ -54,7 +54,7 @@ const ManageTeam = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await userAPI.getLeaderProfile();
 
       if (response.data && response.data.leader) {
@@ -66,7 +66,7 @@ const ManageTeam = () => {
       }
     } catch (error) {
       console.error('Error fetching leader data:', error);
-      
+
       const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser') || '{}');
       if (hackathonUser.user && hackathonUser.user._id) {
         try {
@@ -74,14 +74,14 @@ const ManageTeam = () => {
           if (userResponse.data && userResponse.data.user) {
             setLeaderProfile(userResponse.data.user);
             setTeamMembers(userResponse.data.user.teamInfo?.members || []);
-            toast.success('Team data loaded from user profile!');
+
             return;
           }
         } catch (fallbackError) {
           console.error('Fallback fetch failed:', fallbackError);
         }
       }
-      
+
       setError('Failed to load team data');
       toast.error('Failed to load team data');
     } finally {
@@ -103,11 +103,11 @@ const ManageTeam = () => {
 
   const validateMemberForm = (member) => {
     const newErrors = {};
-    
+
     if (!member.fullName.trim()) {
       newErrors.fullName = 'Full name is required';
     }
-    
+
     if (!member.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email)) {
@@ -115,31 +115,31 @@ const ManageTeam = () => {
     } else if (teamMembers.some(m => m.email === member.email && m._id !== editingMember?._id)) {
       newErrors.email = 'Email already exists in team';
     }
-    
+
     if (!member.phone.trim()) {
       newErrors.phone = 'Phone number is required';
     } else if (!/^[+]?[0-9\s-()]{10,15}$/.test(member.phone)) {
       newErrors.phone = 'Please enter a valid phone number';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleAddMember = async () => {
     if (!validateMemberForm(newMember)) return;
-    
+
     try {
       setLoading(true);
-      
+
       const memberData = {
         ...newMember,
         teamId: leaderProfile?.teamId?._id || leaderProfile?.teamId,
         leaderId: leaderProfile?._id
       };
-      
+
       const response = await userAPI.addMember(memberData);
-      
+
       if (response.data) {
         await fetchLeaderData();
         resetForm();
@@ -178,14 +178,14 @@ const ManageTeam = () => {
   const handleSaveEditedMember = async (updatedMemberData) => {
     try {
       setLoading(true);
-      
+
       const updateData = {
         ...updatedMemberData,
         leaderId: leaderProfile?._id
       };
-      
+
       const response = await userAPI.editMember(editingMember._id, updateData);
-      
+
       if (response.data) {
         await fetchLeaderData();
         setShowEditMember(false);
@@ -224,15 +224,15 @@ const ManageTeam = () => {
   const handleConfirmDelete = async (member) => {
     try {
       setLoading(true);
-      
+
       const removeData = {
         memberId: member._id,
         teamId: leaderProfile?.teamId?._id || leaderProfile?.teamId,
         leaderId: leaderProfile?._id
       };
-      
+
       const response = await userAPI.removeMember(removeData);
-      
+
       if (response.data) {
         await fetchLeaderData();
         setShowDeleteMember(false);
@@ -261,39 +261,26 @@ const ManageTeam = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
       {/* Header Section */}
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
+        <div className="p-8 mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
             <div className="flex-1">
-              <div className="flex items-center gap-4 mb-3">
+              <div className="flex items-center gap-4 mb-10">
                 <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
                   <Users className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Team</h1>
-                  <p className="text-gray-600 text-lg">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Manage Team</h1>
+                  <p className="text-gray-600 text-sm sm:text-lg">
                     Add, edit, and manage your team members. Maximum team size: {maxTeamSize} members (1 leader + 3 team members).
                   </p>
                 </div>
               </div>
             </div>
-            
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50"
-              >
-                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-                {refreshing ? 'Refreshing...' : 'Refresh'}
-              </button>
-            </div>
           </div>
-          
+
           {/* Team Stats */}
           <TeamStats teamMembers={teamMembers} maxTeamSize={maxTeamSize} />
         </div>
-
- 
 
         {/* Add Member Form */}
         {showAddMember && (
@@ -313,15 +300,15 @@ const ManageTeam = () => {
         {/* Team Members Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
           <div className="p-6 border-b border-gray-100">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Team Members</h2>
-                <p className="text-gray-600 mt-1">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Team Members</h2>
+                <p className="text-gray-600 mt-1 text-sm sm:text-base">
                   Manage your team members and their information
                 </p>
               </div>
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-               1 Leader + {teamMembers.length}/{maxTeamSize - 1} Members
+              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mt-2 sm:mt-0">
+                1 Leader + {teamMembers.length}/{maxTeamSize - 1} Members
               </span>
             </div>
           </div>
@@ -334,8 +321,8 @@ const ManageTeam = () => {
             handleEditMember={handleEditMember}
             handleRemoveMember={handleRemoveMember}
             handleViewMember={handleViewMember}
-            showAddMember={showAddMember} // Passed state as prop
-            setShowAddMember={setShowAddMember} // Passed setter as prop
+            showAddMember={showAddMember}
+            setShowAddMember={setShowAddMember}
             searchTerm={searchTerm}
           />
         </div>
@@ -354,19 +341,19 @@ const ManageTeam = () => {
                 <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold mt-0.5 flex-shrink-0">
                   1
                 </div>
-                <p className="text-gray-700"><strong>Team Size:</strong> Maximum {maxTeamSize} members including team leader</p>
+                <p className="text-gray-700 text-sm sm:text-base"><strong>Team Size:</strong> Maximum {maxTeamSize} members including team leader</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold mt-0.5 flex-shrink-0">
                   2
                 </div>
-                <p className="text-gray-700"><strong>Composition:</strong> 1 team leader + up to 3 team members</p>
+                <p className="text-gray-700 text-sm sm:text-base"><strong>Composition:</strong> 1 team leader + up to 3 team members</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold mt-0.5 flex-shrink-0">
                   3
                 </div>
-                <p className="text-gray-700"><strong>Registration:</strong> All members must register individually</p>
+                <p className="text-gray-700 text-sm sm:text-base"><strong>Registration:</strong> All members must register individually</p>
               </div>
             </div>
           </div>
@@ -380,16 +367,16 @@ const ManageTeam = () => {
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center py-2 border-b border-orange-100">
-                <span className="text-gray-700">Team Finalization</span>
-                <span className="font-semibold text-orange-600">Nov 6, 2025</span>
+                <span className="text-gray-700 text-sm sm:text-base">Team Finalization</span>
+                <span className="font-semibold text-orange-600 text-sm sm:text-base">Nov 6, 2025</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-orange-100">
-                <span className="text-gray-700">Member Confirmation</span>
-                <span className="font-semibold text-orange-600">Nov 5, 2025</span>
+                <span className="text-gray-700 text-sm sm:text-base">Member Confirmation</span>
+                <span className="font-semibold text-orange-600 text-sm sm:text-base">Nov 5, 2025</span>
               </div>
               <div className="flex justify-between items-center py-2">
-                <span className="text-gray-700">Late Additions Close</span>
-                <span className="font-semibold text-orange-600">Nov 6, 11:59 PM IST</span>
+                <span className="text-gray-700 text-sm sm:text-base">Late Additions Close</span>
+                <span className="font-semibold text-orange-600 text-sm sm:text-base">Nov 6, 11:59 PM IST</span>
               </div>
             </div>
           </div>
@@ -400,9 +387,9 @@ const ManageTeam = () => {
           <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 flex items-start gap-4">
             <AlertTriangle className="w-6 h-6 text-yellow-600 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <p className="font-semibold text-yellow-800 mb-2">Team Full</p>
-              <p className="text-yellow-700">
-                You have reached the maximum team size of {maxTeamSize} members. To add a new member, 
+              <p className="font-semibold text-yellow-800 mb-2 text-sm sm:text-base">Team Full</p>
+              <p className="text-yellow-700 text-sm sm:text-base">
+                You have reached the maximum team size of {maxTeamSize} members. To add a new member,
                 you'll need to remove an existing one first.
               </p>
             </div>

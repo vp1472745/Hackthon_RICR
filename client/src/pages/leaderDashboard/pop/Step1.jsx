@@ -7,54 +7,143 @@ import {
   BookOpen,
   GitBranch,
   Calendar,
-  Loader
+  Loader as LucideLoader
 } from 'lucide-react';
-import { IoIosSave } from "react-icons/io";
-import { userAPI } from '../../../configs/api.js'; // ensure path is correct
+import { userAPI } from '../../../configs/api.js';
 import { toast } from 'react-toastify';
 
-const Step1 = ({ setIsStep1Saved }) => {
+const Step1 = ({ setIsStep1Saved, setStep }) => {
   const [leader, setLeader] = useState(null);
-  const [formData, setFormData] = useState({});
-  const [loading, setLoading] = useState(false); // Add setLoading to the state
-  const [errorMsg, setErrorMsg] = useState(''); // Add setErrorMsg to the state
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    GitHubProfile: '',
+    collegeName: '',
+    course: 'N/A',
+    collegeBranch: 'N/A',
+    collegeSemester: '0'
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  // Added validation to disable Save button if required fields are empty
   const isFormValid = () => {
     const requiredFields = ['fullName', 'email', 'phone', 'collegeName', 'course', 'collegeBranch', 'collegeSemester'];
-    return requiredFields.every((field) => formData[field] && formData[field] !== 'N/A' && formData[field] !== '0');
+    return requiredFields.every((field) => {
+      const v = formData[field];
+      return v !== undefined && v !== null && v !== '' && v !== 'N/A' && v !== '0';
+    });
+  };
+
+  // Utility: try to extract userId from multiple sessionStorage shapes
+  const getUserIdFromSessionStorage = () => {
+    try {
+      // 1) hackathonUser (your Overview uses this)
+      const hackathonUserStr = sessionStorage.getItem('hackathonUser');
+      if (hackathonUserStr) {
+        const hackathonUser = JSON.parse(hackathonUserStr);
+        if (hackathonUser?.user?._id) return hackathonUser.user._id;
+        if (hackathonUser?.user?.id) return hackathonUser.user.id;
+      }
+
+      // 2) direct userId key
+      const userIdDirect = sessionStorage.getItem('userId');
+      if (userIdDirect) return userIdDirect;
+
+      // 3) user (stringified user object)
+      const userStr = sessionStorage.getItem('user');
+      if (userStr) {
+        const userObj = JSON.parse(userStr);
+        if (userObj?._id) return userObj._id;
+        if (userObj?.id) return userObj.id;
+      }
+
+      return null;
+    } catch (err) {
+      console.error('Parsing sessionStorage error:', err);
+      return null;
+    }
   };
 
   useEffect(() => {
     let mounted = true;
 
-    // Removed getLeaderProfile and use getUserById instead
-    // Removed: getLeaderProfile
-
-    // Updated fetchLeaderProfileById to use getUserById
     const fetchLeaderProfileById = async (userId) => {
       try {
-          setLoading(true);
-          const response = await userAPI.getUserById(userId);
-          if (response.data) {
-              setLeader(response.data);
-              setFormData(response.data);
-          } else {
-              setErrorMsg('Leader profile not found.');
+        setLoading(true);
+        setErrorMsg('');
+
+        if (!userId) {
+          setErrorMsg('User ID not found in localStorage.');
+          return;
+        }
+
+        // Adjust endpoint call according to your userAPI implementation.
+        // If userAPI.get(`/leader/${userId}`) is correct, use that; below we try common variants.
+        let response;
+        try {
+          response = await userAPI.get(`/leader/${userId}`);
+        } catch (e) {
+          // fallback: maybe you have getUserById function on userAPI (as in Overview)
+          try {
+            response = await userAPI.getUserById(userId);
+          } catch (e2) {
+            console.error('Both /leader/:id and getUserById failed:', e, e2);
+            throw e2 || e;
           }
-      } catch (error) {
-          console.error('Error fetching leader profile:', error);
-          setErrorMsg('Failed to fetch leader profile.');
+        }
+
+        const payload = response?.data?.data ?? response?.data ?? null;
+        if (!payload) {
+          setErrorMsg('Leader profile not found in API response.');
+          return;
+        }
+
+        if (mounted) {
+          // If payload has nested `user`, unwrap it
+          const userObj = payload.user ?? payload;
+          setLeader(userObj);
+          setFormData((prev) => ({
+            ...prev,
+            fullName: userObj.fullName ?? userObj.name ?? prev.fullName,
+            email: userObj.email ?? prev.email,
+            phone: userObj.phone ?? prev.phone,
+            GitHubProfile: userObj.GitHubProfile ?? userObj.github ?? prev.GitHubProfile,
+            collegeName: userObj.collegeName ?? prev.collegeName,
+            course: userObj.course ?? prev.course,
+            collegeBranch: userObj.collegeBranch ?? prev.collegeBranch,
+            collegeSemester: userObj.collegeSemester ?? prev.collegeSemester,
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching leader profile:', err);
+        setErrorMsg('Failed to fetch leader profile. Using offline/local data if available.');
+        // try fallback to a stored leaderProfile in localStorage
+        try {
+          const stored = localStorage.getItem('leaderProfile');
+          if (stored) {
+            const p = JSON.parse(stored);
+            if (mounted) {
+              setLeader(p);
+              setFormData((prev) => ({ ...prev, ...p }));
+            }
+          }
+        } catch (parseErr) {
+          console.error('Fallback parse error:', parseErr);
+        }
       } finally {
-          setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
-    const userId = localStorage.getItem('userId'); // Assuming userId is stored in localStorage
+    const userId = getUserIdFromSessionStorage();
     if (userId) {
-        fetchLeaderProfileById(userId);
+      fetchLeaderProfileById(userId);
     } else {
-        setErrorMsg('User ID not found.');
+      // no id found — allow user to fill form manually (not fatal)
+      setLoading(false);
+      setErrorMsg('User ID not found in localStorage (checked hackathonUser, userId, user, auth). You can still fill the form and save.');
     }
 
     return () => {
@@ -67,16 +156,63 @@ const Step1 = ({ setIsStep1Saved }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleNext = async () => {
+    if (!isFormValid()) {
+      toast.error('Please fill all required fields before proceeding.');
+      return;
+    }
 
+    try {
+      setSaving(true);
+      const userId = getUserIdFromSessionStorage();
 
-  if (!leader) {
+      if (!userId) {
+        console.error('User ID is missing. Cannot save leader profile.');
+        setErrorMsg('User ID not found.');
+        return;
+      }
+
+      // Automatically save the form data when moving to the next step
+      const response = await userAPI.editMember(userId, formData);
+      const payload = response?.data?.data ?? response?.data ?? null;
+
+      if (response.status >= 200 && response.status < 300) {
+        setLeader(payload ?? formData);
+        localStorage.setItem('leaderProfile', JSON.stringify(payload ?? formData));
+        toast.success('Profile saved successfully.');
+        if (typeof setIsStep1Saved === 'function') setIsStep1Saved(true);
+
+        // Navigate to the next step
+        if (typeof setStep === 'function') setStep((prevStep) => prevStep + 1);
+      } else {
+        console.warn('Save response not OK:', response);
+        toast.error('Failed to save profile (server responded with non-2xx).');
+      }
+    } catch (err) {
+      console.error('Save error:', err);
+      toast.error('Error while saving profile. Check console for details.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="text-center py-12 text-red-500">Leader profile not found.</div>
+      <div className="flex items-center justify-center py-12">
+        <LucideLoader className="animate-spin w-6 h-6 mr-2" />
+        <span>Loading profile...</span>
+      </div>
     );
   }
 
   return (
     <div className="bg-white max-w-4xl w-full mx-auto p-2">
+      {errorMsg && (
+        <div className="text-center py-2 text-yellow-700">
+          {errorMsg}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Personal Information */}
         <div className="space-y-2">
@@ -170,7 +306,7 @@ const Step1 = ({ setIsStep1Saved }) => {
               <BookOpen className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
               <select
                 name="course"
-                value={formData.course || ''}
+                value={formData.course || 'N/A'}
                 onChange={handleInputChange}
                 className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
               >
@@ -201,7 +337,7 @@ const Step1 = ({ setIsStep1Saved }) => {
               <GitBranch className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
               <select
                 name="collegeBranch"
-                value={formData.collegeBranch || ''}
+                value={formData.collegeBranch || 'N/A'}
                 onChange={handleInputChange}
                 className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
               >
@@ -212,21 +348,6 @@ const Step1 = ({ setIsStep1Saved }) => {
                 <option value="Electrical Engineering">Electrical Engineering (EE)</option>
                 <option value="Mechanical Engineering">Mechanical Engineering (ME)</option>
                 <option value="Civil Engineering">Civil Engineering (CE)</option>
-                <option value="Chemical Engineering">Chemical Engineering (ChE)</option>
-                <option value="Aerospace Engineering">Aerospace Engineering (AE)</option>
-                <option value="Biotechnology">Biotechnology (BT)</option>
-                <option value="Automobile Engineering">Automobile Engineering (Auto)</option>
-                <option value="Production Engineering">Production Engineering (PE)</option>
-                <option value="Industrial Engineering">Industrial Engineering (IE)</option>
-                <option value="Software Engineering">Software Engineering (SE)</option>
-                <option value="Data Science">Data Science (DS)</option>
-                <option value="Artificial Intelligence">Artificial Intelligence (AI)</option>
-                <option value="Machine Learning">Machine Learning (ML)</option>
-                <option value="Cyber Security">Cyber Security (CS)</option>
-                <option value="Commerce">Commerce</option>
-                <option value="Management">Management</option>
-                <option value="Arts">Arts</option>
-                <option value="Science">Science</option>
                 <option value="Other">Other</option>
               </select>
             </div>
@@ -240,7 +361,7 @@ const Step1 = ({ setIsStep1Saved }) => {
               <Calendar className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
               <select
                 name="collegeSemester"
-                value={formData.collegeSemester || ''}
+                value={formData.collegeSemester || '0'}
                 onChange={handleInputChange}
                 className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
               >
@@ -261,13 +382,13 @@ const Step1 = ({ setIsStep1Saved }) => {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-center gap-4 mt-2">
+      <div className="mt-3 flex justify-end gap-2">
         <button
-          onClick={handleSave}
-          disabled={!isFormValid()} // Disable Save button if form is invalid
-          className={`px-10 py-2 rounded flex items-center gap-2 ${isFormValid() ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+          className={`px-5 py-2 rounded-lg font-semibold transition-colors ${isFormValid() && !saving ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+          onClick={handleNext}
+          disabled={!isFormValid() || saving}
         >
-          <IoIosSave className='text-xl' /> Save
+          Next
         </button>
       </div>
     </div>

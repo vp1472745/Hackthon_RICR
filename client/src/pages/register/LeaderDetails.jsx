@@ -28,23 +28,23 @@ const LeaderDetails = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.leaderName.trim()) {
       newErrors.leaderName = 'Team leader name is required';
     }
-    
+
     if (!formData.leaderEmail.trim()) {
       newErrors.leaderEmail = 'Email is required';
     } else if (!validateEmail(formData.leaderEmail)) {
       newErrors.leaderEmail = 'Please enter a valid email address';
     }
-    
+
     if (!formData.leaderPhone.trim()) {
       newErrors.leaderPhone = 'Phone number is required';
     } else if (!validatePhone(formData.leaderPhone)) {
       newErrors.leaderPhone = 'Please enter a valid 10-digit Indian phone number';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -60,15 +60,17 @@ const LeaderDetails = () => {
 
   const handleNext = async () => {
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
       // Call backend API to send OTP
-      await authAPI.sendOTP({
+      const response = await authAPI.sendOTP({
         fullName: formData.leaderName,
         email: formData.leaderEmail,
         phone: formData.leaderPhone
       });
+
+      console.log('OTP API Response:', response); // Debug log
 
       // Store form data for next step
       const registrationData = {
@@ -76,32 +78,30 @@ const LeaderDetails = () => {
         email: formData.leaderEmail,
         phone: formData.leaderPhone
       };
-      
-      localStorage.setItem('registrationData', JSON.stringify(registrationData));
-      
+
+      sessionStorage.setItem('registrationData', JSON.stringify(registrationData));
+
       // Show success message
-      toast.success(' OTPs sent successfully to your email and phone! Please proceed to verification.');
-      
+      toast.success('OTPs sent successfully to your email and phone! Please proceed to verification.');
+
       // Navigate to verification step
       navigate('/register/verification');
-      
+
     } catch (error) {
       console.error('Send OTP error:', error);
-      
+
       if (error.response?.data) {
         const errorMessage = error.response.data.message;
-        
+
         // Handle specific errors
         if (error.response.status === 409) {
           // User already exists
           toast.error(`Error: ${errorMessage}`);
-          
-
         } else {
-          toast.error(` Registration failed: ${errorMessage}`);
+          toast.error(`Registration failed: ${errorMessage}`);
         }
       } else {
-        toast.error(' Registration failed. Please check your internet connection and try again.');
+        toast.error('Registration failed. Please check your internet connection and try again.');
       }
     } finally {
       setLoading(false);
@@ -111,19 +111,16 @@ const LeaderDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-2xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#0B2A4A] mb-2">
-            FutureMaze Registration
-          </h1>
-          <p className="text-gray-600">Step 1 of 3: Team Leader Details</p>
-        </div>
-
         {/* Progress Bar */}
         <ProgressBar currentStep={1} />
-
         {/* Form */}
         <div className="bg-white rounded-lg shadow-md p-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-[#0B2A4A] mb-2">
+              FutureMaze Registration
+            </h1>
+          </div>
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -133,9 +130,8 @@ const LeaderDetails = () => {
                 type="text"
                 value={formData.leaderName}
                 onChange={(e) => handleInputChange('leaderName', e.target.value)}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${
-                  errors.leaderName ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${errors.leaderName ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 placeholder="Enter your full name"
               />
               {errors.leaderName && (
@@ -151,9 +147,8 @@ const LeaderDetails = () => {
                 type="email"
                 value={formData.leaderEmail}
                 onChange={(e) => handleInputChange('leaderEmail', e.target.value)}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${
-                  errors.leaderEmail ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${errors.leaderEmail ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 placeholder="Enter your email address"
               />
               {errors.leaderEmail && (
@@ -173,9 +168,8 @@ const LeaderDetails = () => {
                   type="tel"
                   value={formData.leaderPhone}
                   onChange={(e) => handleInputChange('leaderPhone', e.target.value)}
-                  className={`flex-1 px-4 py-3 border rounded-r-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${
-                    errors.leaderPhone ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`flex-1 px-4 py-3 border rounded-r-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent ${errors.leaderPhone ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="Enter 10-digit phone number"
                   maxLength="10"
                 />

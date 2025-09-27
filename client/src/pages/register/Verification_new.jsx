@@ -17,10 +17,11 @@ const Verification = () => {
   const [resending, setResending] = useState({ email: false, phone: false });
   const [verificationComplete, setVerificationComplete] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   useEffect(() => {
-    // Get registration data from localStorage
-    const savedData = localStorage.getItem('registrationData');
+    // Get registration data from sessionStorage
+    const savedData = sessionStorage.getItem('registrationData');
     if (!savedData) {
       // If no registration data, redirect to first step
       navigate('/register');
@@ -102,9 +103,9 @@ const Verification = () => {
       }
       return;
     }
-    
+
     setLoading(true);
-    
+
     // Debug: Log the data being sent
     console.log('Registration data being sent:', {
       fullName: registrationData.fullName,
@@ -113,7 +114,7 @@ const Verification = () => {
       emailOTP: formData.emailOTP,
       phoneOTP: formData.phoneOTP
     });
-    
+
     try {
       // Call backend API to verify OTPs and complete registration
       const response = await authAPI.register({
@@ -140,7 +141,6 @@ const Verification = () => {
         
         // Show success message
         const teamCode = response.data.team?.teamCode || 'Unknown';
-        toast.success(`🎉 Registration successful! Team created: ${teamCode}`);
     
         // Mark verification as complete
         setVerificationComplete(true);
@@ -149,18 +149,16 @@ const Verification = () => {
       }
     } catch (error) {
       console.error('Verification error:', error);
-
+      toast.error('Verification failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBack = () => {
-    navigate('/register');
-  };
 
   const handleNext = () => {
     setShowPayment(true);
+    navigate('/register/payment'); // Navigate to the payment page
   };
 
   if (!registrationData) {
@@ -195,14 +193,12 @@ const Verification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex justify-center p-4">
       <div className="w-full max-w-2xl">
         <ProgressBar currentStep={2} />
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-[#0B2A4A] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-white" />
-            </div>
+            
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Verify Your Details</h2>
             <p className="text-gray-600">We've sent OTPs to your email and phone number. Please enter them below to complete verification.</p>
           </div>
@@ -266,8 +262,9 @@ const Verification = () => {
             <button
               onClick={handleVerify}
               className="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-all"
+              disabled={loading} // Disable button when loading
             >
-              Verify OTPs
+              {loading ? 'Verifying...' : 'Verify OTPs'}
             </button>
           </div>
         </div>

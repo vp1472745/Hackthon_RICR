@@ -110,7 +110,7 @@ const ProjectTheme = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/20 p-6">
       {/* Header Section */}
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
+        <div className=" p-8 mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-4">
@@ -126,17 +126,7 @@ const ProjectTheme = () => {
               </div>
             </div>
             
-            {selectedTheme && (
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5 min-w-[280px]">
-                <div className="flex items-center gap-3 mb-2">
-                  <CheckCircle className="w-6 h-6 text-green-500" />
-                  <span className="font-semibold text-green-700">Theme Selected</span>
-                </div>
-                <div className="text-lg font-bold text-gray-900 truncate">
-                  {selectedThemeData?.themeName}
-                </div>
-              </div>
-            )}
+   
           </div>
         </div>
 
@@ -159,7 +149,7 @@ const ProjectTheme = () => {
         )}
 
         {/* Theme Selection Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 ml-10">
           {themes.map(theme => {
             const isSelected = selectedTheme === theme.themeName;
             return (

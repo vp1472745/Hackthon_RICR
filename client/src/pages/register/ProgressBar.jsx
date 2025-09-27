@@ -10,60 +10,68 @@ const ProgressBar = ({ currentStep }) => {
 
   return (
     <div className="mb-8">
-      <div className="flex items-center mb-4">
+      <div className="flex items-center justify-between relative">
         {steps.map((step, index) => {
           const Icon = step.icon;
           const isCompleted = currentStep > step.id;
           const isCurrent = currentStep === step.id;
-          const isActive = currentStep >= step.id;
-          
+
           return (
             <React.Fragment key={step.id}>
-              {/* Step Circle */}
-              <div className="flex flex-col items-center">
-                <div className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-500 ${
-                  isCompleted 
-                    ? 'bg-green-500 border-green-500 text-white transform scale-110' 
-                    : isCurrent 
-                      ? 'bg-[#0B2A4A] border-[#0B2A4A] text-white transform scale-110 shadow-lg'
+              {/* Step Container with Fixed Width */}
+              <div className="flex flex-col items-center w-1/3 text-center">
+                <div
+                  className={`flex items-center justify-center w-14 h-14 rounded-full border-4 transition-all duration-500 shadow-md ${
+                    isCompleted
+                      ? 'bg-gradient-to-r from-green-400 to-green-600 border-green-500 text-white'
+                      : isCurrent
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-700 border-blue-500 text-white scale-110'
                       : 'bg-gray-200 border-gray-300 text-gray-500'
-                }`}>
-                  {isCompleted ? <CheckCircle size={20} /> : <Icon size={20} />}
+                  }`}
+                >
+                  <Icon size={24} />
                 </div>
-                <span className={`text-xs mt-2 text-center font-medium transition-colors duration-300 ${
-                  isActive ? 'text-[#0B2A4A] font-semibold' : 'text-gray-600'
-                }`}>
+                <span
+                  className={`text-sm mt-2 font-medium transition-colors duration-300 ${
+                    isCompleted || isCurrent ? 'text-blue-700 font-semibold' : 'text-gray-600'
+                  }`}
+                >
                   {step.title}
                 </span>
               </div>
-              
-              {/* Connecting Line with Animation */}
+
+              {/* Connecting Line */}
               {index < steps.length - 1 && (
-                <div className="flex-1  relative">
-                  {/* Background Line */}
-                  <div className="h-2 w-full bg-gray-300 rounded-full relative overflow-hidden">
-                    {/* Animated Progress Line */}
-                    <div 
-                      className={`h-full rounded-full transition-all duration-1000 ease-in-out ${
-                        currentStep > step.id 
-                          ? 'bg-green-500 w-full' 
-                          : currentStep === step.id 
-                            ? 'bg-[#0B2A4A] w-full animate-pulse' 
-                            : 'bg-gray-300 w-0'
-                      }`}
-                      style={{
-                        transform: currentStep > step.id ? 'translateX(0)' : 'translateX(-100%)',
-                        transition: 'transform 0.8s ease-in-out, background-color 0.3s ease'
-                      }}
+                <div className="flex-1 h-2 bg-gray-300 rounded-full relative mx-4">
+                  <div
+                    className={`absolute top-0 left-0 h-full rounded-full transition-all duration-500 ${
+                      currentStep > step.id
+                        ? 'bg-gradient-to-r from-green-400 to-green-600 w-full'
+                        : 'bg-gray-300 w-full'
+                    }`}
+                  ></div>
+                </div>
+              )}
+
+              {/* Right Arrow - Ensure it remains unchanged */}
+              {index < steps.length - 1 && (
+                <div className="flex items-center mx-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`w-6 h-6 transition-colors duration-500 ${
+                      currentStep > step.id ? 'text-green-600' : 'text-gray-400'
+                    }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 5l7 7-7 7"
                     />
-                  </div>
-                  
-                  {/* Progress Indicator Dots */}
-                  {currentStep === step.id && (
-                    <div className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
-                      <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
-                    </div>
-                  )}
+                  </svg>
                 </div>
               )}
             </React.Fragment>

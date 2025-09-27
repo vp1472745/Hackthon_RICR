@@ -59,3 +59,37 @@ export const sendOTPEmail = async (to, otp) => {
 };
 
 
+export const sendCredentialsEmail = async (to, credentials) => {
+    const subject = "Your FutureMaze Login Credentials";
+    const email = to;
+    const text = `
+    
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Your FutureMaze Login Credentials</title>
+                <style>
+                    body { font-family: Arial, sans-serif; background: #f9f9f9; color: #222; }
+                    .container { max-width: 400px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);}
+                    .footer { font-size: 0.9em; color: #888; margin-top: 32px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h2>Your FutureMaze Login Credentials</h2>
+                    <p>Hello,</p>
+                    <p>Your login credentials are as follows:</p>
+                    <p>Email: ${email}</p>
+                    <p>Team Code: ${credentials}</p>
+                    <p>Please keep this information safe and do not share it with anyone.</p>
+                    <div class="footer">
+                        If you did not request this, please ignore this email.<br>
+                        &copy; ${new Date().getFullYear()} FutureMaze
+                    </div>
+                </div>
+            </body>
+        </html>
+    `;
+    return sendEmail(to, subject, text);
+};

@@ -4,6 +4,8 @@ import {
   addTeamMember,
   removeTeamMember,
   editTeamMemberByLeader,
+  updateTermsAccepted,
+  
 } from '../controller/userController.js';
 import {  authenticateLeader } from '../middlewares/auth.js';
 
@@ -21,5 +23,8 @@ router.delete('/leader/remove-member', authenticateLeader, removeTeamMember);
 
 // Edit team member profile (leader only)
 router.put('/leader/edit-member/:memberId', authenticateLeader, editTeamMemberByLeader);
+
+// Update terms acceptance (user only)
+router.put('/update-terms', authenticateLeader, updateTermsAccepted);
 
 export default router;

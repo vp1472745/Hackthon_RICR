@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, CreditCard, Clock } from 'lucide-react';
+import { CheckCircle, CreditCard, Clock } from 'lucide-react';
+ import { authAPI } from '../../configs/api.js';
 import { useNavigate } from 'react-router-dom';
 import ProgressBar from './ProgressBar.jsx';
 
 const Payment = () => {
   const navigate = useNavigate();
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(100);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [registrationData, setRegistrationData] = useState(null);
 
@@ -16,7 +17,7 @@ const Payment = () => {
       navigate('/register');
       return;
     }
-    
+
     try {
       const parsedData = JSON.parse(savedData);
       setRegistrationData(parsedData);
@@ -32,21 +33,23 @@ const Payment = () => {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
       }, 1000);
-      
+
       return () => clearTimeout(timer);
     } else if (paymentCompleted && countdown === 0) {
       navigate('/login');
     }
   }, [paymentCompleted, countdown, navigate]);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     // Simulate payment processing
+
+    //call an Backend Route to send email with login details
+    
     setPaymentCompleted(true);
+
+    await authAPI.sendCredentials({ email: registrationData.email ,teamCode: registrationData.team.teamCode });
   };
 
-  const handleBack = () => {
-    navigate('/verification');
-  };
 
   if (!registrationData) {
     return (
@@ -60,99 +63,91 @@ const Payment = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-white flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         <ProgressBar currentStep={3} />
-        
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+
+        <div className="bg-white rounded-3xl shadow-2xl p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-[#0B2A4A] rounded-full flex items-center justify-center mx-auto mb-4">
-              <CreditCard className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Payment</h2>
-            <p className="text-gray-600">
-              Complete your registration with payment
-            </p>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Complete Your Payment</h2>
+            <p className="text-gray-600">Secure your spot at FutureMaze by completing the payment below.</p>
           </div>
 
           {!paymentCompleted ? (
-            <div className="space-y-6">
+            <div className="space-y-7">
               {/* Registration Fee */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                <h4 className="font-semibold text-[#0B2A4A] mb-2">Registration Fee</h4>
-                <p className="text-3xl font-bold text-[#0B2A4A]">₹1,000</p>
-                <p className="text-sm text-gray-600 mt-2">Non-refundable registration fee</p>
+              <div className="flex items-center justify-between bg-blue-100 border border-blue-200 rounded-xl px-6 py-4">
+                <div>
+                  <h4 className="font-semibold text-[#0B2A4A]">Registration Fee</h4>
+                  <p className="text-xs text-gray-500">Non-refundable</p>
+                </div>
+                <span className="text-2xl font-bold text-[#0B2A4A]">₹1,500</span>
               </div>
 
-              {/* Team Details */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-800 mb-2">Registration Details:</h4>
-                <p className="text-sm text-gray-600">Name: {registrationData.fullName}</p>
-                <p className="text-sm text-gray-600">Email: {registrationData.email}</p>
-                <p className="text-sm text-gray-600">Phone: +91 {registrationData.phone}</p>
-                {registrationData.team && (
-                  <p className="text-sm font-bold text-green-600">Team Code: {registrationData.team.teamCode}</p>
-                )}
+              {/* Registration Details */}
+              <div className="bg-gray-50 rounded-xl px-5 py-4">
+                <h4 className="font-semibold text-gray-700 mb-2">Your Details</h4>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  {registrationData.team && (
+                    <li>
+                      <span className="font-medium">Team Code:</span> <span className="text-green-700">{registrationData.team.teamCode}</span>
+                    </li>
+                  )}
+                  <li>
+                    <span className="font-medium">Name:</span> {registrationData.fullName}
+                  </li>
+                  <li>
+                    <span className="font-medium">Email:</span> {registrationData.email}
+                  </li>
+                  <li>
+                    <span className="font-medium">Phone:</span> +91 {registrationData.phone}
+                  </li>
+                </ul>
               </div>
 
               {/* Payment Button */}
-              <div className="text-center">
+              <div className="flex flex-col items-center">
                 <button
                   onClick={handlePayment}
-                  className="bg-[#0B2A4A] hover:bg-[#0d2d4f] text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors duration-200 flex items-center gap-3 mx-auto"
+                  className="bg-[#0B2A4A] hover:bg-[#14345a] text-white px-8 py-3 rounded-xl font-semibold text-lg flex items-center gap-2 shadow-md transition"
                 >
                   <CreditCard className="w-5 h-5" />
-                  Payment
+                  Pay Now
                 </button>
-              </div>
 
-              {/* Back Button */}
-              <div className="flex justify-center mt-6">
-                <button
-                  onClick={handleBack}
-                  className="flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back
-                </button>
               </div>
             </div>
           ) : (
-            /* Success Screen with Countdown */
-            <div className="text-center py-8">
-              <div className="text-6xl mb-4">🎉</div>
-              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-green-600 mb-2">Payment Successful!</h3>
-              <p className="text-gray-600 mb-6">
-                Registration completed successfully! Welcome to FutureMaze by RICR!
+            // Payment Success
+            <div className="flex flex-col items-center py-8">
+              <CheckCircle className="w-14 h-14 text-green-500 mb-3" />
+              <h3 className="text-xl font-bold text-green-700 mb-1">Payment Successful!</h3>
+              <p className="text-gray-600 mb-4 text-center">
+                Welcome to FutureMaze! Your registration is complete.
               </p>
-              
-              <div className="bg-blue-50 rounded-lg p-6 mb-6">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Clock className="w-5 h-5 text-blue-600" />
-                  <span className="text-blue-800 font-semibold">Auto-redirecting in</span>
-                </div>
-                <div className="text-4xl font-bold text-blue-600">{countdown}</div>
-                <p className="text-sm text-blue-700 mt-2">Redirecting to Leader Dashboard...</p>
+              <p className="text-blue-700 font-medium mb-4 text-center">
+                Check your Email for Login Details and Instructions.
+              </p>
+              <div className="flex items-center gap-2 bg-blue-100 rounded-lg px-4 py-2 mb-5">
+                <Clock className="w-5 h-5 text-blue-700" />
+                <span className="text-blue-800 text-sm">
+                  Redirecting to login in <span className="font-bold">{countdown}</span> seconds...
+                </span>
               </div>
-
               <button
                 onClick={() => navigate('/login')}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition"
               >
-                Go to Dashboard Now
+                Login Now
               </button>
             </div>
           )}
 
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Note:</strong> This is a demo payment system. In production, this would integrate with real payment gateways.
-            </p>
+          <div className="mt-7 p-4 bg-blue-50 rounded-xl text-blue-900 text-xs text-center">
+            <strong>Note:</strong> This is a demo payment page. In production, a real payment gateway would be integrated.
           </div>
         </div>
       </div>
-     
     </div>
   );
 };

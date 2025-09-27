@@ -7,25 +7,17 @@ import HackathonTimer from './HackathonTimer';
 import { Users, Target, Award, RefreshCw, AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';
 
 const Overview = () => {
-  // Get data from localStorage
-  const teamData = JSON.parse(localStorage.getItem('hackathonUser')) || {};
-  const registrationData = JSON.parse(localStorage.getItem('registrationData')) || {};
-  const selectedTheme = localStorage.getItem('selectedTheme') || null;
+  // Get data from sessionStorage
+  const teamData = JSON.parse(sessionStorage.getItem('hackathonUser')) || {};
+  const registrationData = JSON.parse(sessionStorage.getItem('registrationData')) || {};
+  const selectedTheme = sessionStorage.getItem('selectedTheme') || null;
 
   // Leader profile state
   const [leaderProfile, setLeaderProfile] = useState(null);
   const [apiTeamMembers, setApiTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Timer state
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  });
+    
 
   // Stats state
   const [teamStats, setTeamStats] = useState({
@@ -38,11 +30,7 @@ const Overview = () => {
   // Fetch leader profile from API
   const fetchLeaderProfile = async () => {
     try {
-      setLoading(true);
-      setError(null);
-
-
-      const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser') || '{}');
+      const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
       if (hackathonUser.user && hackathonUser.user._id) {
         try {
           const userResponse = await userAPI.getUserById(hackathonUser.user._id);
@@ -50,7 +38,6 @@ const Overview = () => {
             setLeaderProfile(userResponse.data.user);
             setApiTeamMembers(userResponse.data.user.teamInfo?.members || []);
             updateTeamStats(userResponse.data.user, userResponse.data.user.teamInfo?.members || []);
-            toast.success('Profile loaded successfully!');
             return;
           }
         } catch (fallbackError) {
@@ -59,8 +46,8 @@ const Overview = () => {
       }
 
       setError('Using offline data');
-      const storedProfile = localStorage.getItem('leaderProfile');
-      const storedMembers = localStorage.getItem('apiTeamMembers');
+      const storedProfile = sessionStorage.getItem('leaderProfile');
+      const storedMembers = sessionStorage.getItem('apiTeamMembers');
       
       if (storedProfile) {
         const profile = JSON.parse(storedProfile);
@@ -80,60 +67,8 @@ const Overview = () => {
     }
   };
 
-  // Update team statistics
-  const updateTeamStats = (profile, members) => {
-    const totalMembers = members.length + 1;
-    const teamComplete = totalMembers >= 4;
-    const themeSelected = !!selectedTheme;
-    const registrationComplete = !!(registrationData && Object.keys(registrationData).length > 0);
 
-    setTeamStats({
-      totalMembers,
-      teamComplete,
-      themeSelected,
-      registrationComplete
-    });
-  };
 
-  // Handle manual refresh
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchLeaderProfile();
-    toast.info('Data refreshed successfully!');
-  };
-
-  // Calculate countdown to hackathon
-  useEffect(() => {
-    const hackathonDate = new Date('2024-12-31T09:00:00');
-
-    const updateTimer = () => {
-      const now = new Date().getTime();
-      const distance = hackathonDate.getTime() - now;
-
-      if (distance > 0) {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        setTimeLeft({ days, hours, minutes, seconds });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      }
-    };
-
-    const timer = setInterval(updateTimer, 1000);
-    updateTimer();
-
-    return () => clearInterval(timer);
-  }, []);
-
-  // Update stats when dependencies change
-  useEffect(() => {
-    if (leaderProfile) {
-      updateTeamStats(leaderProfile, apiTeamMembers);
-    }
-  }, [leaderProfile, apiTeamMembers, selectedTheme, registrationData]);
 
   // Update selectedTheme dynamically from localStorage
   useEffect(() => {
@@ -157,6 +92,21 @@ const Overview = () => {
   }, []);
 
   const teamMembers = registrationData.teamMembers || [];
+
+  // Reimplement updateTeamStats function
+  const updateTeamStats = (profile, members) => {
+    const totalMembers = members.length + 1; // Including the leader
+    const teamComplete = totalMembers >= 4;
+    const themeSelected = !!localStorage.getItem('selectedTheme');
+    const registrationComplete = !!localStorage.getItem('registrationData');
+
+    return {
+        totalMembers,
+        teamComplete,
+        themeSelected,
+        registrationComplete
+    };
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
@@ -205,7 +155,6 @@ const Overview = () => {
         {/* Right Side Panel (1/3 width) */}
         <div className="xl:col-span-1">
           <RightSidePanel
-            timeLeft={timeLeft}
             selectedTheme={selectedTheme}
             teamStats={teamStats}
           />

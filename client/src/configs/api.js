@@ -14,7 +14,7 @@ const api = axios.create({
 // Add request interceptor to include auth token
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -31,8 +31,8 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             // Token expired or invalid
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('hackathonUser');
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('hackathonUser');
             window.location.href = '/login';
         }
         return Promise.reject(error);
@@ -50,7 +50,8 @@ export const authAPI = {
     // Step 3: Login (team login with teamCode and email)
     login: (loginData) => api.post('/auth/login', loginData),
 
-
+    // Send email with login details
+    sendCredentials: (emailData) => api.post('/auth/sendCredentials', emailData),
     // Logout
     logout: () => api.post('/auth/logout')
 };

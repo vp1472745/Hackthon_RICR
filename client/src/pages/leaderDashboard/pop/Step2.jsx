@@ -1,42 +1,114 @@
-import React, { useState } from 'react';
-import { IoIosSave } from 'react-icons/io';
-import { X } from 'lucide-react';
+// Step2.jsx
+import React, { useState, useEffect } from 'react';
+import { X, Loader } from 'lucide-react';
+import { userAPI } from '../../../configs/api';
+import { toast } from 'react-toastify';
 
-const Step2 = ({ setIsStep2Saved, setIsNextDisabled }) => {
+const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
+   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
+
+  useEffect(() => {
+    if (teamMembers.length === 0) {
+      setIsNextDisabled(false); // Enable Next if no members are added
+    } else {
+      const allFormsValid = teamMembers.every(isFormValid);
+      setIsNextDisabled(!allFormsValid); // Disable Next if any form is incomplete
+    }
+  }, [teamMembers, setIsNextDisabled]);
 
   const addMemberForm = () => {
     if (teamMembers.length < 3) {
-      setTeamMembers([...teamMembers, { fullName: '', email: '', phone: '', collegeName: '', course: '', collegeBranch: '', collegeSemester: '', githubLink: '' }]);
-      setIsNextDisabled(true); // Disable Next button when a new form is added
+      setTeamMembers(prev => [
+        ...prev,
+        {
+          fullName: '',
+          email: '',
+          phone: '',
+          collegeName: '',
+          course: 'N/A',
+          collegeBranch: 'N/A',
+          collegeSemester: '0',
+          githubLink: ''
+        }
+      ]);
+      setErrors(prev => [...prev, {}]);
+      setIsNextDisabled(true);
+    } else {
+      toast.info('Maximum 3 members allowed.');
     }
   };
 
   const removeMemberForm = (index) => {
     const updatedMembers = teamMembers.filter((_, i) => i !== index);
     setTeamMembers(updatedMembers);
-    if (updatedMembers.length === 0) {
-      setIsNextDisabled(false); // Enable Next button if no forms are present
-    }
+    setErrors(errors.filter((_, i) => i !== index));
+    if (updatedMembers.length === 0) setIsNextDisabled(false);
   };
 
   const handleInputChange = (index, field, value) => {
     const updatedMembers = [...teamMembers];
-    updatedMembers[index][field] = value;
+    updatedMembers[index] = { ...updatedMembers[index], [field]: value };
     setTeamMembers(updatedMembers);
+
+    const updatedErrors = [...errors];
+    updatedErrors[index] = { ...updatedErrors[index], [field]: '' };
+    setErrors(updatedErrors);
   };
 
   const isFormValid = (member) => {
     const requiredFields = ['fullName', 'email', 'phone', 'collegeName', 'course', 'collegeBranch', 'collegeSemester'];
-    return requiredFields.every((field) => member[field] && member[field] !== 'N/A' && member[field] !== '0');
+    return requiredFields.every(f => member[f] && member[f] !== 'N/A' && member[f] !== '0');
   };
 
-  const handleSave = async () => {
-    if (teamMembers.every(isFormValid)) {
-      setIsStep2Saved(true); // Notify MultiStepModal that Step2 is saved
-      setIsNextDisabled(false); // Enable Next button when data is saved
-    } else {
-      alert('Please fill all required fields for all team members.');
+  const validateAll = () => {
+    const newErrors = teamMembers.map(member => {
+      const err = {};
+      if (!member.fullName) err.fullName = 'Full name is required';
+      if (!member.email) err.email = 'Email is required';
+      if (!member.phone) err.phone = 'Phone number is required';
+      if (!member.collegeName) err.collegeName = 'College name is required';
+      if (!member.course || member.course === 'N/A') err.course = 'Course is required';
+      if (!member.collegeBranch || member.collegeBranch === 'N/A') err.collegeBranch = 'Branch is required';
+      if (!member.collegeSemester || member.collegeSemester === '0') err.collegeSemester = 'Semester is required';
+      return err;
+    });
+    setErrors(newErrors);
+    return newErrors.every(e => Object.keys(e).length === 0);
+  };
+
+  const hasDuplicates = (members) => {
+    const emails = members.map(member => member.email);
+    const phones = members.map(member => member.phone);
+    const emailSet = new Set(emails);
+    const phoneSet = new Set(phones);
+    return emailSet.size !== emails.length || phoneSet.size !== phones.length;
+  };
+
+  const validatePayload = (members) => {
+    return members.every(member => member.fullName && member.email && member.phone);
+  };
+
+  const saveTeamMembers = async (members) => {
+    setLoading(true);
+    try {
+      for (const member of members) {
+        console.log('Sending individual member payload:', member);
+        await userAPI.addMember(member); // Send each member individually
+      }
+      setLoading(false);
+      toast.success('Team members saved successfully.');
+    } catch (error) {
+      setLoading(false);
+      if (error.response?.status === 400) {
+        toast.error('Bad Request: ' + (error.response?.data?.error || 'Invalid data.'));
+      } else {
+        toast.error('Failed to save members: ' + (error.response?.data?.message || error.message));
+      }
+      console.error('Save failed:', error);
+      throw error;
     }
   };
 
@@ -49,127 +121,92 @@ const Step2 = ({ setIsStep2Saved, setIsNextDisabled }) => {
           <button
             className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
             onClick={() => removeMemberForm(index)}
+            type="button"
           >
             <X className="w-5 h-5" />
           </button>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-              <input
-                type="text"
-                value={member.fullName}
-                onChange={(e) => handleInputChange(index, 'fullName', e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
-                placeholder="Enter full name"
-              />
-            </div>
+            {['fullName', 'email', 'phone', 'collegeName'].map((field) => (
+              <div key={field}>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {field === 'fullName' ? 'Full Name *' : field === 'email' ? 'Email Address *' : field === 'phone' ? 'Phone Number *' : 'College Name *'}
+                </label>
+                <input
+                  type={field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'}
+                  value={member[field]}
+                  onChange={(e) => handleInputChange(index, field, e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent ${errors[index]?.[field] ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder={`Enter ${field}`}
+                  disabled={loading}
+                />
+                {errors[index]?.[field] && <p className="text-red-500 text-sm mt-1">{errors[index][field]}</p>}
+              </div>
+            ))}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-              <input
-                type="email"
-                value={member.email}
-                onChange={(e) => handleInputChange(index, 'email', e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
-                placeholder="Enter email address"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-              <input
-                type="tel"
-                value={member.phone}
-                onChange={(e) => handleInputChange(index, 'phone', e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
-                placeholder="Enter phone number"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">College Name *</label>
-              <input
-                type="text"
-                value={member.collegeName}
-                onChange={(e) => handleInputChange(index, 'collegeName', e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
-                placeholder="Enter college name"
-              />
-            </div>
-
+            {/* Course */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Course *</label>
               <select
                 value={member.course}
                 onChange={(e) => handleInputChange(index, 'course', e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent ${errors[index]?.course ? 'border-red-500' : 'border-gray-300'}`}
+                disabled={loading}
               >
                 <option value="N/A">Select Course</option>
-                <option value="B.Tech">B.Tech (Bachelor of Technology)</option>
-                <option value="B.E">B.E (Bachelor of Engineering)</option>
-                <option value="BCA">BCA (Bachelor of Computer Applications)</option>
-                <option value="MCA">MCA (Master of Computer Applications)</option>
-                <option value="M.Tech">M.Tech (Master of Technology)</option>
-                <option value="M.E">M.E (Master of Engineering)</option>
-                <option value="B.Sc">B.Sc (Bachelor of Science)</option>
-                <option value="M.Sc">M.Sc (Master of Science)</option>
-                <option value="BBA">BBA (Bachelor of Business Administration)</option>
-                <option value="MBA">MBA (Master of Business Administration)</option>
-                <option value="B.Com">B.Com (Bachelor of Commerce)</option>
-                <option value="M.Com">M.Com (Master of Commerce)</option>
+                <option value="B.Tech">B.Tech</option>
+                <option value="B.E">B.E</option>
+                <option value="BCA">BCA</option>
+                <option value="MCA">MCA</option>
+                <option value="M.Tech">M.Tech</option>
+                <option value="M.E">M.E</option>
+                <option value="B.Sc">B.Sc</option>
+                <option value="M.Sc">M.Sc</option>
+                <option value="BBA">BBA</option>
+                <option value="MBA">MBA</option>
+                <option value="B.Com">B.Com</option>
+                <option value="M.Com">M.Com</option>
                 <option value="Diploma">Diploma</option>
-                <option value="Ph.D">Ph.D (Doctor of Philosophy)</option>
+                <option value="Ph.D">Ph.D</option>
               </select>
             </div>
 
+            {/* Branch */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">College Branch *</label>
               <select
                 value={member.collegeBranch}
                 onChange={(e) => handleInputChange(index, 'collegeBranch', e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent ${errors[index]?.collegeBranch ? 'border-red-500' : 'border-gray-300'}`}
+                disabled={loading}
               >
                 <option value="N/A">Select Branch</option>
-                <option value="Computer Science Engineering">Computer Science Engineering (CSE)</option>
-                <option value="Information Technology">Information Technology (IT)</option>
-                <option value="Electronics and Communication">Electronics and Communication (ECE)</option>
-                <option value="Electrical Engineering">Electrical Engineering (EE)</option>
-                <option value="Mechanical Engineering">Mechanical Engineering (ME)</option>
-                <option value="Civil Engineering">Civil Engineering (CE)</option>
-                <option value="Chemical Engineering">Chemical Engineering (ChE)</option>
-                <option value="Aerospace Engineering">Aerospace Engineering (AE)</option>
-                <option value="Biotechnology">Biotechnology (BT)</option>
-                <option value="Automobile Engineering">Automobile Engineering (Auto)</option>
-                <option value="Production Engineering">Production Engineering (PE)</option>
-                <option value="Industrial Engineering">Industrial Engineering (IE)</option>
-                <option value="Software Engineering">Software Engineering (SE)</option>
-                <option value="Data Science">Data Science (DS)</option>
-                <option value="Artificial Intelligence">Artificial Intelligence (AI)</option>
-                <option value="Machine Learning">Machine Learning (ML)</option>
-                <option value="Cyber Security">Cyber Security (CS)</option>
+                <option value="Computer Science Engineering">CSE</option>
+                <option value="Information Technology">IT</option>
+                <option value="Electronics and Communication">ECE</option>
+                <option value="Electrical Engineering">EE</option>
               </select>
             </div>
 
+            {/* Semester */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Semester *</label>
               <select
                 value={member.collegeSemester}
                 onChange={(e) => handleInputChange(index, 'collegeSemester', e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent ${errors[index]?.collegeSemester ? 'border-red-500' : 'border-gray-300'}`}
+                disabled={loading}
               >
                 <option value="0">Select Semester</option>
-                <option value="1">1st Semester</option>
-                <option value="2">2nd Semester</option>
-                <option value="3">3rd Semester</option>
-                <option value="4">4th Semester</option>
-                <option value="5">5th Semester</option>
-                <option value="6">6th Semester</option>
-                <option value="7">7th Semester</option>
-                <option value="8">8th Semester</option>
+                <option value="1">1st</option>
+                <option value="2">2nd</option>
+                <option value="3">3rd</option>
+                <option value="4">4th</option>
               </select>
             </div>
-            <div>
+
+            {/* GitHub */}
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">GitHub Profile (Optional)</label>
               <input
                 type="url"
@@ -184,25 +221,44 @@ const Step2 = ({ setIsStep2Saved, setIsNextDisabled }) => {
       ))}
 
       {teamMembers.length < 3 && (
-        <button
-          onClick={addMemberForm}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
+        <button onClick={addMemberForm} type="button" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mb-3">
           Add Member
         </button>
       )}
 
-      {teamMembers.length > 0 && (
-        <div className="flex justify-end gap-4 mt-6">
-          <button
-            onClick={handleSave}
-            disabled={!teamMembers.every(isFormValid)}
-            className={`px-4 py-2 rounded-lg font-semibold flex gap-2 transition-colors ${teamMembers.every(isFormValid) ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-          >
-            <IoIosSave className="text-xl" /> Save
-          </button>
-        </div>
-      )}
+      <div className="mt-3 flex justify-between items-center">
+        <button onClick={handleBack} type="button" className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+          Back
+        </button>
+
+        <button
+          onClick={async () => {
+            if (teamMembers.length === 0) {
+              setIsStep2Saved(true);
+              handleNext();
+              return;
+            }
+
+            if (!validateAll()) {
+              toast.error('Please fill all required fields correctly.');
+              return;
+            }
+
+            try {
+              await saveTeamMembers(teamMembers);
+              setIsStep2Saved(true);
+              handleNext();
+            } catch (err) {
+              console.error('Save failed', err);
+            }
+          }}
+          disabled={isNextDisabled}
+          className={`px-5 py-2 rounded-lg font-semibold transition-colors ${isNextDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+        >
+          {loading && <Loader className="w-4 h-4 animate-spin mr-2 inline" />}
+          Next
+        </button>
+      </div>
     </div>
   );
 };

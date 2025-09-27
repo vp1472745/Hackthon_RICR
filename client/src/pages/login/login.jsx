@@ -70,11 +70,11 @@ const Login = () => {
 
         // Store authentication token if provided
         if (response.data.token) {
-          localStorage.setItem('authToken', response.data.token);
+          sessionStorage.setItem('authToken', response.data.token);
         }
 
         // Store user session data
-        localStorage.setItem('hackathonUser', JSON.stringify({
+        sessionStorage.setItem('hackathonUser', JSON.stringify({
           teamCode: formData.teamCode,
           email: formData.email,
           user: response.data.user,

@@ -86,34 +86,70 @@ const HelpDesk = () => {
     }
   ];
 
+  // Helper to open user's mailbox (best-effort):
+  // 1) Try to open Gmail web compose (if the user is logged into Gmail in Chrome this opens their mailbox & compose window).
+  // 2) If user prefers another provider or Gmail is not available, mailto: will act as a fallback (it opens the system-default mail client).
+  const openMailCompose = ({ to, subject = '', body = '' } = {}) => {
+    const encodedTo = encodeURIComponent(to || '');
+    const encodedSubject = encodeURIComponent(subject || '');
+    const encodedBody = encodeURIComponent(body || '');
+
+    // Gmail compose URL (will open in the logged-in Google account in the browser)
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedTo}&su=${encodedSubject}&body=${encodedBody}`;
+
+    // Outlook Web compose URL (for users who use outlook.live.com / office365)
+    // NOTE: outlook supports prefilled subject & body via "path=/mail/action/compose&to=...&subject=...&body=..."
+    const outlookUrl = `https://outlook.office.com/mail/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`;
+
+    // Fallback mailto:
+    const mailtoUrl = `mailto:${to}?subject=${encodedSubject}&body=${encodedBody}`;
+
+    // Try opening Gmail first (best chance to open the mailbox in the browser)
+    // Open in a new tab so user's current app is preserved.
+    try {
+      const newWin = window.open(gmailUrl, '_blank');
+
+      // If popup blocked or newWin is null, try Outlook; if that fails, use mailto
+      if (!newWin) {
+        // try outlook
+        const outWin = window.open(outlookUrl, '_blank');
+        if (!outWin) {
+          // fallback to mailto (this will open system email client)
+          window.location.href = mailtoUrl;
+        }
+      }
+    } catch (err) {
+      // final fallback
+      window.location.href = mailtoUrl;
+    }
+  };
+
   const contactMethods = [
     {
       type: 'Email Support',
       icon: Mail,
-      value: 'support@hackathon2025.com',
+      value: 'contact@ricr.in',
       description: 'General inquiries and detailed questions',
       response: '24-48 hours',
       buttonText: 'Send Email',
-      action: () => window.open('mailto:support@hackathon2025.com')
+      action: () => {
+        // We can include a short prefilled subject/body. If you want to use the user's values from the modal,
+        // consider changing this to open the modal first and then call openMailCompose with contactForm contents.
+        const subject = 'Support Request';
+        const body = `Hello team,%0D%0A%0D%0AI have a question regarding...%0D%0A%0D%0ARegards,`;
+        openMailCompose({ to: 'contact@ricr.in', subject, body });
+      }
     },
     {
       type: 'Phone Support',
       icon: Phone,
-      value: '+91 98765 43210',
+      value: '+91 8889991736',
       description: 'Urgent technical issues only',
       response: 'Mon-Fri, 9 AM - 6 PM IST',
       buttonText: 'Call Now',
-      action: () => window.open('tel:+919876543210')
-    },
-    {
-      type: 'Live Chat',
-      icon: MessageCircle,
-      value: 'Available 24/7',
-      description: 'Quick questions and real-time help',
-      response: 'Real-time during business hours',
-      buttonText: 'Start Chat',
-      action: () => setShowContactForm(true)
+      action: () => window.open('tel:+918889991736')
     }
+
   ];
 
   const filteredFaqs = faqData.filter(faq => 
@@ -121,6 +157,10 @@ const HelpDesk = () => {
   );
 
   const handleSubmitContact = () => {
+    // If you want the contact form modal to open the user's mailbox with form contents,
+    // replace the alert and setShowContactForm(false) with a call to openMailCompose using contactForm.
+    // Example:
+    // openMailCompose({ to: 'contact@ricr.in', subject: contactForm.subject, body: contactForm.message });
     alert('Your message has been sent successfully! We will get back to you within 24-48 hours.');
     setContactForm({ category: 'general', subject: '', message: '' });
     setShowContactForm(false);
@@ -135,132 +175,49 @@ const HelpDesk = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/20 p-4 sm:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
-          <div className="flex items-center gap-4 mb-3">
+        <div className="p-8 mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-3">
             <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
-              <HelpCircle className="w-8 h-8 text-white" />
+              <HelpCircle className="w-6 sm:w-8 h-6 sm:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Help & Support Center</h1>
-              <p className="text-gray-600 text-lg">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Help & Support Center</h1>
+              <p className="text-sm sm:text-lg text-gray-600">
                 Get instant help with our comprehensive knowledge base or connect with our support team.
               </p>
             </div>
           </div>
         </div>
 
-
-        {/* Category Filter */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Browse by Category</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {helpCategories.map((category) => {
-              const Icon = category.icon;
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 border-2 ${
-                    selectedCategory === category.id
-                      ? `border-transparent bg-gradient-to-br ${category.color} text-white shadow-lg transform scale-105`
-                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300 hover:shadow-md'
-                  }`}
-                >
-                  <Icon className="w-6 h-6" />
-                  <span className="text-sm font-medium text-center">{category.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50/30">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Frequently Asked Questions</h2>
-                <p className="text-gray-600 mt-1">
-                  {filteredFaqs.length} questions in {selectedCategory === 'all' ? 'all categories' : helpCategories.find(cat => cat.id === selectedCategory)?.name.toLowerCase()}
-                </p>
-              </div>
-              <button
-                onClick={() => setShowContactForm(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold whitespace-nowrap"
-              >
-                <MessageCircle className="w-5 h-5" />
-                Contact Support
-              </button>
-            </div>
-          </div>
-          
-          <div className="divide-y divide-gray-100">
-            {filteredFaqs.map((faq) => (
-              <div key={faq.id} className="p-6 hover:bg-gray-50/50 transition-colors duration-200">
-                <button
-                  onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
-                  className="w-full flex items-start justify-between text-left group"
-                >
-                  <div className="flex items-start gap-4 flex-1">
-                    <div className={`p-2 rounded-lg bg-gradient-to-br ${getCategoryColor(faq.category)} mt-1`}>
-                      <HelpCircle className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="text-left flex-1">
-                      <h3 className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors pr-4">
-                        {faq.question}
-                      </h3>
-                      {expandedFaq === faq.id && (
-                        <div className="mt-3 text-gray-600 leading-relaxed">
-                          {faq.answer}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {expandedFaq === faq.id ? (
-                    <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0 mt-1" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0 mt-1" />
-                  )}
-                </button>
-              </div>
-            ))}
-            
-            {filteredFaqs.length === 0 && (
-              <div className="p-12 text-center">
-                <HelpCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No questions found</h3>
-                <p className="text-gray-500">Try selecting a different category</p>
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* Contact Methods */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Get in Touch</h2>
-          <p className="text-gray-600 mb-6">Our support team is here to help you succeed</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Get in Touch</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-6">Our support team is here to help you succeed</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
             {contactMethods.map((method, index) => {
               const Icon = method.icon;
               return (
-                <div key={index} className="border border-gray-200 rounded-xl p-6 hover:border-blue-300 transition-all duration-200 hover:shadow-lg bg-gradient-to-b from-white to-gray-50/50">
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 transition-all duration-200 hover:shadow-lg bg-gradient-to-b from-white to-gray-50/50"
+                >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-blue-600" />
+                    <div className="w-10 sm:w-12 h-10 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <Icon className="w-5 sm:w-6 h-5 sm:h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">{method.type}</h4>
-                      <p className="text-sm text-gray-500">{method.response}</p>
+                      <h4 className="text-sm sm:text-base font-semibold text-gray-900">{method.type}</h4>
+                      <p className="text-xs sm:text-sm text-gray-500">{method.response}</p>
                     </div>
                   </div>
-                  
-                  <p className="font-medium text-blue-600 mb-2">{method.value}</p>
-                  <p className="text-gray-600 mb-4 text-sm">{method.description}</p>
-                  
+
+                  <p className="text-sm sm:text-base font-medium text-blue-600 mb-2">{method.value}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-4">{method.description}</p>
+
                   <button
                     onClick={method.action}
-                    className="w-full py-2.5 bg-blue-50 text-blue-600 rounded-lg font-medium hover:bg-blue-100 transition-colors duration-200 border border-blue-200"
+                    className="w-full py-2 sm:py-2.5 bg-blue-50 text-blue-600 rounded-lg font-medium hover:bg-blue-100 transition-colors duration-200 border border-blue-200"
                   >
                     {method.buttonText}
                   </button>
@@ -269,30 +226,116 @@ const HelpDesk = () => {
             })}
           </div>
         </div>
+
+        {/* Category Filter */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Browse by Category</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {helpCategories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl transition-all duration-200 border-2 ${
+                    selectedCategory === category.id
+                      ? `border-transparent bg-gradient-to-br ${category.color} text-white shadow-lg transform scale-105`
+                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300 hover:shadow-md'
+                  }`}
+                >
+                  <Icon className="w-5 sm:w-6 h-5 sm:h-6" />
+                  <span className="text-xs sm:text-sm font-medium text-center">{category.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
+          <div className="p-4 sm:p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50/30">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Frequently Asked Questions</h2>
+                <p className="text-sm sm:text-base text-gray-600 mt-1">
+                  {filteredFaqs.length} questions in {selectedCategory === 'all' ? 'all categories' : helpCategories.find(cat => cat.id === selectedCategory)?.name.toLowerCase()}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowContactForm(true)}
+                className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold whitespace-nowrap"
+              >
+                <MessageCircle className="w-4 sm:w-5 h-4 sm:h-5" />
+                Contact Support
+              </button>
+            </div>
+          </div>
+          
+          <div className="divide-y divide-gray-100">
+            {filteredFaqs.map((faq) => (
+              <div key={faq.id} className="p-4 sm:p-6 hover:bg-gray-50/50 transition-colors duration-200">
+                <button
+                  onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
+                  className="w-full flex items-start justify-between text-left group"
+                >
+                  <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                    <div className={`p-2 sm:p-3 rounded-lg bg-gradient-to-br ${getCategoryColor(faq.category)} mt-1`}>
+                      <HelpCircle className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
+                    </div>
+                    <div className="text-left flex-1">
+                      <h3 className="text-sm sm:text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors pr-4">
+                        {faq.question}
+                      </h3>
+                      {expandedFaq === faq.id && (
+                        <div className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-600 leading-relaxed">
+                          {faq.answer}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {expandedFaq === faq.id ? (
+                    <ChevronUp className="w-4 sm:w-5 h-4 sm:h-5 text-gray-500 flex-shrink-0 mt-1" />
+                  ) : (
+                    <ChevronDown className="w-4 sm:w-5 h-4 sm:h-5 text-gray-500 flex-shrink-0 mt-1" />
+                  )}
+                </button>
+              </div>
+            ))}
+            
+            {filteredFaqs.length === 0 && (
+              <div className="p-8 sm:p-12 text-center">
+                <HelpCircle className="w-12 sm:w-16 h-12 sm:h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-sm sm:text-lg font-semibold text-gray-600 mb-2">No questions found</h3>
+                <p className="text-xs sm:text-sm text-gray-500">Try selecting a different category</p>
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
 
       {/* Contact Form Modal */}
       {showContactForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 sm:p-6 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in fade-in-90 zoom-in-90">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-gray-900">Contact Support</h3>
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Contact Support</h3>
                 <button
                   onClick={() => setShowContactForm(false)}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  <X className="w-5 h-5 text-gray-500" />
+                  <X className="w-4 sm:w-5 h-4 sm:h-5 text-gray-500" />
                 </button>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Category</label>
                   <select
                     value={contactForm.category}
                     onChange={(e) => setContactForm({...contactForm, category: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-colors"
                   >
                     <option value="general">General Inquiry</option>
                     <option value="technical">Technical Issue</option>
@@ -303,39 +346,39 @@ const HelpDesk = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Subject</label>
                   <input
                     type="text"
                     value={contactForm.subject}
                     onChange={(e) => setContactForm({...contactForm, subject: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-colors"
                     placeholder="Brief description of your issue"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Message</label>
                   <textarea
                     value={contactForm.message}
                     onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                    rows={4}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-colors"
+                    rows={3}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-colors"
                     placeholder="Describe your question or issue in detail..."
                   />
                 </div>
               </div>
               
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-3 mt-4 sm:mt-6">
                 <button
                   onClick={handleSubmitContact}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold shadow-lg"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold shadow-lg"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-4 sm:w-5 h-4 sm:h-5" />
                   Send Message
                 </button>
                 <button
                   onClick={() => setShowContactForm(false)}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold"
+                  className="px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold"
                 >
                   Cancel
                 </button>

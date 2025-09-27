@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
 	// Check login state on mount
 	useEffect(() => {
-		const userData = JSON.parse(localStorage.getItem("hackathonUser"));
+		const userData = JSON.parse(sessionStorage.getItem("hackathonUser"));
 		if (userData && userData.user && userData.token) {
 			setIsAuthenticated(true);
 			setLeaderName(userData.user.fullName || userData.user.name || "");
@@ -20,10 +20,10 @@ export const AuthProvider = ({ children }) => {
 		}
 	}, []);
 
-		// Listen for login/logout changes in localStorage and custom authChange event
+		// Listen for login/logout changes in sessionStorage and custom authChange event
 		useEffect(() => {
 			const handleStorage = () => {
-				const userData = JSON.parse(localStorage.getItem("hackathonUser"));
+				const userData = JSON.parse(sessionStorage.getItem("hackathonUser"));
 				if (userData && userData.user && userData.token) {
 					setIsAuthenticated(true);
 					setLeaderName(userData.user.fullName || userData.user.name || "");
@@ -41,8 +41,8 @@ export const AuthProvider = ({ children }) => {
 		}, []);
 
 	const logout = () => {
-		localStorage.removeItem("hackathonUser");
-		localStorage.removeItem("authToken");
+		sessionStorage.removeItem("hackathonUser");
+		sessionStorage.removeItem("authToken");
 		setIsAuthenticated(false);
 		setLeaderName("");
 		navigate("/");

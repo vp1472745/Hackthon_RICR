@@ -9,7 +9,7 @@ const ProblemStatements = () => {
   const [error, setError] = useState('');
 
   // Get teamId from user info or cookie
-  const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser'));
+  const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser'));
   const teamId = hackathonUser?.team?._id || hackathonUser?.teamId || hackathonUser?.user?.teamId;
 
   useEffect(() => {
@@ -92,7 +92,7 @@ const ProblemStatements = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-6">
+        <div className=" p-8 mb-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
               <FileText className="w-7 h-7 text-white" />

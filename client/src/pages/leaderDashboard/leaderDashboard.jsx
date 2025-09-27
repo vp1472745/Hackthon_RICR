@@ -15,12 +15,24 @@ const LeaderDashboard = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser'));
+    const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser'));
     if (hackathonUser?.user?.termsAccepted) {
       setShowModal(false); // Skip modal if terms are accepted
     } else {
       setShowModal(true); // Show modal if terms are not accepted
     }
+  }, []);
+
+  useEffect(() => {
+    const handleSectionChange = (event) => {
+      setActiveSection(event.detail);
+    };
+
+    window.addEventListener('changeSection', handleSectionChange);
+
+    return () => {
+      window.removeEventListener('changeSection', handleSectionChange);
+    };
   }, []);
 
   const handleSidebarToggle = (collapsed) => {

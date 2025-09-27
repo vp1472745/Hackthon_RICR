@@ -173,14 +173,8 @@ const AddMember = ({
       </div>
       
       <div className="flex gap-3 mt-6">
-        <button
-          onClick={handleAddMember}
-          disabled={loading}
-          className="flex items-center gap-2 px-6 py-2 bg-[#0B2A4A] text-white rounded-lg hover:bg-[#0d2d4f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading && <Loader className="w-4 h-4 animate-spin" />}
-          Add Member
-        </button>
+      
+      
         <button
           onClick={cancelEdit}
           disabled={loading}

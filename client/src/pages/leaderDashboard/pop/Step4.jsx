@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
 import { userAPI } from '../../../configs/api';
 
-const Step4 = ({ setIsStep4Saved, setIsNextDisabled }) => {
+const Step4 = ({ setIsStep4Saved }) => {
   const [isAccepted, setIsAccepted] = useState(false);
-
-  const handleAccept = async (e) => {
+  const [isNextDisabled, setIsNextDisabled] = useState(true);
+  const handleAccept = (e) => {
     const accepted = e.target.checked;
     setIsAccepted(accepted);
-    setIsStep4Saved(accepted); // Notify MultiStepModal when terms are accepted
+    setIsStep4Saved(false); // Do not mark Step 4 as saved yet
     setIsNextDisabled(!accepted); // Disable Next button if terms are not accepted
+  };
 
-    if (accepted) {
+  const handleSave = async () => {
+    if (isAccepted) {
       try {
         const response = await userAPI.updateTermsAccepted({ termsAccepted: true });
         console.log('Terms accepted updated:', response.data);
+        const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
+        hackathonUser.user.termsAccepted = true; // Update termsAccepted to true
+        sessionStorage.setItem('hackathonUser', JSON.stringify(hackathonUser));
+        setIsStep4Saved(true); // Notify MultiStepModal that Step 4 is saved
       } catch (error) {
         console.error('Error updating termsAccepted:', error);
       }
@@ -48,6 +54,16 @@ const Step4 = ({ setIsStep4Saved, setIsNextDisabled }) => {
           <label htmlFor="acceptTerms" className="text-gray-800 font-medium">
             I have read and accept the terms and conditions.
           </label>
+        </div>
+
+        <div className="mt-3 flex justify-end gap-2">
+          <button
+            className={`px-5 py-2 rounded-lg font-semibold transition-colors ${isAccepted ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+            onClick={handleSave}
+            disabled={!isAccepted}
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>
