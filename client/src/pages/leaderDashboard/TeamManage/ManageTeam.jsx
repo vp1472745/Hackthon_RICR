@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, UserPlus, AlertTriangle, CheckCircle, RefreshCw, Search, Filter } from 'lucide-react';
+import { Users, AlertTriangle, CheckCircle, RefreshCw, Search, Filter } from 'lucide-react';
 import { userAPI } from '../../../configs/api';
 import { toast } from 'react-toastify';
 import AddMember from './AddMember';
@@ -286,24 +286,6 @@ const ManageTeam = () => {
                 <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                 {refreshing ? 'Refreshing...' : 'Refresh'}
               </button>
-              
-              {canAddMembers && !showAddMember ? (
-                <button
-                  onClick={() => setShowAddMember(true)}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
-                >
-                  <UserPlus className="w-5 h-5" />
-                  Add Member
-                </button>
-              ) : !canAddMembers ? (
-                <button
-                  disabled
-                  className="flex items-center gap-2 px-6 py-2.5 bg-gray-100 text-gray-500 rounded-xl cursor-not-allowed font-semibold"
-                >
-                  <UserPlus className="w-5 h-5" />
-                  Team Full
-                </button>
-              ) : null}
             </div>
           </div>
           
@@ -352,6 +334,8 @@ const ManageTeam = () => {
             handleEditMember={handleEditMember}
             handleRemoveMember={handleRemoveMember}
             handleViewMember={handleViewMember}
+            showAddMember={showAddMember} // Passed state as prop
+            setShowAddMember={setShowAddMember} // Passed setter as prop
             searchTerm={searchTerm}
           />
         </div>

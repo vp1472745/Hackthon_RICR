@@ -1,7 +1,6 @@
 import React from 'react';
 import { 
   X, 
-  AlertTriangle, 
   Trash2, 
   User, 
   Mail, 
@@ -51,20 +50,6 @@ const DeleteMember = ({
 
         {/* Content */}
         <div className="p-6">
-          {/* Warning Message */}
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-red-800 mb-1">Confirm Member Removal</h3>
-                <p className="text-red-700 text-sm">
-                  Are you sure you want to remove <span className="font-semibold">{member.fullName}</span> from your team? 
-                  This action will permanently remove them from the hackathon team and cannot be undone.
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Member Information Summary */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
@@ -119,40 +104,23 @@ const DeleteMember = ({
             </ul>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3">
+          {/* Confirm and Cancel Buttons */}
+          <div className="flex justify-end gap-3">
             <button
               onClick={onCancel}
               disabled={loading}
-              className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 font-medium"
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirmDelete}
               disabled={loading}
-              className="flex-1 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
+              className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
             >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Removing...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="w-4 h-4" />
-                  Remove Member
-                </>
-              )}
+              {loading ? 'Removing...' : 'Remove Member'}
             </button>
           </div>
-        </div>
-
-        {/* Footer Note */}
-        <div className="px-6 pb-4">
-          <p className="text-xs text-gray-500 text-center">
-            This action is permanent and cannot be reversed. Please confirm you want to proceed.
-          </p>
         </div>
       </div>
     </div>

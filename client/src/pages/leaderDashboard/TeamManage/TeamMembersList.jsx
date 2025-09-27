@@ -9,20 +9,27 @@ import {
   Trash2, 
   Loader,
   Eye,
-  Github
+  Github,
+  UserPlus
 } from 'lucide-react';
 import { userAPI } from '../../../configs/api';
 import { toast } from 'react-toastify';
+import AddMember from './AddMember'; // Adjust the import path as necessary
 
 const TeamMembersList = ({ 
   handleEditMember, 
   handleRemoveMember,
-  handleViewMember
+  handleViewMember,
+  showAddMember, // Added prop
+  setShowAddMember // Added prop
 }) => {
   const [leaderProfile, setLeaderProfile] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]); // Fixed: Consistent naming
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [newMember, setNewMember] = useState({}); // State for new member data
+  const [errors, setErrors] = useState({}); // State for form errors
+  const [addMemberForms, setAddMemberForms] = useState([]); // State for multiple add member forms
 
   const fetchLeaderProfile = async () => {
     try {
@@ -88,6 +95,64 @@ const TeamMembersList = ({
     if (window.confirm(`Are you sure you want to remove ${member.fullName}?`)) {
       handleRemoveMember(member);
       toast.info(`${member.fullName} removed from team.`);
+    }
+  };
+
+  const handleAddMember = async (memberData) => {
+    try {
+      setLoading(true);
+      setErrors({}); // Reset errors
+
+      // Basic client-side validation
+      if (!memberData.fullName || !memberData.email) {
+        setErrors({
+          fullName: !memberData.fullName ? 'Full name is required' : '',
+          email: !memberData.email ? 'Email is required' : ''
+        });
+        return;
+      }
+
+      // Call the parent handler to add the member
+      await userAPI.addMemberToTeam(memberData);
+      toast.success(`${memberData.fullName} added to the team!`);
+
+      // Update local state
+      setTeamMembers((prev) => [...prev, memberData]);
+      setShowAddMember(false); // Close the form
+    } catch (error) {
+      console.error('Error adding member:', error);
+      toast.error('Failed to add member. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveAllMembers = async () => {
+    try {
+      setLoading(true);
+      setErrors({}); // Reset errors
+
+      // Filter out empty forms and validate
+      const validMembers = addMemberForms.filter(memberData => memberData.fullName && memberData.email);
+      if (validMembers.length === 0) {
+        toast.warning('Please fill in at least one member\'s details');
+        return;
+      }
+
+      // Call the API to add each member
+      for (const memberData of validMembers) {
+        await userAPI.addMember(memberData); // Fixed method name
+        toast.success(`${memberData.fullName} added to the team!`);
+      }
+
+      // Update local state
+      setTeamMembers((prev) => [...prev, ...validMembers]);
+      setAddMemberForms([]); // Clear forms
+    } catch (error) {
+      console.error('Error adding members:', error);
+      toast.error('Failed to add members. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -261,6 +326,50 @@ const TeamMembersList = ({
             </div>
           )}
 
+          {/* Add Member Button - Shown only if less than 3 members */}
+          {teamMembers.length < 3 && (
+            <div className="p-8 text-center text-gray-500 bg-gray-50">
+              <button
+                onClick={() => {
+                  if (addMemberForms.length < 3) {
+                    setAddMemberForms([...addMemberForms, {}]);
+                  }
+                }}
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+              >
+                <UserPlus className="w-5 h-5 inline-block mr-2" /> Add Member
+              </button>
+              {addMemberForms.map((form, index) => (
+                <div key={index} className="mt-4">
+                  <AddMember
+                    showAddMember={true}
+                    newMember={form}
+                    setNewMember={(updatedForm) => {
+                      const updatedForms = [...addMemberForms];
+                      updatedForms[index] = updatedForm;
+                      setAddMemberForms(updatedForms);
+                    }}
+                    errors={errors}
+                    loading={loading}
+                    handleAddMember={handleAddMember}
+                    cancelEdit={() => {
+                      const updatedForms = addMemberForms.filter((_, i) => i !== index);
+                      setAddMemberForms(updatedForms);
+                    }}
+                  />
+                </div>
+              ))}
+              {addMemberForms.length > 0 && (
+                <button
+                  onClick={saveAllMembers}
+                  className="mt-4 px-6 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+                >
+                  Save Members
+                </button>
+              )}
+            </div>
+          )}
+
           
         </div>
       )}
@@ -268,4 +377,4 @@ const TeamMembersList = ({
   );
 };
 
-export default TeamMembersList;
+export default TeamMembersList;;

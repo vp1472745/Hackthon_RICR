@@ -41,20 +41,6 @@ const Overview = () => {
       setLoading(true);
       setError(null);
 
-      const response = await userAPI.getLeaderProfile();
-
-      if (response.data && response.data.leader) {
-        const { leader, team } = response.data;
-        setLeaderProfile(leader);
-        setApiTeamMembers(team?.members || []);
-        
-        localStorage.setItem('leaderProfile', JSON.stringify(leader));
-        localStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
-        
-        updateTeamStats(leader, team?.members || []);
-      }
-    } catch (error) {
-      console.error('Error fetching leader profile:', error);
 
       const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser') || '{}');
       if (hackathonUser.user && hackathonUser.user._id) {

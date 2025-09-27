@@ -15,19 +15,12 @@ const LeaderDashboard = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await userAPI.getLeaderProfile();
-        if (response.data && response.data.leader) {
-          const { termsAccepted } = response.data.leader;
-          setShowModal(!termsAccepted); // Show modal if terms are not accepted
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    fetchUserData();
+    const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser'));
+    if (hackathonUser?.user?.termsAccepted) {
+      setShowModal(false); // Skip modal if terms are accepted
+    } else {
+      setShowModal(true); // Show modal if terms are not accepted
+    }
   }, []);
 
   const handleSidebarToggle = (collapsed) => {

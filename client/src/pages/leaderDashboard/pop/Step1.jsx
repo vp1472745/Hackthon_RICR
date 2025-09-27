@@ -16,6 +16,8 @@ import { toast } from 'react-toastify';
 const Step1 = ({ setIsStep1Saved }) => {
   const [leader, setLeader] = useState(null);
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false); // Add setLoading to the state
+  const [errorMsg, setErrorMsg] = useState(''); // Add setErrorMsg to the state
 
   // Added validation to disable Save button if required fields are empty
   const isFormValid = () => {
@@ -26,53 +28,34 @@ const Step1 = ({ setIsStep1Saved }) => {
   useEffect(() => {
     let mounted = true;
 
-    const fetchLeader = async () => {
-      setLoading(true);
-      setErrorMsg('');
+    // Removed getLeaderProfile and use getUserById instead
+    // Removed: getLeaderProfile
+
+    // Updated fetchLeaderProfileById to use getUserById
+    const fetchLeaderProfileById = async (userId) => {
       try {
-        // token fallback: localStorage -> url param
-        let token = localStorage.getItem('authToken');
-        if (!token) {
-          const params = new URLSearchParams(window.location.search);
-          token = params.get('token');
-          if (token) localStorage.setItem('authToken', token);
-        }
-
-        if (!token) {
-          if (mounted) {
-            setLeader(null);
-            setErrorMsg('No auth token found.');
-            setLoading(false);
+          setLoading(true);
+          const response = await userAPI.getUserById(userId);
+          if (response.data) {
+              setLeader(response.data);
+              setFormData(response.data);
+          } else {
+              setErrorMsg('Leader profile not found.');
           }
-          return;
-        }
-
-        // call axios wrapper from configs/api.js
-        const res = await userAPI.getLeaderProfile();
-        const data = res?.data ?? null;
-
-        if (data && data.leader) {
-          const { leader, team } = data;
-          setLeader(leader);
-          setFormData({ ...leader, team });
-        } else {
-          setLeader(null);
+      } catch (error) {
+          console.error('Error fetching leader profile:', error);
           setErrorMsg('Failed to fetch leader profile.');
-        }
-      } catch (err) {
-        console.error('Failed to fetch leader profile:', err);
-        if (mounted) {
-          // attempt to parse axios error message
-          const msg = err?.response?.data?.message || err.message || 'Failed to fetch profile';
-          setErrorMsg(msg);
-          setLeader(null);
-        }
       } finally {
-        if (mounted) setLoading(false);
+          setLoading(false);
       }
     };
 
-    fetchLeader();
+    const userId = localStorage.getItem('userId'); // Assuming userId is stored in localStorage
+    if (userId) {
+        fetchLeaderProfileById(userId);
+    } else {
+        setErrorMsg('User ID not found.');
+    }
 
     return () => {
       mounted = false;
@@ -82,29 +65,6 @@ const Step1 = ({ setIsStep1Saved }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      let token = localStorage.getItem('authToken');
-      if (!token) {
-        setErrorMsg('No auth token found.');
-        setLoading(false);
-        return;
-      }
-
-      const updatedLeader = await userAPI.updateLeaderProfile(formData);
-      toast.success(updatedLeader.data.message);
-
-      setLeader(updatedLeader);
-      setIsStep1Saved(true); // Notify MultiStepModal that Step1 is saved
-    } catch (error) {
-      console.error('Failed to update leader profile:', error);
-      setErrorMsg('Failed to update leader profile.');
-    } finally {
-      setLoading(false);
-    }
   };
 
 

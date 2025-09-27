@@ -188,28 +188,6 @@ const ProblemStatements = () => {
                   </div>
                 </div>
 
-                {/* Additional Information Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-                    <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                      <Lightbulb className="w-4 h-4" />
-                      Expected Outcomes
-                    </h4>
-                    <p className="text-blue-700 text-sm">
-                      Develop an innovative solution that addresses the core challenges presented in this problem statement.
-                    </p>
-                  </div>
-                  
-                  <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-                    <h4 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
-                      <Users className="w-4 h-4" />
-                      Team Requirements
-                    </h4>
-                    <p className="text-green-700 text-sm">
-                      Collaborate effectively with your team members to deliver a comprehensive solution.
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
 

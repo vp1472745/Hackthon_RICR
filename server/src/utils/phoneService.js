@@ -55,7 +55,6 @@ export const sendOTPPhone = async (phone, otp) => {
                 'Content-Type': 'application/json'
             }
         });
-        console.log('WhatsApp API response:', response.data);
     } catch (error) {
         console.error('Error sending WhatsApp message:', error);
     }

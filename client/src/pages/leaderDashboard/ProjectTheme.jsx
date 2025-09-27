@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, CheckCircle, Star, Loader } from 'lucide-react';
-import { projectThemeAPI } from '../../configs/api';
+import { projectThemeAPI,  userAPI } from '../../configs/api';
 
 const ProjectTheme = () => {
   const [themes, setThemes] = useState([]);
@@ -40,17 +40,34 @@ const ProjectTheme = () => {
   }, []);
 
   useEffect(() => {
-    if (!teamId) return;
-    const fetchTeamTheme = async () => {
+    const fetchTeamThemeByUserId = async () => {
       try {
-        const res = await teamAPI.getTeamDetails(teamId);
-        setSelectedTheme(res.data.teamTheme || null);
+        const userId = JSON.parse(localStorage.getItem('hackathonUser'))?.user?._id;
+        if (!userId) {
+          console.error('User ID not found in localStorage.');
+          setError('User ID not found. Please log in again.');
+          return;
+        }
+
+        console.log('Fetching team theme for userId:', userId);
+        const response = await userAPI.getUserById(userId);
+        const teamTheme = response.data.user.teamInfo?.team?.teamTheme;
+
+        if (teamTheme) {
+          setSelectedTheme(teamTheme.themeName);
+          console.log('Fetched theme:', teamTheme.themeName);
+        } else {
+          setSelectedTheme(null);
+          console.warn('No theme found for the user.');
+        }
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching team theme by user ID:', err);
+        setError('Failed to fetch team theme. Please try again later.');
       }
     };
-    fetchTeamTheme();
-  }, [teamId]);
+
+    fetchTeamThemeByUserId();
+  }, []);
 
   const handleThemeSelect = (themeName) => {
     if (selectedTheme === themeName) return;
