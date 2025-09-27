@@ -69,6 +69,34 @@ const RightSidePanel = () => {
     }
   }, []);
 
+  const fetchThemeByTeamId = async () => {
+    try {
+      setLoadingProblem(true);
+      setError('');
+
+      const userId = JSON.parse(localStorage.getItem('hackathonUser'))?.user?._id;
+      if (!userId) {
+        setError('User ID not found');
+        return;
+      }
+
+      const response = await userAPI.getUserById(userId);
+      if (response.data && response.data.user) {
+        const teamTheme = response.data.user.teamInfo?.team?.teamTheme;
+        if (teamTheme) {
+          setSelectedTheme(teamTheme.themeName);
+          localStorage.setItem('selectedTheme', teamTheme.themeName);
+        } else {
+          setSelectedTheme(null);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching theme by team ID:', err);
+      setError('Failed to fetch theme');
+    } finally {
+      setLoadingProblem(false);
+    }
+  };
 
   const loadThemeAndProblem = useCallback(async () => {
     setLoadingProblem(true);
@@ -102,7 +130,6 @@ const RightSidePanel = () => {
       // If we have a user object and it contains teamInfo with teamTheme / teamProblemStatement, use it
       if (userObj && userObj.teamInfo) {
         const teamInfo = userObj.teamInfo;
-        // teamTheme might be nested differently; attempt common paths
         const themeName =
           teamInfo?.team?.teamTheme?.themeName ||
           teamInfo?.teamTheme?.themeName ||
@@ -168,6 +195,7 @@ const RightSidePanel = () => {
 
   useEffect(() => {
     loadThemeAndProblem();
+    fetchThemeByTeamId();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -178,7 +206,41 @@ const RightSidePanel = () => {
 
   return (
     <div className="space-y-6">
+     {/* Theme Card */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Target className="w-6 h-6 text-[#0B2A4A]" />
+            <h2 className="text-lg font-semibold text-gray-800">Selected Theme</h2>
+          </div>
+          <div className="text-sm text-gray-500 flex items-center gap-3">
+            {selectedTheme ? (
+              <span className="inline-flex items-center gap-1 text-green-600">
+                <CheckCircle className="w-4 h-4" />
+                Selected
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-yellow-600">
+                <AlertTriangle className="w-4 h-4" />
+                Not Selected
+              </span>
+            )}
+          </div>
+        </div>
 
+        {selectedTheme ? (
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <h3 className="font-medium text-gray-900 mb-2">{selectedTheme}</h3>
+            <p className="text-sm text-gray-600">This is your selected theme for the hackathon.</p>
+          </div>
+        ) : (
+          <div className="text-center py-6 text-gray-500">
+            <Target className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p className="text-sm">No theme selected yet</p>
+            <p className="text-xs mt-1">Please select a theme to proceed with your project.</p>
+          </div>
+        )}
+      </div>
 
       {/* Problem Statement */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -247,6 +309,8 @@ const RightSidePanel = () => {
           </div>
         )}
       </div>
+
+ 
     </div>
   );
 };

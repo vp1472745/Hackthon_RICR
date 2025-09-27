@@ -9,7 +9,7 @@ const TeamStats = ({ teamMembers }) => {
   const slotsAvailable = maxMembers - currentMembers;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Team Leader Card */}
       <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200">
         <div className="flex items-center justify-between mb-3">
@@ -35,7 +35,7 @@ const TeamStats = ({ teamMembers }) => {
       </div>
 
       {/* Slots Available Card */}
-      <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200">
+      <div className="  bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200">
         <div className="flex items-center justify-between mb-3">
           <div className="p-2 bg-purple-100 rounded-lg">
             <UserPlus className="w-5 h-5 text-purple-600" />
