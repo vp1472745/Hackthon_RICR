@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Users, AlertTriangle, CheckCircle, RefreshCw, Search, Filter } from 'lucide-react';
+import { Users, AlertTriangle } from 'lucide-react';
 import { userAPI } from '../../../configs/api';
 import { toast } from 'react-toastify';
-import AddMember from './AddMember';
 import TeamMembersList from './TeamMembersList';
 import TeamStats from './TeamStats';
 import EditMember from './editMember';
@@ -15,29 +14,16 @@ const ManageTeam = () => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   // UI states
-  const [showAddMember, setShowAddMember] = useState(false);
   const [showEditMember, setShowEditMember] = useState(false);
   const [showViewMember, setShowViewMember] = useState(false);
   const [showDeleteMember, setShowDeleteMember] = useState(false);
-  const [newMember, setNewMember] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    collegeName: '',
-    course: '',
-    collegeBranch: '',
-    collegeSemester: '',
-    GitHubProfile: ''
-  });
 
   const [editingMember, setEditingMember] = useState(null);
   const [viewingMember, setViewingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
-  const [errors, setErrors] = useState({});
 
   const maxTeamSize = 4; // 1 Leader + 4 members  
   const canAddMembers = teamMembers.length < 4; // Max 4 team members (excluding leader)
@@ -90,85 +76,11 @@ const ManageTeam = () => {
     }
   };
 
-  // Handle manual refresh
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchLeaderData();
-  };
 
   // Load team data on component mount
   useEffect(() => {
     fetchLeaderData();
   }, []);
-
-  const validateMemberForm = (member) => {
-    const newErrors = {};
-
-    if (!member.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    }
-
-    if (!member.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    } else if (teamMembers.some(m => m.email === member.email && m._id !== editingMember?._id)) {
-      newErrors.email = 'Email already exists in team';
-    }
-
-    if (!member.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^[+]?[0-9\s-()]{10,15}$/.test(member.phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleAddMember = async () => {
-    if (!validateMemberForm(newMember)) return;
-
-    try {
-      setLoading(true);
-
-      const memberData = {
-        ...newMember,
-        teamId: leaderProfile?.teamId?._id || leaderProfile?.teamId,
-        leaderId: leaderProfile?._id
-      };
-
-      const response = await userAPI.addMember(memberData);
-
-      if (response.data) {
-        await fetchLeaderData();
-        resetForm();
-        toast.success('Team member added successfully!');
-      }
-    } catch (error) {
-      console.error('Error adding member:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to add team member';
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resetForm = () => {
-    setNewMember({
-      fullName: '',
-      email: '',
-      phone: '',
-      collegeName: '',
-      course: '',
-      collegeBranch: '',
-      collegeSemester: '',
-      GitHubProfile: ''
-    });
-    setShowAddMember(false);
-    setEditingMember(null);
-    setErrors({});
-  };
 
   const handleEditMember = (member) => {
     setEditingMember(member);
@@ -253,18 +165,14 @@ const ManageTeam = () => {
     setDeletingMember(null);
   };
 
-  const cancelEdit = () => {
-    resetForm();
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
       {/* Header Section */}
       <div className="max-w-7xl mx-auto">
-        <div className="p-8 mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
+        <div >
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex-1">
-              <div className="flex items-center gap-4 mb-10">
+              <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
                   <Users className="w-7 h-7 text-white" />
                 </div>
@@ -277,25 +185,7 @@ const ManageTeam = () => {
               </div>
             </div>
           </div>
-
-          {/* Team Stats */}
-          <TeamStats teamMembers={teamMembers} maxTeamSize={maxTeamSize} />
         </div>
-
-        {/* Add Member Form */}
-        {showAddMember && (
-          <div className="mb-6">
-            <AddMember
-              showAddMember={showAddMember}
-              newMember={newMember}
-              setNewMember={setNewMember}
-              errors={errors}
-              loading={loading}
-              handleAddMember={handleAddMember}
-              cancelEdit={cancelEdit}
-            />
-          </div>
-        )}
 
         {/* Team Members Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
@@ -321,8 +211,6 @@ const ManageTeam = () => {
             handleEditMember={handleEditMember}
             handleRemoveMember={handleRemoveMember}
             handleViewMember={handleViewMember}
-            showAddMember={showAddMember}
-            setShowAddMember={setShowAddMember}
             searchTerm={searchTerm}
           />
         </div>

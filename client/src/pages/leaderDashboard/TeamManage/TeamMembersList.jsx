@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Users, 
-  Crown, 
-  Mail, 
-  Phone, 
-  User, 
-  Edit, 
-  Trash2, 
+import {
+  Users,
+  Crown,
+  Mail,
+  Phone,
+  User,
+  Edit,
+  Trash2,
   Loader,
   Eye,
   Github,
@@ -16,8 +16,8 @@ import { userAPI } from '../../../configs/api';
 import { toast } from 'react-toastify';
 import AddMember from './AddMember'; // Adjust the import path as necessary
 
-const TeamMembersList = ({ 
-  handleEditMember, 
+const TeamMembersList = ({
+  handleEditMember,
   handleRemoveMember,
   handleViewMember,
   showAddMember, // Added prop
@@ -60,7 +60,7 @@ const TeamMembersList = ({
             setLeaderProfile(userResponse.data.user);
             setTeamMembers(userResponse.data.user.teamInfo?.members || []); // Fixed setter
 
-          
+
             return; // Exit early on success
           }
         } catch (fallbackError) {
@@ -173,7 +173,7 @@ const TeamMembersList = ({
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-           {error ? (
+      {error ? (
         <div className="p-8 text-center">
           <p className="text-red-600 mb-4 font-medium">{error}</p>
           <button
@@ -198,19 +198,14 @@ const TeamMembersList = ({
                         Leader
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div className="space-y-2 mb-2">
                       <InfoItem icon={Mail} label="Email" value={leaderProfile.email} />
                       <InfoItem icon={Phone} label="Phone" value={leaderProfile.phone} />
-                      <InfoItem 
-                        icon={User } 
-                        label="College" 
-                        value={leaderProfile.collegeName || leaderProfile.course} 
-                      />
                     </div>
                     {leaderProfile.GitHubProfile && (
-                      <a 
-                        href={leaderProfile.GitHubProfile} 
-                        target="_blank" 
+                      <a
+                        href={leaderProfile.GitHubProfile}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium mb-3"
                       >
@@ -218,9 +213,6 @@ const TeamMembersList = ({
                         GitHub Profile
                       </a>
                     )}
-                    <p className="text-xs text-gray-500">
-                      Joined on {leaderProfile.createdAt ? new Date(leaderProfile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Recently'}
-                    </p>
                   </div>
                 </div>
                 <div className="flex gap-2 flex-shrink-0">
@@ -261,19 +253,14 @@ const TeamMembersList = ({
                           Member
                         </span>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                      <div className="space-y-2 mb-2">
                         <InfoItem icon={Mail} label="Email" value={member.email} />
                         <InfoItem icon={Phone} label="Phone" value={member.phone} />
-                        <InfoItem 
-                          icon={User } 
-                          label="College" 
-                          value={member.collegeName || member.course} 
-                        />
                       </div>
                       {member.GitHubProfile && (
-                        <a 
-                          href={member.GitHubProfile} 
-                          target="_blank" 
+                        <a
+                          href={member.GitHubProfile}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium mb-3"
                         >
@@ -281,9 +268,7 @@ const TeamMembersList = ({
                           GitHub Profile
                         </a>
                       )}
-                      <p className="text-xs text-gray-500">
-                        Joined on {member.createdAt ? new Date(member.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Recently'}
-                      </p>
+
                     </div>
                   </div>
                   <div className="flex gap-2 flex-shrink-0">
@@ -328,19 +313,10 @@ const TeamMembersList = ({
 
           {/* Add Member Button - Shown only if less than 3 members */}
           {teamMembers.length < 3 && (
-            <div className="p-8 text-center text-gray-500 bg-gray-50">
-              <button
-                onClick={() => {
-                  if (addMemberForms.length < 3) {
-                    setAddMemberForms([...addMemberForms, {}]);
-                  }
-                }}
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
-              >
-                <UserPlus className="w-5 h-5 inline-block mr-2" /> Add Member
-              </button>
+            <div className="px-8 text-center text-gray-500 bg-gray-50">
+
               {addMemberForms.map((form, index) => (
-                <div key={index} className="mt-4">
+                <div key={index} className="pt-5">
                   <AddMember
                     showAddMember={true}
                     newMember={form}
@@ -359,18 +335,31 @@ const TeamMembersList = ({
                   />
                 </div>
               ))}
-              {addMemberForms.length > 0 && (
-                <button
-                  onClick={saveAllMembers}
-                  className="mt-4 px-6 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
-                >
-                  Save Members
-                </button>
-              )}
+
+              <div className="py-10 flex justify-center gap-4">
+                {addMemberForms.length < (3 - teamMembers.length) && (
+                  <button
+                    onClick={() => {
+                      setAddMemberForms([...addMemberForms, {}]);
+                    }}
+                    className="px-6 py-2.5 bg-gradient-to-r flex-start from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+                  >
+                    <UserPlus className="w-5 h-5 inline-block mr-2" /> Add More Members
+                  </button>
+                )}
+                {addMemberForms.length > 0 && (
+                  <button
+                    onClick={saveAllMembers}
+                    className="px-6 py-2 flex-end bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+                  >
+                    Save Members
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
-          
+
         </div>
       )}
     </div>

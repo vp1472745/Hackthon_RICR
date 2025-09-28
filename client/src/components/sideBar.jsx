@@ -94,14 +94,9 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div className="flex items-center space-x-2">
-              {/* Team Image/Avatar */}
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#0B2A4A] to-[#1D5B9B] rounded-full flex items-center justify-center text-white font-bold">
-                <UserSquare size={16} className="sm:w-5 sm:h-5" />
-              </div>
               {/* Team Name */}
               <div className="min-w-0">
-
-                <p className="text-xs text-gray-500 truncate">{teamName || 'Loading...'}</p>
+                <p className="text-md text-black truncate font-bold">{teamName || 'Loading...'}</p>
               </div>
             </div>
           )}
@@ -138,8 +133,8 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
                     // Removed auto-collapse logic to keep the sidebar open when switching tabs
                   }}
                   className={`w-full flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg transition-all duration-200 group ${isActive
-                      ? 'bg-[#0B2A4A] text-white shadow-md'
-                      : 'hover:bg-gray-50 text-gray-700 hover:text-[#0B2A4A]'
+                    ? 'bg-[#0B2A4A] text-white shadow-md'
+                    : 'hover:bg-gray-50 text-gray-700 hover:text-[#0B2A4A]'
                     }`}
                 >
                   <Icon
