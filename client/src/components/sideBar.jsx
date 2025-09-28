@@ -135,13 +135,7 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
                 <button
                   onClick={() => {
                     setActiveSection(item.id);
-                    // Auto-collapse sidebar on mobile/small screens or when user wants it closed
-                    if (!isCollapsed) {
-                      setIsCollapsed(true);
-                      if (onSidebarToggle) {
-                        onSidebarToggle(true);
-                      }
-                    }
+                    // Removed auto-collapse logic to keep the sidebar open when switching tabs
                   }}
                   className={`w-full flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg transition-all duration-200 group ${isActive
                       ? 'bg-[#0B2A4A] text-white shadow-md'
