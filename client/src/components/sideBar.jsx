@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   LayoutDashboard,
   Layers,
@@ -9,11 +9,34 @@ import {
   ChevronRight,
   ChevronDown
 } from 'lucide-react';
-
-
+import { userAPI } from '../configs/api';
 
 const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [teamName, setTeamName] = useState('');
+
+  useEffect(() => {
+    const fetchTeamName = async () => {
+      try {
+        const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
+        console.log('Session Storage hackathonUser:', hackathonUser);
+
+        if (hackathonUser.team && hackathonUser.team.teamName) {
+          console.log('Team Name from sessionStorage:', hackathonUser.team.teamName);
+          setTeamName(hackathonUser.team.teamName);
+        } else {
+          console.log('Fetching team info from API...');
+          const response = await userAPI.getTeamInfo();
+          console.log('API Response:', response);
+          setTeamName(response.data?.team?.name || '');
+        }
+      } catch (error) {
+        console.error('Error fetching team name:', error);
+      }
+    };
+
+    fetchTeamName();
+  }, []);
 
   const handleToggle = () => {
     const newCollapsedState = !isCollapsed;
@@ -78,7 +101,7 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
               {/* Team Name */}
               <div className="min-w-0">
 
-                <p className="text-xs text-gray-500 truncate">FutureMaze 2025</p>
+                <p className="text-xs text-gray-500 truncate">{teamName || 'Loading...'}</p>
               </div>
             </div>
           )}
