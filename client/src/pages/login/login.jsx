@@ -141,7 +141,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B2A4A] via-[#1D5B9B] to-[#0B2A4A] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className=" bg-gradient-to-br from-[#0B2A4A] via-[#1D5B9B] to-[#0B2A4A] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-white opacity-5"></div>
@@ -152,17 +152,15 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8 relative z-10">
         {/* Header */}
         <div className="text-center">
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-3">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg">
               <Shield className="w-10 h-10 text-[#0B2A4A]" />
             </div>
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">
-            Team Leader Login
+             Login
           </h2>
-          <p className="text-blue-100">
-            Only team leaders can access the dashboard
-          </p>
+        
         </div>
 
         {/* Login Form */}
@@ -263,37 +261,7 @@ const Login = () => {
               )}
             </button>
 
-            {/* Forgot Password */}
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="text-sm text-[#1D5B9B] hover:text-[#0B2A4A] transition-colors duration-200"
-              >
-                Forgot your team code?
-              </button>
-            </div>
           </form>
-        </div>
-
-        {/* Demo Credentials */}
-        <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 text-white">
-          <h3 className="font-semibold mb-2 text-center">Demo Team Credentials</h3>
-          <div className="grid grid-cols-1 gap-3 text-xs">
-            <div className="text-center bg-white bg-opacity-10 rounded p-2">
-              <p className="font-medium">Team Code: <span className="text-yellow-200">FM001</span></p>
-              <p>Email: <span className="text-yellow-200">team1@example.com</span></p>
-            </div>
-            <div className="text-center bg-white bg-opacity-10 rounded p-2">
-              <p className="font-medium">Team Code: <span className="text-yellow-200">FM002</span></p>
-              <p>Email: <span className="text-yellow-200">team2@example.com</span></p>
-            </div>
-          </div>
-          <div className="text-center mt-3 pt-2 border-t border-white border-opacity-20">
-            <p className="text-xs text-blue-200">
-              ⚠️ Use your registered team code and leader email to login
-            </p>
-          </div>
         </div>
 
         {/* Footer Links */}
@@ -307,12 +275,7 @@ const Login = () => {
               Register your team for FutureMaze
             </button>
           </p>
-          <p className="text-blue-200 text-xs">
-            Need help? Contact us at{' '}
-            <a href="mailto:futuremaze@ricr.ac.in" className="text-white hover:underline">
-              futuremaze@ricr.ac.in
-            </a>
-          </p>
+        
         </div>
       </div>
     </div>
