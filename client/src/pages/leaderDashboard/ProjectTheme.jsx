@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lightbulb, CheckCircle, Star, Loader } from 'lucide-react';
+import { Lightbulb, CheckCircle, Loader } from 'lucide-react';
 import { projectThemeAPI,  userAPI } from '../../configs/api';
 
 const ProjectTheme = () => {
@@ -103,17 +103,6 @@ const ProjectTheme = () => {
     setPendingSelection(null);
   };
 
-  const getDifficultyColor = (difficulty) => {
-    switch ((difficulty || '').toLowerCase()) {
-      case 'low': return 'text-green-600 bg-green-100 border border-green-200';
-      case 'medium': return 'text-yellow-600 bg-yellow-100 border border-yellow-200';
-      case 'high': return 'text-red-600 bg-red-100 border border-red-200';
-      default: return 'text-gray-600 bg-gray-100 border border-gray-200';
-    }
-  };
-
-  const selectedThemeData = themes.find(theme => theme.themeName === selectedTheme);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/20 p-6">
       {/* Header Section */}
@@ -189,26 +178,13 @@ const ProjectTheme = () => {
 
                   {/* Theme Name */}
                   <h3 className="font-bold text-gray-900 text-xl mb-3 leading-tight">
-                    {theme.themeName}
+                    {theme.themeName.length > 50 ? `${theme.themeName.slice(0, 50)}...` : theme.themeName}
                   </h3>
 
                   {/* Theme Description */}
                   <p className="text-gray-600 leading-relaxed mb-6 line-clamp-3">
-                    {theme.themeDescription}
+                    {theme.themeDescription.length > 100 ? `${theme.themeDescription.slice(0, 100)}...` : theme.themeDescription}
                   </p>
-
-                  {/* Difficulty and Popularity */}
-                  <div className="flex items-center justify-between mb-6">
-                    <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${getDifficultyColor(theme.difficulty)}`}>
-                      {theme.difficulty || 'N/A'}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                      <span className="text-sm text-gray-600 font-medium">
-                        {theme.popularity ? `${theme.popularity}%` : '0%'}
-                      </span>
-                    </div>
-                  </div>
 
                   {/* Select Button */}
                   <button
