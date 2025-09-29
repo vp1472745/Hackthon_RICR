@@ -167,14 +167,14 @@ const ProjectTheme = () => {
                   </div>
                 )}
 
-                <div className="p-6 h-100">
+                <div className="p-6 h-75">
                   {/* Theme Name */}
-                  <h3 className="font-bold text-gray-900 text-xl mb-3 leading-tight h-[30%]">
+                  <h3 className="font-bold text-gray-900 text-xl leading-tight h-[30%]">
                     {theme.themeName.length > 50 ? `${theme.themeName.slice(0, 50)}...` : theme.themeName}
                   </h3>
 
                   {/* Theme Description */}
-                  <p className="text-gray-600 leading-relaxed mb-6 line-clamp-3 h-[50%]">
+                  <p className="text-gray-600 leading-relaxed line-clamp-3 h-[50%]">
                     {theme.themeDescription.length > 100 ? `${theme.themeDescription.slice(0, 100)}...` : theme.themeDescription}
                   </p>
 
