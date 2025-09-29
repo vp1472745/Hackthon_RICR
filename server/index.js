@@ -25,11 +25,11 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/auth', AuthRouter);
-app.use('/api/user', UserRoute);
-app.use('/api/theme', ProjectThemeRouter);
-app.use('/api/problem', ProblemStatementRoute);
-app.use('/api/admin', AdminRoute);
+app.use('/auth', AuthRouter);
+app.use('/user', UserRoute);
+app.use('/theme', ProjectThemeRouter);
+app.use('/problem', ProblemStatementRoute);
+app.use('/admin', AdminRoute);
 
 
 app.get('/', (req, res) => {
