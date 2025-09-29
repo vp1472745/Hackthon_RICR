@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema({
     },
     GitHubProfile: {
         type: String,
+      
         default: "N/A",
     },
 

@@ -88,6 +88,25 @@ const ProblemStatements = () => {
     );
   }
 
+  if (!loading && !error && (!problem || Object.keys(problem).length === 0)) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+        <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <Lightbulb className="w-8 h-8 text-gray-400" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">No Problem Statement Assigned</h3>
+        <p className="text-gray-600 mb-6 max-w-md mx-auto">
+          Your team hasn't been assigned a problem statement yet. Please check back later or contact the organizers.
+        </p>
+        <div className="bg-blue-50 rounded-xl p-4 max-w-md mx-auto">
+          <p className="text-sm text-blue-700">
+            Problem statements are typically assigned after theme selection and team finalization.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">

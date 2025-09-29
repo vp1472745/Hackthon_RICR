@@ -29,7 +29,7 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
   const [errorMsg, setErrorMsg] = useState('');
 
   const isFormValid = () => {
-    const requiredFields = ['fullName', 'email', 'phone', 'collegeName', 'course', 'collegeBranch', 'collegeSemester'];
+    const requiredFields = ['fullName', 'email', 'phone', 'collegeName', 'course', 'collegeBranch', 'collegeSemester', 'GitHubProfile'];
     return requiredFields.every((field) => {
       const v = formData[field];
       return v !== undefined && v !== null && v !== '' && v !== 'N/A' && v !== '0';
@@ -270,6 +270,7 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
                 type="url"
                 name="GitHubProfile"
                 value={formData.GitHubProfile || ''}
+                required  
                 onChange={handleInputChange}
                 className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
                 placeholder="https://github.com/username"

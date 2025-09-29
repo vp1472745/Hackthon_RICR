@@ -80,8 +80,9 @@ export const sendCredentialsEmail = async (to, credentials) => {
                     <h2>Your FutureMaze Login Credentials</h2>
                     <p>Hello,</p>
                     <p>Your login credentials are as follows:</p>
-                    <p>Email: ${email}</p>
                     <p>Team Code: ${credentials}</p>
+                    <p>Email: ${email}</p>
+               
                     <p>Please keep this information safe and do not share it with anyone.</p>
                     <div class="footer">
                         If you did not request this, please ignore this email.<br>

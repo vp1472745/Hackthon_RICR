@@ -88,11 +88,7 @@ const Payment = () => {
               <div className="bg-gray-50 rounded-xl px-5 py-4">
                 <h4 className="font-semibold text-gray-700 mb-2">Your Details</h4>
                 <ul className="text-sm text-gray-700 space-y-1">
-                  {registrationData.team && (
-                    <li>
-                      <span className="font-medium">Team Code:</span> <span className="text-green-700">{registrationData.team.teamCode}</span>
-                    </li>
-                  )}
+         
                   <li>
                     <span className="font-medium">Name:</span> {registrationData.fullName}
                   </li>
@@ -109,7 +105,7 @@ const Payment = () => {
               <div className="flex flex-col items-center">
                 <button
                   onClick={handlePayment}
-                  className="bg-[#0B2A4A] hover:bg-[#14345a] text-white px-8 py-3 rounded-xl font-semibold text-lg flex items-center gap-2 shadow-md transition"
+                  className="bg-[#0B2A4A] hover:bg-[#14345a] cursor-pointer text-white px-8 py-3 rounded-xl font-semibold text-lg flex items-center gap-2 shadow-md transition"
                 >
                   <CreditCard className="w-5 h-5" />
                   Pay Now
@@ -136,7 +132,7 @@ const Payment = () => {
               </div>
               <button
                 onClick={() => navigate('/login')}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition"
+                className="bg-green-600 hover:bg-green-700 cursor-pointer text-white px-6 py-2 rounded-lg font-semibold transition"
               >
                 Login Now
               </button>

@@ -184,7 +184,7 @@ const LeaderDetails = () => {
           <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+              className="flex items-center px-6 cursor-pointer py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
             >
               Back to Home
             </button>
@@ -192,7 +192,7 @@ const LeaderDetails = () => {
             <button
               onClick={handleNext}
               disabled={loading}
-              className="flex items-center px-6 py-2 bg-[#0B2A4A] hover:bg-[#1D5B9B] text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center cursor-pointer px-6 py-2 bg-[#0B2A4A] hover:bg-[#1D5B9B] text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>

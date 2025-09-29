@@ -18,6 +18,8 @@ const Verification = () => {
   const [verificationComplete, setVerificationComplete] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
+  const [emailTimer, setEmailTimer] = useState(60); // Timer for email OTP resend
+  const [phoneTimer, setPhoneTimer] = useState(60); // Timer for phone OTP resend
 
   useEffect(() => {
     // Get registration data from sessionStorage
@@ -36,6 +38,16 @@ const Verification = () => {
       navigate('/register');
     }
   }, [navigate]);
+
+  useEffect(() => {
+    // Start countdown timers on page load
+    const interval = setInterval(() => {
+      setEmailTimer((prev) => (prev > 0 ? prev - 1 : 0));
+      setPhoneTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const validateForm = () => {
     const newErrors = {};
@@ -76,22 +88,28 @@ const Verification = () => {
 
   const resendOTP = async (type) => {
     if (!registrationData) return;
-    
-    setResending(prev => ({ ...prev, [type]: true }));
+
+    if ((type === 'email' && emailTimer > 0) || (type === 'phone' && phoneTimer > 0)) return;
+
+    setResending((prev) => ({ ...prev, [type]: true }));
     
     try {
       await authAPI.sendOTP({
         fullName: registrationData.fullName,
         email: registrationData.email,
-        phone: registrationData.phone
+        phone: registrationData.phone,
       });
       
-      toast.success(` ${type === 'email' ? 'Email' : 'Phone'} OTP resent successfully!`);
+      toast.success(`${type === 'email' ? 'Email' : 'Phone'} OTP resent successfully!`);
+
+      // Reset both timers when either button is clicked
+      setEmailTimer(120);
+      setPhoneTimer(120);
     } catch (error) {
       console.error(`Resend ${type} OTP error:`, error);
-      toast.error(` Failed to resend ${type} OTP. Please try again.`);
+      toast.error(`Failed to resend ${type} OTP. Please try again.`);
     } finally {
-      setResending(prev => ({ ...prev, [type]: false }));
+      setResending((prev) => ({ ...prev, [type]: false }));
     }
   };
 
@@ -223,10 +241,10 @@ const Verification = () => {
                 <button
                   type="button"
                   onClick={() => resendOTP('email')}
-                  disabled={resending.email}
-                  className="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all disabled:opacity-50"
+                  disabled={resending.email || emailTimer > 0}
+                  className="px-4 py-3 bg-blue-500 text-white cursor-pointer rounded-lg hover:bg-blue-600 transition-all disabled:opacity-50"
                 >
-                  Resend OTP
+                  {emailTimer > 0 ? `Resend in ${emailTimer}s` : 'Resend OTP'}
                 </button>
               </div>
               {errors.emailOTP && <p className="text-red-500 text-sm mt-1">{errors.emailOTP}</p>}
@@ -251,17 +269,17 @@ const Verification = () => {
                 <button
                   type="button"
                   onClick={() => resendOTP('phone')}
-                  disabled={resending.phone}
-                  className="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all disabled:opacity-50"
+                  disabled={resending.phone || phoneTimer > 0}
+                  className="px-4 py-3 bg-blue-500 cursor-pointer text-white rounded-lg hover:bg-blue-600 transition-all disabled:opacity-50"
                 >
-                  Resend OTP
+                  {phoneTimer > 0 ? `Resend in ${phoneTimer}s` : 'Resend OTP'}
                 </button>
               </div>
               {errors.phoneOTP && <p className="text-red-500 text-sm mt-1">{errors.phoneOTP}</p>}
             </div>
             <button
               onClick={handleVerify}
-              className="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-all"
+              className="w-full bg-green-500 cursor-pointer text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-all"
               disabled={loading} // Disable button when loading
             >
               {loading ? 'Verifying...' : 'Verify OTPs'}
