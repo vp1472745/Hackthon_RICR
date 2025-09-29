@@ -30,19 +30,19 @@ const Login = () => {
   // Validation function
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.teamCode.trim()) {
       newErrors.teamCode = 'Team Code is required';
     } else if (formData.teamCode.trim().length < 3) {
       newErrors.teamCode = 'Team Code must be at least 3 characters';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -50,7 +50,7 @@ const Login = () => {
   // Handle login submission
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -75,11 +75,11 @@ const Login = () => {
 
         // Store user session data
         sessionStorage.setItem('hackathonUser', JSON.stringify({
-          teamCode: formData.teamCode,
           email: formData.email,
           user: response.data.user,
           team: response.data.team,
-          token: response.data.token,
+          theme: response.data.theme,
+          ProblemStatements: response.data.ProblemStatements,
           loginTime: new Date().toISOString()
         }));
 
@@ -89,7 +89,7 @@ const Login = () => {
         // Store teamId in cookie for cross-page access (expires in 2 days)
         const teamId = response.data.team?._id || response.data.teamId;
         if (teamId) {
-          document.cookie = `teamId=${teamId}; path=/; max-age=${2*24*60*60}`;
+          document.cookie = `teamId=${teamId}; path=/; max-age=${2 * 24 * 60 * 60}`;
         } else {
           alert('No teamId found in login response! Theme selection will not work.');
         }
@@ -104,7 +104,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      
+
       if (error.response?.data) {
         const errorMessage = error.response.data.message;
         setLoginMessage(`Error: ${errorMessage}`);
@@ -158,9 +158,9 @@ const Login = () => {
             </div>
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">
-             Login
+            Login
           </h2>
-        
+
         </div>
 
         {/* Login Form */}
@@ -179,9 +179,8 @@ const Login = () => {
                   type="text"
                   value={formData.teamCode}
                   onChange={(e) => handleInputChange('teamCode', e.target.value.toUpperCase())}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent transition-colors duration-200 ${
-                    errors.teamCode ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                  }`}
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent transition-colors duration-200 ${errors.teamCode ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   placeholder="Enter your Team Code (e.g., FM001)"
                   autoComplete="username"
                 />
@@ -207,9 +206,8 @@ const Login = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent transition-colors duration-200 ${
-                    errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                  }`}
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent transition-colors duration-200 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   placeholder="Enter your registered email"
                   autoComplete="email"
                 />
@@ -224,19 +222,17 @@ const Login = () => {
 
             {/* Login Message */}
             {loginMessage && (
-              <div className={`p-3 rounded-lg flex items-center ${
-                loginMessage.includes('successful') 
-                  ? 'bg-green-50 border border-green-200' 
+              <div className={`p-3 rounded-lg flex items-center ${loginMessage.includes('successful')
+                  ? 'bg-green-50 border border-green-200'
                   : 'bg-red-50 border border-red-200'
-              }`}>
+                }`}>
                 {loginMessage.includes('successful') ? (
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
                 ) : (
                   <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
                 )}
-                <p className={`text-sm ${
-                  loginMessage.includes('successful') ? 'text-green-700' : 'text-red-700'
-                }`}>
+                <p className={`text-sm ${loginMessage.includes('successful') ? 'text-green-700' : 'text-red-700'
+                  }`}>
                   {loginMessage}
                 </p>
               </div>
@@ -275,7 +271,7 @@ const Login = () => {
               Register your team for FutureMaze
             </button>
           </p>
-        
+
         </div>
       </div>
     </div>

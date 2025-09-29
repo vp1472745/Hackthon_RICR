@@ -2,8 +2,10 @@ import React from 'react';
 import { Target, FileText } from 'lucide-react';
 
 const RightSidePanel = () => {
-  const selectedTheme = sessionStorage.getItem('selectedTheme') || 'No theme selected';
-  const selectedProblemStatement = sessionStorage.getItem('selectedProblemStatement') || 'No problem statement selected';
+  let selectedTheme = JSON.parse(sessionStorage.getItem('hackathonUser'))?.theme?.themeName || 'No theme selected';
+  const selectedProblemStatement = JSON.parse(sessionStorage.getItem('hackathonUser'))?.team?.teamProblemStatement || 'No problem statement selected';
+
+  console.log("Selected Theme in RightSidePanel:", selectedTheme);
 
   return (
     <div className="space-y-6">

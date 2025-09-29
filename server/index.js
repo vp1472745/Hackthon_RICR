@@ -4,28 +4,32 @@ dotenv.config();
 import express from 'express';
 import connectDB from '../server/src/config/db.js';
 import cors from 'cors';
-
 import AuthRouter from './src/routes/authRoutes.js';
 import UserRoute from './src/routes/userRoute.js';
 import ProjectThemeRouter from './src/routes/projectThemeRoute.js';
+import AdminRoute from './src/routes/adminRoute.js';
 
 import ProblemStatementRoute from './src/routes/problemStatementRoute.js';
 
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({
+    origin: [
+        'http://localhost:5173',
+        'https://hackathon.ricr.in'
+    ],
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', AuthRouter);
 app.use('/api/user', UserRoute);
 app.use('/api/theme', ProjectThemeRouter);
-
-
-
-
 app.use('/api/problem', ProblemStatementRoute);
+app.use('/api/admin', AdminRoute);
 
 
 app.get('/', (req, res) => {

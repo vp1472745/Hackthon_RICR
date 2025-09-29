@@ -4,6 +4,8 @@ import { sendOTPEmail, sendCredentialsEmail } from '../utils/emailService.js';
 import { sendOTPPhone } from '../utils/phoneService.js';
 import Otp from '../models/otpModel.js';
 import Team from '../models/TeamModel.js';
+import Theme from '../models/projectTheme.js';
+import ProblemStatement from '../models/problemStatementModel.js';
 import { generateAuthToken } from '../utils/genAuthToken.js';
 
 export const SendOTP = async (req, res, next) => {
@@ -179,10 +181,22 @@ export const Login = async (req, res, next) => {
             return next(error);
         }
 
+        const theme = await Theme.findById(userTeam.teamTheme) || null;
+
+
+        const ProblemStatements = await ProblemStatement.findById(userTeam.teamProblemStatement) || null;
+
         // generate token, set cookie, and return token in body too
         const token = generateAuthToken(existingUser, userTeam, res);
 
-        res.status(200).json({ message: 'Login successful', user: existingUser, team: userTeam, token });
+        res.status(200).json({
+            message: 'Login successful',
+            user: existingUser,
+            team: userTeam,
+            token,
+            theme,
+            ProblemStatements
+        });
     } catch (error) {
         next(error);
     }

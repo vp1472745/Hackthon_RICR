@@ -2,11 +2,11 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import Admin from "../models/adminModels.js"; // adjust path if needed
+import Admin from "../models/adminRegisterModel.js"; // adjust path if needed
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/HackathonDB";
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || "10", 10);
 
 if (!MONGO_URI) {
