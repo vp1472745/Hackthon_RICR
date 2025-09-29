@@ -143,7 +143,7 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
     } else {
       // no id found — allow user to fill form manually (not fatal)
       setLoading(false);
-      setErrorMsg('User ID not found in sessionStorage (checked hackathonUser, userId, user, auth). You can still fill the form and save.');
+      setErrorMsg('User ID not found in localStorage (checked hackathonUser, userId, user, auth). You can still fill the form and save.');
     }
 
     return () => {

@@ -5,19 +5,53 @@ import { userAPI } from '../../../configs/api';
 import { toast } from 'react-toastify';
 
 const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
-   const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [leaderProfile, setLeaderProfile] = useState(null);
 
+  // Try to read leader profile from sessionStorage, else fetch
   useEffect(() => {
+    const cached = sessionStorage.getItem('leaderProfile');
+    if (cached) {
+      try {
+        setLeaderProfile(JSON.parse(cached));
+      } catch (e) {
+        console.warn('Invalid session leaderProfile, clearing.', e);
+        sessionStorage.removeItem('leaderProfile');
+        fetchLeader();
+      }
+    } else {
+      fetchLeader();
+    }
+  }, []);
+
+  const fetchLeader = async () => {
+    try {
+      const res = await userAPI.getLeaderProfile();
+      if (res?.data?.leader) {
+        setLeaderProfile(res.data.leader);
+        sessionStorage.setItem('leaderProfile', JSON.stringify(res.data.leader));
+      }
+    } catch (err) {
+      console.warn('Could not fetch leader profile for Step2', err);
+    }
+  };
+
+  // Update isNextDisabled depending on forms validity & loading
+  useEffect(() => {
+    if (loading) {
+      setIsNextDisabled(true);
+      return;
+    }
     if (teamMembers.length === 0) {
-      setIsNextDisabled(false); // Enable Next if no members are added
+      setIsNextDisabled(false);
     } else {
       const allFormsValid = teamMembers.every(isFormValid);
-      setIsNextDisabled(!allFormsValid); // Disable Next if any form is incomplete
+      setIsNextDisabled(!allFormsValid);
     }
-  }, [teamMembers, setIsNextDisabled]);
+  }, [teamMembers, loading]);
 
   const addMemberForm = () => {
     if (teamMembers.length < 3) {
@@ -35,7 +69,6 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
         }
       ]);
       setErrors(prev => [...prev, {}]);
-      setIsNextDisabled(true);
     } else {
       toast.info('Maximum 3 members allowed.');
     }
@@ -45,7 +78,6 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
     const updatedMembers = teamMembers.filter((_, i) => i !== index);
     setTeamMembers(updatedMembers);
     setErrors(errors.filter((_, i) => i !== index));
-    if (updatedMembers.length === 0) setIsNextDisabled(false);
   };
 
   const handleInputChange = (index, field, value) => {
@@ -60,7 +92,10 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
 
   const isFormValid = (member) => {
     const requiredFields = ['fullName', 'email', 'phone', 'collegeName', 'course', 'collegeBranch', 'collegeSemester'];
-    return requiredFields.every(f => member[f] && member[f] !== 'N/A' && member[f] !== '0');
+    return requiredFields.every(f => {
+      const val = member[f];
+      return val !== undefined && val !== null && val !== '' && val !== 'N/A' && val !== '0';
+    });
   };
 
   const validateAll = () => {
@@ -80,36 +115,58 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
   };
 
   const hasDuplicates = (members) => {
-    const emails = members.map(member => member.email);
-    const phones = members.map(member => member.phone);
-    const emailSet = new Set(emails);
-    const phoneSet = new Set(phones);
-    return emailSet.size !== emails.length || phoneSet.size !== phones.length;
+    const emails = members.map(member => member.email?.trim().toLowerCase() || '');
+    const phones = members.map(member => member.phone?.trim() || '');
+    const emailSet = new Set(emails.filter(e => e));
+    const phoneSet = new Set(phones.filter(p => p));
+    return emailSet.size !== emails.filter(e => e).length || phoneSet.size !== phones.filter(p => p).length;
   };
 
-  const validatePayload = (members) => {
-    return members.every(member => member.fullName && member.email && member.phone);
-  };
+  // Convert frontend member to backend payload (GitHubProfile expected)
+  const normalizeMemberPayload = (member) => ({
+    fullName: member.fullName,
+    email: member.email,
+    phone: member.phone,
+    collegeName: member.collegeName || 'N/A',
+    course: member.course || 'N/A',
+    collegeBranch: member.collegeBranch || 'N/A',
+    collegeSemester: Number(member.collegeSemester) || 0,
+    GitHubProfile: member.githubLink || '',
+    teamId: leaderProfile?.teamId || undefined // include teamId if available
+  });
 
   const saveTeamMembers = async (members) => {
     setLoading(true);
+    let allSaved = true;
     try {
       for (const member of members) {
         console.log('Sending individual member payload:', member);
-        await userAPI.addMember(member); // Send each member individually
+        try {
+          await userAPI.addMember(member); // Send each member individually
+        } catch (error) {
+          allSaved = false;
+          if (error.response?.status === 409) {
+            toast.error(`Member with email ${member.email} already exists in the team.`);
+          } else {
+            throw error; // Re-throw other errors to be handled below
+          }
+        }
       }
-      setLoading(false);
-      toast.success('Team members saved successfully.');
+      if (allSaved) {
+        toast.success('Team members saved successfully.');
+      }
     } catch (error) {
-      setLoading(false);
+      allSaved = false;
       if (error.response?.status === 400) {
         toast.error('Bad Request: ' + (error.response?.data?.error || 'Invalid data.'));
       } else {
         toast.error('Failed to save members: ' + (error.response?.data?.message || error.message));
       }
       console.error('Save failed:', error);
-      throw error;
+    } finally {
+      setLoading(false);
     }
+    return allSaved;
   };
 
   return (
@@ -122,6 +179,7 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
             className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
             onClick={() => removeMemberForm(index)}
             type="button"
+            disabled={loading}
           >
             <X className="w-5 h-5" />
           </button>
@@ -198,10 +256,15 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
                 disabled={loading}
               >
                 <option value="0">Select Semester</option>
-                <option value="1">1st</option>
-                <option value="2">2nd</option>
-                <option value="3">3rd</option>
-                <option value="4">4th</option>
+                <option value="1">1st Semester</option>
+                <option value="2">2nd Semester</option>
+                <option value="3">3rd Semester</option>
+                <option value="4">4th Semester</option>
+                <option value="5">5th Semester</option>
+                <option value="6">6th Semester</option>
+                <option value="7">7th Semester</option>
+                <option value="8">8th Semester</option>
+                <option value="9">Pass out</option>
               </select>
             </div>
 
@@ -214,6 +277,7 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
                 onChange={(e) => handleInputChange(index, 'githubLink', e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent"
                 placeholder="https://github.com/username"
+                disabled={loading}
               />
             </div>
           </div>
@@ -221,13 +285,18 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
       ))}
 
       {teamMembers.length < 3 && (
-        <button onClick={addMemberForm} type="button" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mb-3">
+        <button
+          onClick={addMemberForm}
+          type="button"
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mb-3"
+          disabled={loading}
+        >
           Add Member
         </button>
       )}
 
       <div className="mt-3 flex justify-between items-center">
-        <button onClick={handleBack} type="button" className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+        <button onClick={handleBack} type="button" className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors" disabled={loading}>
           Back
         </button>
 
@@ -239,21 +308,29 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
               return;
             }
 
+            // validate & save
             if (!validateAll()) {
               toast.error('Please fill all required fields correctly.');
               return;
             }
 
+            if (hasDuplicates(teamMembers)) {
+              toast.error('Duplicate emails or phone numbers found. Please remove duplicates.');
+              return;
+            }
+
             try {
-              await saveTeamMembers(teamMembers);
-              setIsStep2Saved(true);
-              handleNext();
+              const allSaved = await saveTeamMembers(teamMembers);
+              if (allSaved) {
+                setIsStep2Saved(true);
+                handleNext();
+              }
             } catch (err) {
               console.error('Save failed', err);
             }
           }}
-          disabled={isNextDisabled}
-          className={`px-5 py-2 rounded-lg font-semibold transition-colors ${isNextDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+          disabled={isNextDisabled || loading}
+          className={`px-5 py-2 rounded-lg font-semibold transition-colors ${isNextDisabled || loading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
         >
           {loading && <Loader className="w-4 h-4 animate-spin mr-2 inline" />}
           Next
