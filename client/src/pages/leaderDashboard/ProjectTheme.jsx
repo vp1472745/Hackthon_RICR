@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, CheckCircle, Loader } from 'lucide-react';
-import { projectThemeAPI,  userAPI } from '../../configs/api';
+import { projectThemeAPI, userAPI } from '../../configs/api';
 
 const ProjectTheme = () => {
   const [themes, setThemes] = useState([]);
@@ -122,8 +122,8 @@ const ProjectTheme = () => {
                 </div>
               </div>
             </div>
-            
-   
+
+
           </div>
         </div>
 
@@ -152,11 +152,10 @@ const ProjectTheme = () => {
             return (
               <div
                 key={theme._id}
-                className={`group relative bg-white rounded-2xl shadow-sm border-2 transition-all duration-300 cursor-pointer hover:shadow-xl ${
-                  isSelected
+                className={`group relative bg-white rounded-2xl shadow-sm border-2 transition-all duration-300 cursor-pointer hover:shadow-xl ${isSelected
                     ? 'border-green-500 shadow-lg ring-4 ring-green-100 transform scale-105'
                     : 'border-gray-200 hover:border-blue-300 hover:scale-105'
-                }`}
+                  }`}
                 onClick={() => handleThemeSelect(theme.themeName)}
               >
                 {/* Selected Indicator */}
@@ -168,31 +167,23 @@ const ProjectTheme = () => {
                   </div>
                 )}
 
-                <div className="p-6">
-                  {/* Theme Icon */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-                      <Lightbulb className="w-7 h-7 text-white" />
-                    </div>
-                  </div>
-
+                <div className="p-6 h-100">
                   {/* Theme Name */}
-                  <h3 className="font-bold text-gray-900 text-xl mb-3 leading-tight">
+                  <h3 className="font-bold text-gray-900 text-xl mb-3 leading-tight h-[30%]">
                     {theme.themeName.length > 50 ? `${theme.themeName.slice(0, 50)}...` : theme.themeName}
                   </h3>
 
                   {/* Theme Description */}
-                  <p className="text-gray-600 leading-relaxed mb-6 line-clamp-3">
+                  <p className="text-gray-600 leading-relaxed mb-6 line-clamp-3 h-[50%]">
                     {theme.themeDescription.length > 100 ? `${theme.themeDescription.slice(0, 100)}...` : theme.themeDescription}
                   </p>
 
                   {/* Select Button */}
                   <button
-                    className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
-                      isSelected
+                    className={`w-full py-3 h-[20%] px-4 rounded-xl font-semibold transition-all duration-200 ${isSelected
                         ? 'bg-green-100 text-green-700 cursor-default'
                         : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md'
-                    }`}
+                      }`}
                     disabled={isSelected}
                   >
                     {isSelected ? 'Theme Selected' : 'Select Theme'}
@@ -206,7 +197,6 @@ const ProjectTheme = () => {
         {/* Empty State */}
         {!loading && themes.length === 0 && !error && (
           <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-200">
-            <Lightbulb className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">No Themes Available</h3>
             <p className="text-gray-500 max-w-md mx-auto">
               Themes will be available soon. Please check back later.
