@@ -10,6 +10,7 @@ import ProjectThemeRouter from './src/routes/projectThemeRoute.js';
 import AdminRoute from './src/routes/adminRoute.js';
 
 import ProblemStatementRoute from './src/routes/problemStatementRoute.js';
+import morgan from 'morgan';
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
 
 app.use('/auth', AuthRouter);
 app.use('/user', UserRoute);

@@ -375,7 +375,7 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
                 <option value="6">6th Semester</option>
                 <option value="7">7th Semester</option>
                 <option value="8">8th Semester</option>
-                <option value="pass">Pass out</option>
+                <option value="9">Pass out</option>
               </select>
             </div>
           </div>
