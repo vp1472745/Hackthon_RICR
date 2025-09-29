@@ -63,7 +63,7 @@ const Overview = () => {
       }
     } finally {
       setLoading(false);
-      setRefreshing(false);
+      
     }
   };
 

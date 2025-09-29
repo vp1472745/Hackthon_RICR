@@ -72,7 +72,7 @@ const ManageTeam = () => {
       toast.error('Failed to load team data');
     } finally {
       setLoading(false);
-      setRefreshing(false);
+     
     }
   };
 
