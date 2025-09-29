@@ -78,8 +78,8 @@ const ProblemStatements = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex items-center justify-center p-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center max-w-md w-full">
+      <div className="overflow-hidden min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex items-center justify-center p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center w-full">
           <Loader className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Problem Statement</h3>
           <p className="text-gray-600">Fetching your challenge details...</p>
@@ -108,7 +108,7 @@ const ProblemStatements = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6 overflow-hidden">
       <div className="max-w-4xl mx-auto">
         {/* Header Section */}
         <div className=" p-8 mb-6">

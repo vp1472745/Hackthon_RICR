@@ -66,7 +66,7 @@ const LeaderDashboard = () => {
         setActiveSection={setActiveSection}
         onSidebarToggle={handleSidebarToggle}
       />
-      
+
       {/* Main Content */}
       <div className={`flex-1 flex flex-col transition-all duration-300 ${
         sidebarCollapsed 
@@ -78,7 +78,7 @@ const LeaderDashboard = () => {
           <MultiStepModal isOpen={true} onClose={() => setShowModal(false)} />
         )}
         {/* Page Content */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto p-4 sm:p-6">
           <div className="min-h-full">
             {renderActiveComponent()}
           </div>

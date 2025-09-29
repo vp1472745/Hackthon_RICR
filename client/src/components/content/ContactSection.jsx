@@ -17,7 +17,7 @@ export default function ContactSection() {
 
   return (
     <motion.section
-      className="w-full py-16 md:py-20 rounded-2xl md:rounded-3xl shadow-inner"
+      className="w-full py-16 md:py-20 rounded-2xl md:rounded-3xl shadow-inner overflow-hidden"
       style={{ backgroundImage: `linear-gradient(135deg, ${THEME.gradientStart}, ${THEME.gradientEnd})` }}
       initial="hidden"
       whileInView="visible"

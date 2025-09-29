@@ -70,10 +70,10 @@ const MultiStepModal = ({ isOpen, onClose }) => {
   if (!modalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4 sm:p-6">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[85vh] overflow-y-auto mx-4 p-6 relative">
         {/* Stepper */}
-        <div className="flex items-center justify-center mb-8 gap-5">
+        <div className="flex flex-wrap items-center justify-center mb-8 gap-5">
           {steps.map((s, idx) => (
             <React.Fragment key={s.label}>
               <div className="flex flex-col items-center">
@@ -87,7 +87,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
               </div>
               {idx < steps.length - 1 && (
                 <div className="flex items-center">
-                  <div className={`h-1 w-20 mx-2 rounded bg-gradient-to-r ${idx < step ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                  <div className={`h-1 w-16 sm:w-20 mx-2 rounded bg-gradient-to-r ${idx < step ? 'bg-green-500' : 'bg-gray-300'}`}></div>
                 </div>
               )}
             </React.Fragment>
@@ -102,8 +102,8 @@ const MultiStepModal = ({ isOpen, onClose }) => {
           setIsStep2Saved={setIsStep2Saved}
           setIsStep3Saved={setIsStep3Saved}
           setIsStep4Saved={setIsStep4Saved}
-          handleNext={handleNext}      // <-- add this
-          handleBack={handleBack}      // <-- add this
+          handleNext={handleNext}
+          handleBack={handleBack}
         />
 
         {/* Removed Back and Next buttons */}

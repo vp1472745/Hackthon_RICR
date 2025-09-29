@@ -86,9 +86,7 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
   ];
 
   return (
-    <div className={`bg-white border-r border-gray-200 fixed left-0 top-0 ${isCollapsed ? 'w-12 sm:w-16' : 'w-56 sm:w-64'
-      } h-full flex flex-col overflow-hidden z-10 mt-12 sm:mt-14 transition-all duration-300`}>
-
+    <div className={`bg-white border-r border-gray-200 fixed left-0 top-0 ${isCollapsed ? 'w-12 sm:w-16' : 'w-56 sm:w-64'} h-full flex flex-col overflow-hidden z-10 mt-12 sm:mt-14 transition-all duration-300`}>
       {/* Team Header Section */}
       <div className="p-2 sm:p-3 border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center justify-between">
@@ -96,7 +94,7 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
             <div className="flex items-center space-x-2">
               {/* Team Name */}
               <div className="min-w-0">
-                <p className="text-md text-black truncate font-bold">{teamName || 'Loading...'}</p>
+                <p className="text-md text-black truncate font-bold text-center sm:text-left">{teamName || 'Loading...'}</p>
               </div>
             </div>
           )}
@@ -113,9 +111,6 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
             )}
           </button>
         </div>
-
-
-
       </div>
 
       {/* Navigation Menu */}
@@ -130,7 +125,6 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
                 <button
                   onClick={() => {
                     setActiveSection(item.id);
-                    // Removed auto-collapse logic to keep the sidebar open when switching tabs
                   }}
                   className={`w-full flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg transition-all duration-200 group ${isActive
                     ? 'bg-[#0B2A4A] text-white shadow-md'
@@ -144,7 +138,7 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
                   />
 
                   {!isCollapsed && (
-                    <div className="flex-1 text-left min-w-0">
+                    <div className="flex-1 text-center sm:text-left min-w-0">
                       <div className={`font-medium text-xs sm:text-sm truncate ${isActive ? 'text-white' : 'text-gray-900'
                         }`}>
                         {item.title}
@@ -172,7 +166,6 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
           })}
         </ul>
       </nav>
-
     </div>
   );
 };

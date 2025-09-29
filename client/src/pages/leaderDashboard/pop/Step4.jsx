@@ -30,30 +30,25 @@ const Step4 = ({ setIsStep4Saved }) => {
     <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl shadow-lg p-6">
       <div className="mt-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Terms and Conditions</h3>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <p className="text-gray-600 mb-4">
-            Please read and accept the following terms and conditions to proceed:
-          </p>
-          <ul className="list-disc pl-6 text-gray-600 space-y-2">
-            <li>Bring a valid ID proof on the day of the event.</li>
-            <li>Ensure your team is present at the venue 30 minutes before the start time.</li>
-            <li>Follow all the rules and guidelines provided by the organizers.</li>
-            <li>Respect the decisions of the judges and organizers.</li>
-            <li>Any form of misconduct will lead to disqualification.</li>
-          </ul>
-        </div>
-
-        <div className="flex items-center gap-3 mt-6">
-          <input
-            type="checkbox"
-            id="acceptTerms"
-            checked={isAccepted}
-            onChange={handleAccept}
-            className="w-5 h-5 text-[#0B2A4A] border-gray-300 rounded focus:ring-2 focus:ring-[#0B2A4A]"
-          />
-          <label htmlFor="acceptTerms" className="text-gray-800 font-medium">
-            I have read and accept the terms and conditions.
-          </label>
+        <div className="p-4 sm:p-6 bg-gray-50 rounded-xl shadow-lg">
+          {/* Terms and Conditions Section */}
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700">Please read and accept the terms and conditions:</p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Bring a valid ID proof on the day of the event.</li>
+              <li>Ensure your team is present at the venue 30 minutes before the start time.</li>
+              <li>Follow all the rules and guidelines provided by the organizers.</li>
+            </ul>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={isAccepted}
+                onChange={handleAccept}
+                className="rounded border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <span className="text-sm text-gray-700">I accept the terms and conditions</span>
+            </div>
+          </div>
         </div>
 
         <div className="mt-3 flex justify-end gap-2">

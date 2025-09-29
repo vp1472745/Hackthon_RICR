@@ -7,16 +7,15 @@ import ContactSection from "../components/content/ContactSection";
 import FAQSection from "../components/content/FAQSection";
 import RegistrationCTASection from "../components/content/RegistrationCTASection";
 
-
 function Home() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Hero should be full width */}
+      {/* Hero Section (full width) */}
       <HeroPage />
 
-      {/* Main content container */}
-      <main className="flex-1 container mx-auto px-4 sm:px-6 ">
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Main Content */}
+      <main className="flex-1 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 lg:space-y-20">
           <FeaturesSection />
           <EventDetailsSection />
           <ThemesSection />
@@ -26,13 +25,23 @@ function Home() {
         </div>
       </main>
 
+      {/* Footer */}
       <footer className="bg-gray-800 text-gray-200 py-6 mt-8">
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row justify-between items-center">
-          <span className="text-sm">&copy; {new Date().getFullYear()} Ricr Hackathon. All rights reserved.</span>
-          <div className="flex space-x-4 mt-2 sm:mt-0">
-            <a href="/privacy" className="hover:underline">Privacy Policy</a>
-            <a href="/terms" className="hover:underline">Terms of Service</a>
-            <a href="mailto:contact@ricrhackathon.com" className="hover:underline">Contact</a>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+          <span className="text-sm text-center md:text-left">
+            &copy; {new Date().getFullYear()} Ricr Hackathon. All rights reserved.
+          </span>
+
+          <div className="flex flex-col sm:flex-row sm:space-x-6 text-sm text-center md:text-right">
+            <a href="/privacy" className="hover:underline mb-2 sm:mb-0">
+              Privacy Policy
+            </a>
+            <a href="/terms" className="hover:underline mb-2 sm:mb-0">
+              Terms of Service
+            </a>
+            <a href="mailto:contact@ricrhackathon.com" className="hover:underline">
+              Contact
+            </a>
           </div>
         </div>
       </footer>
