@@ -36,6 +36,7 @@ export const authenticateToken = async (req, res, next) => {
   }
 };
 
+
 export const authenticateLeader = async (req, res, next) => {
   try {
     // First authenticate the token
