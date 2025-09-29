@@ -43,15 +43,15 @@ const TeamMembersList = ({
         setLeaderProfile(leader);
         setTeamMembers(team?.members || []); // Fixed setter
 
-        // Store in localStorage for offline use
-        localStorage.setItem('leaderProfile', JSON.stringify(leader));
-        localStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
+        // Store in sessionStorage for session use
+        sessionStorage.setItem('leaderProfile', JSON.stringify(leader));
+        sessionStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
       }
     } catch (error) {
-      console.error('Error fetching leader profile:', error);
+   
 
-      // Try alternative approach - get user by ID from localStorage
-      const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser') || '{}');
+      // Try alternative approach - get user by ID from sessionStorage
+      const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
       if (hackathonUser.user && hackathonUser.user._id) {
         try {
           // Try to fetch user by ID as a fallback
@@ -60,24 +60,19 @@ const TeamMembersList = ({
             setLeaderProfile(userResponse.data.user);
             setTeamMembers(userResponse.data.user.teamInfo?.members || []); // Fixed setter
 
+            // Save fallback to sessionStorage as well
+            sessionStorage.setItem('leaderProfile', JSON.stringify(userResponse.data.user));
+            sessionStorage.setItem('apiTeamMembers', JSON.stringify(userResponse.data.user.teamInfo?.members || []));
 
             return; // Exit early on success
           }
         } catch (fallbackError) {
-          console.error('Fallback fetch failed:', fallbackError);
+          
         }
       }
 
-      // Final fallback to localStorage data
-      setError('Using offline data');
-      toast.warning('Using offline profile data');
 
-      const storedProfile = localStorage.getItem('leaderProfile');
-      const storedMembers = localStorage.getItem('apiTeamMembers');
-      if (storedProfile) setLeaderProfile(JSON.parse(storedProfile));
-      if (storedMembers) setTeamMembers(JSON.parse(storedMembers)); // Fixed setter
-
-      // If no stored data, use hackathonUser  data
+      // If no stored data, use hackathonUser data from sessionStorage
       if (!storedProfile && hackathonUser.user) {
         setLeaderProfile(hackathonUser.user);
         toast.info('Using login session data');
@@ -118,6 +113,14 @@ const TeamMembersList = ({
 
       // Update local state
       setTeamMembers((prev) => [...prev, memberData]);
+      // also update sessionStorage copy
+      try {
+        const updated = [...(JSON.parse(sessionStorage.getItem('apiTeamMembers') || '[]')), memberData];
+        sessionStorage.setItem('apiTeamMembers', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('Could not update sessionStorage apiTeamMembers', e);
+      }
+
       setShowAddMember(false); // Close the form
     } catch (error) {
       console.error('Error adding member:', error);
@@ -147,6 +150,16 @@ const TeamMembersList = ({
 
       // Update local state
       setTeamMembers((prev) => [...prev, ...validMembers]);
+
+      // update sessionStorage copy
+      try {
+        const existing = JSON.parse(sessionStorage.getItem('apiTeamMembers') || '[]');
+        const updated = [...existing, ...validMembers];
+        sessionStorage.setItem('apiTeamMembers', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('Could not update sessionStorage apiTeamMembers', e);
+      }
+
       setAddMemberForms([]); // Clear forms
     } catch (error) {
       console.error('Error adding members:', error);
@@ -169,7 +182,7 @@ const TeamMembersList = ({
     </div>
   );
 
-
+  const memberCount = Array.isArray(teamMembers) ? teamMembers.length : 0;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -366,4 +379,4 @@ const TeamMembersList = ({
   );
 };
 
-export default TeamMembersList;;
+export default TeamMembersList;

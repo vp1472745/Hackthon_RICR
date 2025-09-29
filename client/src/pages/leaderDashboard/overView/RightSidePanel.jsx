@@ -1,11 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Target, FileText } from 'lucide-react';
+import { problemStatementAPI } from '../../../configs/api';
 
 const RightSidePanel = () => {
-  let selectedTheme = JSON.parse(sessionStorage.getItem('hackathonUser'))?.theme?.themeName || 'No theme selected';
-  const selectedProblemStatement = JSON.parse(sessionStorage.getItem('hackathonUser'))?.team?.teamProblemStatement || 'No problem statement selected';
+  const [selectedTheme, setSelectedTheme] = useState('No theme selected');
+  const [selectedProblemStatement, setSelectedProblemStatement] = useState('No problem statement selected');
 
-  console.log("Selected Theme in RightSidePanel:", selectedTheme);
+  useEffect(() => {
+    const fetchData = async () => {
+      const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser'));
+      const theme = hackathonUser?.theme?.themeName || 'No theme selected';
+      setSelectedTheme(theme);
+
+      const teamId = hackathonUser?.team?._id || hackathonUser?.teamId;
+      if (teamId) {
+        try {
+          const res = await problemStatementAPI.getByTeam(teamId);
+          let problem = null;
+          if (res.data.problemStatements && Array.isArray(res.data.problemStatements) && res.data.problemStatements.length > 0) {
+            problem = res.data.problemStatements[0];
+          } else if (res.data.problemStatement) {
+            problem = res.data.problemStatement;
+          }
+          setSelectedProblemStatement(problem?.PStitle || 'No problem statement selected');
+        } catch (err) {
+          console.error('Error fetching problem statement:', err);
+          setSelectedProblemStatement('Failed to fetch problem statement');
+        }
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="space-y-6">

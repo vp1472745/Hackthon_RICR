@@ -30,21 +30,24 @@ const ProjectTheme = () => {
         setLoading(true);
         const res = await projectThemeAPI.getAllThemes();
         setThemes(res.data.themes || []);
-        setLoading(false);
-      } catch {
-        setError('Failed to load themes');
+        console.log('Themes fetched:', res.data.themes);
+      } catch (err) {
+        console.error('Error fetching themes:', err);
+        setError('Failed to load themes. Please try again later.');
+      } finally {
         setLoading(false);
       }
     };
+
     fetchThemes();
   }, []);
 
   useEffect(() => {
     const fetchTeamThemeByUserId = async () => {
       try {
-        const userId = JSON.parse(localStorage.getItem('hackathonUser'))?.user?._id;
+        const userId = JSON.parse(sessionStorage.getItem('hackathonUser'))?.user?._id;
         if (!userId) {
-          console.error('User ID not found in localStorage.');
+          console.error('User ID not found in sessionStorage.');
           setError('User ID not found. Please log in again.');
           return;
         }
@@ -60,6 +63,11 @@ const ProjectTheme = () => {
           setSelectedTheme(null);
           console.warn('No theme found for the user.');
         }
+
+        // Log userId and response for debugging
+        console.log('User ID from sessionStorage:', userId);
+        console.log('Response from getUserById:', response.data);
+        console.log('Team theme fetched:', teamTheme);
       } catch (err) {
         console.error('Error fetching team theme by user ID:', err);
         setError('Failed to fetch team theme. Please try again later.');

@@ -5,7 +5,7 @@ const TeamStats = ({ teamMembers }) => {
   const maxMembers = 3; // Max 4 team members (excluding leader)
   const leader = teamMembers.find(m => m.role === 'Leader');
   const members = teamMembers.filter(m => m.role === 'Member');
-  const currentMembers = members.length;
+  const currentMembers = Array.isArray(teamMembers) ? teamMembers.filter(m => m.role === 'Member').length : 0;
   const slotsAvailable = maxMembers - currentMembers;
 
   return (

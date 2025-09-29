@@ -1,4 +1,5 @@
 import User from '../models/UserModel.js';
+import mongoose from 'mongoose';
 
 
 // Get user by ID with team information (public route)
@@ -6,6 +7,14 @@ export const getUserById = async (req, res, next) => {
   try {
     const { userId } = req.params;
     
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid userId format" });
+    }
+
+    // Log the userId for debugging
+    console.log("Requested userId:", userId);
+
     const user = await User.findById(userId)
       .populate({
         path: 'teamId',
@@ -17,7 +26,7 @@ export const getUserById = async (req, res, next) => {
       });
     
     if (!user) {
-      const error = new Error('User not found');
+      const error = new Error(`User with ID ${userId} not found`);
       error.statusCode = 404;
       return next(error);
     }

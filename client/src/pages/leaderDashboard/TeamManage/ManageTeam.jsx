@@ -3,7 +3,7 @@ import { Users, AlertTriangle } from 'lucide-react';
 import { userAPI } from '../../../configs/api';
 import { toast } from 'react-toastify';
 import TeamMembersList from './TeamMembersList';
-import TeamStats from './TeamStats';
+
 import EditMember from './editMember';
 import ViewMember from './viewMember';
 import DeleteMember from './deleteMember';
@@ -41,38 +41,37 @@ const ManageTeam = () => {
       setLoading(true);
       setError(null);
 
+      // Check sessionStorage for team data
+      const storedLeader = JSON.parse(sessionStorage.getItem('leaderProfile'));
+      const storedMembers = JSON.parse(sessionStorage.getItem('apiTeamMembers'));
+
+      if (storedLeader && storedMembers) {
+        setLeaderProfile(storedLeader);
+        setTeamMembers(storedMembers);
+        toast.info('Loaded team data from session storage.');
+        return;
+      }
+
+      // Fetch from API if not in sessionStorage
       const response = await userAPI.getLeaderProfile();
 
       if (response.data && response.data.leader) {
         const { leader, team } = response.data;
         setLeaderProfile(leader);
         setTeamMembers(team?.members || []);
+
+        // Store in sessionStorage for future use
+        sessionStorage.setItem('leaderProfile', JSON.stringify(leader));
+        sessionStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
         toast.success('Team data loaded successfully!');
         return;
       }
     } catch (error) {
       console.error('Error fetching leader data:', error);
-
-      const hackathonUser = JSON.parse(localStorage.getItem('hackathonUser') || '{}');
-      if (hackathonUser.user && hackathonUser.user._id) {
-        try {
-          const userResponse = await userAPI.getUserById(hackathonUser.user._id);
-          if (userResponse.data && userResponse.data.user) {
-            setLeaderProfile(userResponse.data.user);
-            setTeamMembers(userResponse.data.user.teamInfo?.members || []);
-
-            return;
-          }
-        } catch (fallbackError) {
-          console.error('Fallback fetch failed:', fallbackError);
-        }
-      }
-
       setError('Failed to load team data');
       toast.error('Failed to load team data');
     } finally {
       setLoading(false);
-     
     }
   };
 
@@ -214,6 +213,7 @@ const ManageTeam = () => {
             searchTerm={searchTerm}
           />
         </div>
+
 
         {/* Guidelines */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
