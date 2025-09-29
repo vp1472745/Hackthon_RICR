@@ -43,8 +43,10 @@ const Login = () => {
       if (response.data.message) {
         setLoginMessage('Login successful! Redirecting to dashboard...');
 
+        // Store token
         if (response.data.token) sessionStorage.setItem('authToken', response.data.token);
 
+        // Store user session
         sessionStorage.setItem('hackathonUser', JSON.stringify({
           email: formData.email,
           user: response.data.user,
@@ -54,10 +56,12 @@ const Login = () => {
           loginTime: new Date().toISOString()
         }));
 
+        // Store teamId in cookie (2 days)
         const teamId = response.data.team?._id || response.data.teamId;
         if (teamId) document.cookie = `teamId=${teamId}; path=/; max-age=${2 * 24 * 60 * 60}`;
         else alert('No teamId found! Theme selection may not work.');
 
+        // Dispatch custom event to update AuthContext immediately
         window.dispatchEvent(new Event('authChange'));
 
         setTimeout(() => navigate('/leader-dashboard'), 500);
@@ -94,26 +98,25 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen    bg-gradient-to-br from-[#0B2A4A] via-[#1D5B9B] to-[#0B2A4A] flex items-center justify-center py-8 px-4">
-      {/* decorative shapes - hidden on very small screens to save space */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="hidden sm:block absolute -top-40 -right-40 w-80 h-80 rounded-full bg-white opacity-5"></div>
-        <div className="hidden sm:block absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-white opacity-5"></div>
-        <div className="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-white opacity-3"></div>
+    <div className="bg-gradient-to-br from-[#0B2A4A] via-[#1D5B9B] to-[#0B2A4A] flex items-center h-full justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-white opacity-5"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-white opacity-5"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-white opacity-3"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-lg">
-        <div className="text-center mb-6">
+      <div className="max-w-md w-full space-y-8 relative z-10 h-f">
+        <div className="text-center">
           <div className="flex justify-center mb-3">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-lg">
-              <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-[#0B2A4A]" />
+            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg">
+              <Shield className="w-10 h-10 text-[#0B2A4A]" />
             </div>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">Login</h2>
+          <h2 className="text-3xl font-bold text-white mb-2">Login</h2>
         </div>
 
-        <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-8">
-          <form onSubmit={handleLogin} className="space-y-5">
+        <div className="bg-white rounded-xl shadow-2xl p-8">
+          <form onSubmit={handleLogin} className="space-y-6">
 
             {/* Team Code */}
             <div>
@@ -122,23 +125,21 @@ const Login = () => {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-4 w-4 text-gray-400" />
+                  <User className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
                   value={formData.teamCode}
                   onChange={(e) => handleInputChange('teamCode', e.target.value.toUpperCase())}
-                  className={`block w-full pl-10 pr-3 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent transition-colors duration-200 ${errors.teamCode ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent transition-colors duration-200 ${errors.teamCode ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                   placeholder="Enter your Team Code (e.g., FM001)"
                   autoComplete="username"
-                  aria-invalid={errors.teamCode ? "true" : "false"}
-                  aria-describedby={errors.teamCode ? "teamcode-error" : undefined}
                 />
               </div>
               {errors.teamCode && (
-                <div id="teamcode-error" className="flex items-center mt-1 text-sm text-red-500">
+                <div className="flex items-center mt-1">
                   <AlertCircle className="h-4 w-4 text-red-500 mr-1" />
-                  <p>{errors.teamCode}</p>
+                  <p className="text-red-500 text-sm">{errors.teamCode}</p>
                 </div>
               )}
             </div>
@@ -150,30 +151,28 @@ const Login = () => {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-4 w-4 text-gray-400" />
+                  <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`block w-full pl-10 pr-3 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent transition-colors duration-200 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent transition-colors duration-200 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                   placeholder="Enter your registered email"
                   autoComplete="email"
-                  aria-invalid={errors.email ? "true" : "false"}
-                  aria-describedby={errors.email ? "email-error" : undefined}
                 />
               </div>
               {errors.email && (
-                <div id="email-error" className="flex items-center mt-1 text-sm text-red-500">
+                <div className="flex items-center mt-1">
                   <AlertCircle className="h-4 w-4 text-red-500 mr-1" />
-                  <p>{errors.email}</p>
+                  <p className="text-red-500 text-sm">{errors.email}</p>
                 </div>
               )}
             </div>
 
             {/* Login Message */}
             {loginMessage && (
-              <div role="alert" className={`p-3 rounded-lg flex items-center ${loginMessage.includes('successful') ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+              <div className={`p-3 rounded-lg flex items-center ${loginMessage.includes('successful') ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
                 {loginMessage.includes('successful') ? (
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
                 ) : (
@@ -189,45 +188,31 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center py-2.5 sm:py-3 px-4 border border-transparent text-sm sm:text-base font-medium rounded-lg text-white bg-[#0B2A4A] hover:bg-[#1D5B9B] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1D5B9B] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center cursor-pointer justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#0B2A4A] hover:bg-[#1D5B9B] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1D5B9B] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                   Signing In...
                 </div>
               ) : (
                 <div className="flex items-center">
-                  <LogIn className="h-4 w-4 mr-2" />
+                  <LogIn className="h-5 w-5 mr-2" />
                   Sign In
                 </div>
               )}
             </button>
 
-            {/* Register / Forgot group - stacks on small screens */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
-              <div className="flex items-center gap-3">
-                <p className="text-sm text-gray-800 font-medium">Not Registered ?</p>
-                <button
-                  type="button"
-                  onClick={() => navigate('/register')}
-                  className="py-2 px-3 text-sm sm:text-sm font-medium rounded-lg bg-[#0B2A4A] text-white hover:bg-[#1D5B9B] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1D5B9B] transition-colors"
-                >
-                  Register
-                </button>
-              </div>
-
-              <div className="text-sm">
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-[#1D5B9B] hover:underline"
-                >
-                  Forgot Team Code?
-                </button>
-              </div>
+            {/* Register Button */}
+            <div className='text-center flex flex-row gap-4 items-center justify-center'>
+              <p className='text-sm text-black font-medium mt-1/2'>Not Registered ?</p>
+              <button
+                onClick={() => navigate('/register')}
+                className=" flex items-center justify-center py-2 mt-1 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#0B2A4A] cursor-pointer hover:bg-[#1D5B9B] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 transition-colors duration-200"
+              >
+                Register
+              </button>
             </div>
-
           </form>
         </div>
       </div>

@@ -221,60 +221,60 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
             Personal Information
           </h4>
 
-          <div className="p-4 sm:p-6 bg-gray-50 rounded-xl shadow-lg">
-            {/* Form Fields */}
-            <div className="space-y-4">
-              {/* Full Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Full Name</label>
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={(e) => handleInputChange(e)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name<span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName || ''}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
+            />
+          </div>
 
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange(e)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email<span className="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email || ''}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
+            />
+          </div>
 
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Phone</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange(e)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone<span className="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone || ''}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
+            />
+          </div>
 
-              {/* GitHub Profile */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">GitHub Profile (optional)</label>
-                <div className="relative">
-                  <Github className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-                  <input
-                    type="url"
-                    name="GitHubProfile"
-                    value={formData.GitHubProfile}
-                    onChange={(e) => handleInputChange(e)}
-                    className="mt-1 block w-full pl-10 pr-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    placeholder="https://github.com/username"
-                  />
-                </div>
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              GitHub Profile (optional)
+            </label>
+            <div className="relative">
+              <Github className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+              <input
+                type="url"
+                name="GitHubProfile"
+                value={formData.GitHubProfile || ''}
+                required  
+                onChange={handleInputChange}
+                className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
+                placeholder="https://github.com/username"
+              />
             </div>
           </div>
         </div>
@@ -286,98 +286,97 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
             Academic Information
           </h4>
 
-          <div className="p-4 sm:p-6 bg-gray-50 rounded-xl shadow-lg">
-            {/* Form Fields */}
-            <div className="space-y-4">
-              {/* College Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">College Name</label>
-                <input
-                  type="text"
-                  name="collegeName"
-                  value={formData.collegeName}
-                  onChange={(e) => handleInputChange(e)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              College Name<span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="collegeName"
+              value={formData.collegeName || ''}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
+            />
+          </div>
 
-              {/* Course */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Course</label>
-                <div className="relative">
-                  <BookOpen className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-                  <select
-                    name="course"
-                    value={formData.course}
-                    onChange={(e) => handleInputChange(e)}
-                    className="mt-1 block w-full pl-10 pr-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  >
-                    <option value="N/A">Select Course</option>
-                    <option value="B.Tech">B.Tech (Bachelor of Technology)</option>
-                    <option value="B.E">B.E (Bachelor of Engineering)</option>
-                    <option value="BCA">BCA (Bachelor of Computer Applications)</option>
-                    <option value="MCA">MCA (Master of Computer Applications)</option>
-                    <option value="M.Tech">M.Tech (Master of Technology)</option>
-                    <option value="M.E">M.E (Master of Engineering)</option>
-                    <option value="B.Sc">B.Sc (Bachelor of Science)</option>
-                    <option value="M.Sc">M.Sc (Master of Science)</option>
-                    <option value="BBA">BBA (Bachelor of Business Administration)</option>
-                    <option value="MBA">MBA (Master of Business Administration)</option>
-                    <option value="B.Com">B.Com (Bachelor of Commerce)</option>
-                    <option value="M.Com">M.Com (Master of Commerce)</option>
-                    <option value="Diploma">Diploma</option>
-                    <option value="Ph.D">Ph.D (Doctor of Philosophy)</option>
-                  </select>
-                </div>
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Course<span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <BookOpen className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+              <select
+                name="course"
+                value={formData.course || 'N/A'}
+                onChange={handleInputChange}
+                className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
+              >
+                <option value="N/A">Select Course</option>
+                <option value="B.Tech">B.Tech (Bachelor of Technology)</option>
+                <option value="B.E">B.E (Bachelor of Engineering)</option>
+                <option value="BCA">BCA (Bachelor of Computer Applications)</option>
+                <option value="MCA">MCA (Master of Computer Applications)</option>
+                <option value="M.Tech">M.Tech (Master of Technology)</option>
+                <option value="M.E">M.E (Master of Engineering)</option>
+                <option value="B.Sc">B.Sc (Bachelor of Science)</option>
+                <option value="M.Sc">M.Sc (Master of Science)</option>
+                <option value="BBA">BBA (Bachelor of Business Administration)</option>
+                <option value="MBA">MBA (Master of Business Administration)</option>
+                <option value="B.Com">B.Com (Bachelor of Commerce)</option>
+                <option value="M.Com">M.Com (Master of Commerce)</option>
+                <option value="Diploma">Diploma</option>
+                <option value="Ph.D">Ph.D (Doctor of Philosophy)</option>
+              </select>
+            </div>
+          </div>
 
-              {/* Branch */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Branch</label>
-                <div className="relative">
-                  <GitBranch className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-                  <select
-                    name="collegeBranch"
-                    value={formData.collegeBranch}
-                    onChange={(e) => handleInputChange(e)}
-                    className="mt-1 block w-full pl-10 pr-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  >
-                    <option value="N/A">Select Branch</option>
-                    <option value="Computer Science Engineering">Computer Science Engineering (CSE)</option>
-                    <option value="Information Technology">Information Technology (IT)</option>
-                    <option value="Electronics and Communication">Electronics and Communication (ECE)</option>
-                    <option value="Electrical Engineering">Electrical Engineering (EE)</option>
-                    <option value="Mechanical Engineering">Mechanical Engineering (ME)</option>
-                    <option value="Civil Engineering">Civil Engineering (CE)</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Branch<span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <GitBranch className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+              <select
+                name="collegeBranch"
+                value={formData.collegeBranch || 'N/A'}
+                onChange={handleInputChange}
+                className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
+              >
+                <option value="N/A">Select Branch</option>
+                <option value="Computer Science Engineering">Computer Science Engineering (CSE)</option>
+                <option value="Information Technology">Information Technology (IT)</option>
+                <option value="Electronics and Communication">Electronics and Communication (ECE)</option>
+                <option value="Electrical Engineering">Electrical Engineering (EE)</option>
+                <option value="Mechanical Engineering">Mechanical Engineering (ME)</option>
+                <option value="Civil Engineering">Civil Engineering (CE)</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
 
-              {/* Semester */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Semester</label>
-                <div className="relative">
-                  <Calendar className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-                  <select
-                    name="collegeSemester"
-                    value={formData.collegeSemester}
-                    onChange={(e) => handleInputChange(e)}
-                    className="mt-1 block w-full pl-10 pr-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  >
-                    <option value="0">Select Semester</option>
-                    <option value="1">1st Semester</option>
-                    <option value="2">2nd Semester</option>
-                    <option value="3">3rd Semester</option>
-                    <option value="4">4th Semester</option>
-                    <option value="5">5th Semester</option>
-                    <option value="6">6th Semester</option>
-                    <option value="7">7th Semester</option>
-                    <option value="8">8th Semester</option>
-                    <option value="9">Pass out</option>
-                  </select>
-                </div>
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Semester<span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <Calendar className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+              <select
+                name="collegeSemester"
+                value={formData.collegeSemester || '0'}
+                onChange={handleInputChange}
+                className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
+              >
+                <option value="0">Select Semester</option>
+                <option value="1">1st Semester</option>
+                <option value="2">2nd Semester</option>
+                <option value="3">3rd Semester</option>
+                <option value="4">4th Semester</option>
+                <option value="5">5th Semester</option>
+                <option value="6">6th Semester</option>
+                <option value="7">7th Semester</option>
+                <option value="8">8th Semester</option>
+                <option value="9">Pass out</option>
+              </select>
             </div>
           </div>
         </div>
