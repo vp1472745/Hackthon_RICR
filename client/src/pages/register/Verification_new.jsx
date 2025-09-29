@@ -155,7 +155,7 @@ const Verification = () => {
           registrationComplete: true
         };
         
-        localStorage.setItem('registrationData', JSON.stringify(teamData));
+        sessionStorage.setItem('registrationData', JSON.stringify(teamData));
         
         // Show success message
         const teamCode = response.data.team?.teamCode || 'Unknown';

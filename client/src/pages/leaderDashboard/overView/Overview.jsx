@@ -70,9 +70,9 @@ const Overview = () => {
 
 
 
-  // Update selectedTheme dynamically from localStorage
+  // Update selectedTheme dynamically from sessionStorage
   useEffect(() => {
-    const storedTheme = localStorage.getItem('selectedTheme');
+    const storedTheme = sessionStorage.getItem('hackathonUser') ? JSON.parse(sessionStorage.getItem('hackathonUser')).theme?.themeName : null;
     if (storedTheme) {
       setTeamStats((prevStats) => ({
         ...prevStats,
@@ -97,8 +97,8 @@ const Overview = () => {
   const updateTeamStats = (profile, members) => {
     const totalMembers = members.length + 1; // Including the leader
     const teamComplete = totalMembers >= 4;
-    const themeSelected = !!localStorage.getItem('selectedTheme');
-    const registrationComplete = !!localStorage.getItem('registrationData');
+    const themeSelected = !!sessionStorage.getItem('hackathonUser')?.theme;
+    const registrationComplete = !!sessionStorage.getItem('registrationData');
 
     return {
         totalMembers,

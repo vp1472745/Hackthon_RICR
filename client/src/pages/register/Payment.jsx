@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, CreditCard, Clock } from 'lucide-react';
- import { authAPI } from '../../configs/api.js';
+import { authAPI } from '../../configs/api.js';
 import { useNavigate } from 'react-router-dom';
 import ProgressBar from './ProgressBar.jsx';
 
@@ -11,8 +11,8 @@ const Payment = () => {
   const [registrationData, setRegistrationData] = useState(null);
 
   useEffect(() => {
-    // Load registration data from localStorage
-    const savedData = localStorage.getItem('registrationData');
+    // Load registration data from sessionStorage
+    const savedData = sessionStorage.getItem('registrationData');
     if (!savedData) {
       navigate('/register');
       return;
@@ -44,10 +44,10 @@ const Payment = () => {
     // Simulate payment processing
 
     //call an Backend Route to send email with login details
-    
+
     setPaymentCompleted(true);
 
-    await authAPI.sendCredentials({ email: registrationData.email ,teamCode: registrationData.team.teamCode });
+    await authAPI.sendCredentials({ email: registrationData.email, teamCode: registrationData.team.teamCode });
   };
 
 
@@ -88,7 +88,7 @@ const Payment = () => {
               <div className="bg-gray-50 rounded-xl px-5 py-4">
                 <h4 className="font-semibold text-gray-700 mb-2">Your Details</h4>
                 <ul className="text-sm text-gray-700 space-y-1">
-         
+
                   <li>
                     <span className="font-medium">Name:</span> {registrationData.fullName}
                   </li>

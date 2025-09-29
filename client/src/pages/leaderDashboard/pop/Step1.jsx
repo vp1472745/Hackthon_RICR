@@ -75,7 +75,7 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
         setErrorMsg('');
 
         if (!userId) {
-          setErrorMsg('User ID not found in localStorage.');
+          setErrorMsg('User ID not found in sessionStorage.');
           return;
         }
 
@@ -119,9 +119,9 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
       } catch (err) {
         console.error('Error fetching leader profile:', err);
         setErrorMsg('Failed to fetch leader profile. Using offline/local data if available.');
-        // try fallback to a stored leaderProfile in localStorage
+        // try fallback to a stored leaderProfile in sessionStorage
         try {
-          const stored = localStorage.getItem('leaderProfile');
+          const stored = sessionStorage.getItem('leaderProfile');
           if (stored) {
             const p = JSON.parse(stored);
             if (mounted) {
@@ -143,7 +143,7 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
     } else {
       // no id found — allow user to fill form manually (not fatal)
       setLoading(false);
-      setErrorMsg('User ID not found in localStorage (checked hackathonUser, userId, user, auth). You can still fill the form and save.');
+      setErrorMsg('User ID not found in sessionStorage (checked hackathonUser, userId, user, auth). You can still fill the form and save.');
     }
 
     return () => {
@@ -178,7 +178,7 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
 
       if (response.status >= 200 && response.status < 300) {
         setLeader(payload ?? formData);
-        localStorage.setItem('leaderProfile', JSON.stringify(payload ?? formData));
+        sessionStorage.setItem('leaderProfile', JSON.stringify(payload ?? formData));
         toast.success('Profile saved successfully.');
         if (typeof setIsStep1Saved === 'function') setIsStep1Saved(true);
 
