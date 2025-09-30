@@ -213,3 +213,42 @@ export const Logout = (req, res, next) => {
         next(error);
     }
 }
+
+
+export const refreshData = async (req, res, next) => {
+    try {
+        if (!req.user) {
+            const error = new Error('User not authenticated');
+            error.statusCode = 401;
+            return next(error);
+        }
+        const user = await User.findById(req.user._id).select('-__v').lean();
+        if (!user) {
+            const error = new Error('User not found');
+            error.statusCode = 404;
+            return next(error);
+        }
+
+        const team = await Team.findById(user.teamId).select('-__v').lean();
+        if (!team) {
+            const error = new Error('Team not found');
+            error.statusCode = 404;
+            return next(error);
+        }
+
+        const theme = await Theme.findById(team.teamTheme).select('-__v').lean();
+        if (!theme) {
+            const error = new Error('Theme not found');
+            error.statusCode = 404;
+            return next(error);
+        }
+
+        res.status(200).json({
+            user,
+            team,
+            theme
+        });
+    } catch (error) {
+        next(error);
+    }
+};
