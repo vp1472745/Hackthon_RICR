@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FaPhone } from 'react-icons/fa';
-import PranaySir from '../../assets/pranaySir.png';
-import RajSir from '../../assets/rajSir.png';
+import { FaPhoneAlt  } from 'react-icons/fa';
+import PranaySir from '../../assets/pranaySir.webp';
+import RajSir from '../../assets/rajSir.webp';
 import { fadeInUp, containerVariants, itemVariants, THEME } from "./constants";
 
 export default function ContactSection() {
@@ -68,9 +68,9 @@ export default function ContactSection() {
                     Hackathon Manager
                   </p>
                   <div className="flex items-center justify-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg p-2">
-                    <FaPhone className="text-lg" />
-                    <a href="tel:+919876543210" className="hover:text-blue-300 transition-colors text-sm md:text-base">
-                      +91 98765 43210
+                    <FaPhoneAlt className="text-lg" />
+                    <a href="tel:+917566106266" className="hover:text-blue-300 transition-colors text-sm md:text-base">
+                      +91 75661 06266
                     </a>
                   </div>
                 </div>
@@ -105,9 +105,9 @@ export default function ContactSection() {
                     Hackathon Coordinator
                   </p>
                   <div className="flex items-center justify-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg p-2">
-                    <FaPhone className="text-lg" />
-                    <a href="tel:+919876543210" className="hover:text-blue-300 transition-colors text-sm md:text-base">
-                      +91 98765 43210
+                    <FaPhoneAlt className="text-lg" />
+                    <a href="tel:+917340862969" className="hover:text-blue-300 transition-colors text-sm md:text-base">
+                      +91 73408 62969
                     </a>
                   </div>
                 </div>

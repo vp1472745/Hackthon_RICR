@@ -26,7 +26,7 @@ const FEATURES = [
 
 export default function FeaturesSection() {
   return (
-    <section className="w-full py-16 md:py-20">
+    <section className="w-full py-6 md:py-10">
       <SectionHeader
         title="Why Join FutureMaze?"
         subtitle="Discover the unique opportunities that make FutureMaze the premier hackathon experience"
