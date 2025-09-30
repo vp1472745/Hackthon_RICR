@@ -53,7 +53,8 @@ export const authenticateLeader = async (req, res, next) => {
     const userId = decoded.userId || decoded.user_id; // Handle both possible field names
     const user = await User.findById(userId).populate('teamId');
     
-
+    console.log(user);
+    
     
     if (!user) {
       const error = new Error('User not found');
@@ -69,6 +70,7 @@ export const authenticateLeader = async (req, res, next) => {
     }
 
     req.user = user;
+    console.log("Leader authenticated");
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {

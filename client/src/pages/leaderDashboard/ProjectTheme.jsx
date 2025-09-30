@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, CheckCircle, Loader } from 'lucide-react';
-import { projectThemeAPI, userAPI } from '../../configs/api';
+import { projectThemeAPI, userAPI ,authAPI} from '../../configs/api';
 
 const ProjectTheme = () => {
   const [themes, setThemes] = useState([]);
@@ -90,6 +90,16 @@ const ProjectTheme = () => {
       setSelectedTheme(pendingSelection);
       setShowConfirmation(false);
       setPendingSelection(null);
+      const refresh_response = await authAPI.refreshData();
+      sessionStorage.setItem('hackathonUser', JSON.stringify({
+        email: refresh_response.data.user.email,
+        user: refresh_response.data.user,
+        team: refresh_response.data.team,
+        theme: refresh_response.data.theme,
+        ProblemStatements: refresh_response.data.ProblemStatements,
+        loginTime: sessionStorage.getItem('hackathonUser') ? JSON.parse(sessionStorage.getItem('hackathonUser')).loginTime : new Date().toISOString(),
+      }));
+
     } catch (err) {
       console.error(err);
       alert('Failed to select theme');
@@ -150,11 +160,10 @@ const ProjectTheme = () => {
                 key={theme._id}
                 onClick={() => handleThemeSelect(theme.themeName)}
                 aria-pressed={isSelected}
-                className={`group relative text-left bg-white rounded-2xl shadow-sm border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-100 ${
-                  isSelected
+                className={`group relative text-left bg-white rounded-2xl shadow-sm border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-100 ${isSelected
                     ? 'border-green-500 shadow-lg ring-4 ring-green-100 transform scale-102'
                     : 'border-gray-200 hover:border-blue-300 hover:scale-105'
-                }`}
+                  }`}
               >
                 {/* Selected Indicator */}
                 {isSelected && (
@@ -181,11 +190,10 @@ const ProjectTheme = () => {
                     <button
                       type="button"
                       disabled={isSelected}
-                      className={`w-full py-2 px-4 rounded-xl font-semibold transition-all duration-200 ${
-                        isSelected
+                      className={`w-full py-2 px-4 rounded-xl font-semibold transition-all duration-200 ${isSelected
                           ? 'bg-green-100 text-green-700 cursor-default border border-green-200'
                           : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md'
-                      }`}
+                        }`}
                       aria-disabled={isSelected}
                     >
                       {isSelected ? 'Theme Selected' : 'Select Theme'}

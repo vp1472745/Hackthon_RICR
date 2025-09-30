@@ -5,9 +5,11 @@ import {
   removeTeamMember,
   editTeamMemberByLeader,
   updateTermsAccepted,
-  
+
 } from '../controller/userController.js';
-import {  authenticateLeader } from '../middlewares/auth.js';
+
+
+import { authenticateLeader } from '../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -26,6 +28,7 @@ router.put('/leader/edit-member/:memberId', authenticateLeader, editTeamMemberBy
 
 // Update terms acceptance (user only)
 router.put('/update-terms', authenticateLeader, updateTermsAccepted);
+
 
 
 export default router;

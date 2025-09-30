@@ -122,18 +122,6 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
     return emailSet.size !== emails.filter(e => e).length || phoneSet.size !== phones.filter(p => p).length;
   };
 
-  // Convert frontend member to backend payload (GitHubProfile expected)
-  const normalizeMemberPayload = (member) => ({
-    fullName: member.fullName,
-    email: member.email,
-    phone: member.phone,
-    collegeName: member.collegeName || 'N/A',
-    course: member.course || 'N/A',
-    collegeBranch: member.collegeBranch || 'N/A',
-    collegeSemester: Number(member.collegeSemester) || 0,
-    GitHubProfile: member.githubLink || '',
-    teamId: leaderProfile?.teamId || undefined // include teamId if available
-  });
 
   const saveTeamMembers = async (members) => {
     setLoading(true);

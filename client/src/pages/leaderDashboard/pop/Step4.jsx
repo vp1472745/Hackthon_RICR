@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { userAPI } from '../../../configs/api';
+import { authAPI, userAPI } from '../../../configs/api';
 
 const Step4 = ({ setIsStep4Saved }) => {
   const [isAccepted, setIsAccepted] = useState(false);
@@ -16,9 +16,17 @@ const Step4 = ({ setIsStep4Saved }) => {
       try {
         const response = await userAPI.updateTermsAccepted({ termsAccepted: true });
         console.log('Terms accepted updated:', response.data);
-        const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
-        hackathonUser.user.termsAccepted = true; // Update termsAccepted to true
-        sessionStorage.setItem('hackathonUser', JSON.stringify(hackathonUser));
+
+        const refresh_response = await authAPI.refreshData();
+        sessionStorage.setItem('hackathonUser', JSON.stringify({
+          email: refresh_response.data.user.email,
+          user: refresh_response.data.user,
+          team: refresh_response.data.team,
+          theme: refresh_response.data.theme,
+          ProblemStatements: refresh_response.data.ProblemStatements,
+          loginTime: sessionStorage.getItem('hackathonUser') ? JSON.parse(sessionStorage.getItem('hackathonUser')).loginTime : new Date().toISOString(),
+        }));
+
         setIsStep4Saved(true); // Notify MultiStepModal that Step 4 is saved
       } catch (error) {
         console.error('Error updating termsAccepted:', error);

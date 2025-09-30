@@ -167,32 +167,32 @@ export const Login = async (req, res, next) => {
         }
 
         // Find the team by the user's teamId
-        const userTeam = await Team.findById(existingUser.teamId);
-        if (!userTeam) {
+        const team = await Team.findById(existingUser.teamId);
+        if (!team) {
             const error = new Error('Team not found for user');
             error.statusCode = 401;
             return next(error);
         }
 
         // Check if the teamCode matches
-        if (userTeam.teamCode !== teamCode) {
+        if (team.teamCode !== teamCode) {
             const error = new Error('Invalid Team ID Email combination');
             error.statusCode = 401;
             return next(error);
         }
 
-        const theme = await Theme.findById(userTeam.teamTheme) || null;
+        const theme = await Theme.findById(team.teamTheme) || null;
 
 
-        const ProblemStatements = await ProblemStatement.findById(userTeam.teamProblemStatement) || null;
+        const ProblemStatements = await ProblemStatement.findById(team.teamProblemStatement) || null;
 
         // generate token, set cookie, and return token in body too
-        const token = generateAuthToken(existingUser, userTeam, res);
+        const token = generateAuthToken(existingUser, team, res);
 
         res.status(200).json({
             message: 'Login successful',
             user: existingUser,
-            team: userTeam,
+            team,
             token,
             theme,
             ProblemStatements
@@ -217,37 +217,29 @@ export const Logout = (req, res, next) => {
 
 export const refreshData = async (req, res, next) => {
     try {
-        if (!req.user) {
-            const error = new Error('User not authenticated');
-            error.statusCode = 401;
-            return next(error);
-        }
-        const user = await User.findById(req.user._id).select('-__v').lean();
+
+        console.log("refreshingData");
+        
+        console.log(req.user);
+        const user = req.user;
+        const team = await Team.findById(req.user.teamId._id).select('-__v').lean();
         if (!user) {
             const error = new Error('User not found');
             error.statusCode = 404;
             return next(error);
         }
 
-        const team = await Team.findById(user.teamId).select('-__v').lean();
-        if (!team) {
-            const error = new Error('Team not found');
-            error.statusCode = 404;
-            return next(error);
-        }
-
-        const theme = await Theme.findById(team.teamTheme).select('-__v').lean();
-        if (!theme) {
-            const error = new Error('Theme not found');
-            error.statusCode = 404;
-            return next(error);
-        }
+        const theme = await Theme.findById(team.teamTheme) || null;
+        const ProblemStatements = await ProblemStatement.findById(team.teamProblemStatement) || null;
 
         res.status(200).json({
+            message: 'Data refreshed successfully',
             user,
             team,
-            theme
+            theme,
+            ProblemStatements
         });
+
     } catch (error) {
         next(error);
     }

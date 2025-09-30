@@ -238,7 +238,8 @@ export const updateTermsAccepted = async (req, res, next) => {
       error.statusCode = 404;
       return next(error);
     }
-
+    console.log("Terms accepted updated for user");
+    
     res.status(200).json({
       message: 'Terms and conditions updated successfully',
       user: updatedUser

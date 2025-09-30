@@ -53,7 +53,10 @@ export const authAPI = {
     // Send email with login details
     sendCredentials: (emailData) => api.post('/auth/sendCredentials', emailData),
     // Logout
-    logout: () => api.post('/auth/logout')
+    logout: () => api.post('/auth/logout'),
+    // Refresh user data
+    refreshData: () => api.get('/auth/refresh'),
+
 };
 
 // User API functions
@@ -71,8 +74,9 @@ export const userAPI = {
     updateTermsAccepted: () => api.put('/user/update-terms', { termsAccepted: true }),
 
     //update theme selection
-    updateThemeSelection: (teamId, themeName) => api.put(`/theme/select/${teamId}`, { themeName })
-
+    updateThemeSelection: (teamId, themeName) => api.put(`/theme/select/${teamId}`, { themeName }),
+    // Refresh user data
+   
 };
 
 export const projectThemeAPI = {
