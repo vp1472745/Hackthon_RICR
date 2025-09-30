@@ -262,7 +262,7 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              GitHub Profile (optional)
+              GitHub Profile<span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <Github className="w-4 h-4 absolute left-3 top-3 text-gray-400" />

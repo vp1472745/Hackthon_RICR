@@ -25,10 +25,11 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
     fetchThemes();
   }, []);
 
-  const handleThemeSelect = (themeName) => {
+  const handleThemeSelect =async (themeName) => {
     try {
       setSelectedTheme(themeName);
       sessionStorage.setItem('selectedTheme', themeName);
+      const res = await projectThemeAPI.selectThemeForTeam(teamId, themeName);
       console.log('Theme stored in sessionStorage:', themeName); // Debugging log
       setIsStep3Saved(true); // Notify MultiStepModal that Step3 is saved
       setIsNextDisabled(false); // Enable Next button when a theme is selected

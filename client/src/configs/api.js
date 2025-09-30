@@ -70,6 +70,9 @@ export const userAPI = {
     // Update terms accepted
     updateTermsAccepted: () => api.put('/user/update-terms', { termsAccepted: true }),
 
+    //update theme selection
+    updateThemeSelection: (teamId, themeName) => api.put(`/theme/select/${teamId}`, { themeName })
+
 };
 
 export const projectThemeAPI = {

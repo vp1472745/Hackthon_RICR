@@ -9,7 +9,7 @@ const RightSidePanel = () => {
   useEffect(() => {
     const fetchData = async () => {
       const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser'));
-      const theme = hackathonUser?.theme?.themeName || 'No theme selected';
+      const theme = hackathonUser?.theme?.themeName || sessionStorage.getItem('selectedTheme') || 'No theme selected';
       setSelectedTheme(theme);
 
       const teamId = hackathonUser?.team?._id || hackathonUser?.teamId;

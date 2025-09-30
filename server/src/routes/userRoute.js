@@ -27,4 +27,5 @@ router.put('/leader/edit-member/:memberId', authenticateLeader, editTeamMemberBy
 // Update terms acceptance (user only)
 router.put('/update-terms', authenticateLeader, updateTermsAccepted);
 
+
 export default router;
