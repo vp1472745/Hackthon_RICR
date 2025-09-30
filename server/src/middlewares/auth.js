@@ -4,6 +4,7 @@ import User from '../models/UserModel.js';
 export const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
+
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
     if (!token) {
@@ -15,7 +16,7 @@ export const authenticateToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
     const userId = decoded.userId || decoded.user_id; // Handle both possible field names
     const user = await User.findById(userId).populate('teamId');
-    
+
     if (!user) {
       const error = new Error('User not found');
       error.statusCode = 401;
@@ -52,10 +53,10 @@ export const authenticateLeader = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
     const userId = decoded.userId || decoded.user_id; // Handle both possible field names
     const user = await User.findById(userId).populate('teamId');
-    
+
     console.log(user);
-    
-    
+
+
     if (!user) {
       const error = new Error('User not found');
       error.statusCode = 401;
@@ -83,6 +84,10 @@ export const authenticateLeader = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
+
 
 
 

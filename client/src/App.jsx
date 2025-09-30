@@ -6,6 +6,9 @@ import Home from "./pages/home.jsx";
 import RegisterMain from "../src/pages/register/RegisterMain.jsx";
 import Login from "./pages/login/login.jsx";
 import LeaderDashboard from "./pages/leaderDashboard/leaderDashboard.jsx";
+import AdminLogin from "./pages/superAdminDashboard/SuperAdminLogin.jsx";
+import AdminDashboard from "./pages/superAdminDashboard/adminDashboard.jsx";
+import Admin from "./pages/AdminDashboard/adminDashboard.jsx";
 import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -41,6 +44,9 @@ function App() {
                                     <Route path="/register/*" element={<RegisterMain />} />
                                     <Route path="/login" element={<Login />} />
                                     <Route path="/leader-dashboard" element={<LeaderDashboard />} />
+                                    <Route path="/dashboard/login" element={<AdminLogin />} />
+                                    <Route path="/dashboard/super-admin" element={<AdminDashboard />} />
+                                    <Route path="/dashboard/admin" element={<Admin />} />
                                 </Routes>
                             </main>
                         </>

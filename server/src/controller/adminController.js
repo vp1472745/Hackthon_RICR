@@ -1,4 +1,5 @@
 import Admin from "../models/adminRegisterModel.js";
+import User from "../models/UserModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -45,36 +46,6 @@ export const adminLogin = async (req, res) => {
   }
 };
 
-
-// Update admin role
-export const updateAdminRole = async (req, res) => {
-  const { id } = req.params;
-  const { role } = req.body;
-
-  if (!["admin", "superadmin"].includes(role)) {
-    return res.status(400).json({ message: "Invalid role" });
-  }
-
-  try {
-    const admin = await Admin.findByIdAndUpdate(
-      id,
-      { role },
-      { new: true, runValidators: true }
-    );
-
-    if (!admin) {
-      return res.status(404).json({ message: "Admin not found" });
-    }
-
-    res.status(200).json({
-      message: "Admin role updated successfully",
-      admin,
-    });
-  } catch (error) {
-    handleError(res, error, "Error updating admin role");
-  }
-};
-
 // Delete admin
 export const deleteAdmin = async (req, res) => {
   const { id } = req.params;
@@ -89,5 +60,25 @@ export const deleteAdmin = async (req, res) => {
     res.status(200).json({ message: "Admin deleted successfully" });
   } catch (error) {
     handleError(res, error, "Error deleting admin");
+  }
+};
+
+//logout admin
+export const adminLogout = (req, res) => {
+  res.clearCookie("authToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  });
+  res.status(200).json({ message: "Logout successful" });
+};
+
+
+//get all users
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    handleError(res, error, "Error fetching users");
   }
 };

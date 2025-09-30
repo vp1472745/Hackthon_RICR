@@ -104,7 +104,14 @@ export const problemStatementAPI = {
 };
 
 
+export const AdminAPI = {
+// router.post("/login", adminLogin);
+login: (loginData) => api.post('/admin/login', loginData),
+// router.post("/logout", authenticateAdmin, adminLogout);
+logout: () => api.post('/admin/logout'),
 
+
+};
 
 
 

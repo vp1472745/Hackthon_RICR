@@ -6,7 +6,7 @@ import Admin from "../models/adminRegisterModel.js"; // adjust path if needed
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/HackathonDB";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://contact_db_user:QL7z0tkGxA7Y60ri@ricr.wp5wt34.mongodb.net/Hackathon_RICR_DB";
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || "10", 10);
 
 if (!MONGO_URI) {
