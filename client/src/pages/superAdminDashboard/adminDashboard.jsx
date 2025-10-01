@@ -1,23 +1,40 @@
-// src/components/AdminDashboard.jsx
-import React, { useState } from 'react'
-import Sidebar from './Sidebar'
+import React, { useState } from 'react';
+import Sidebar from './Sidebar';
+import Overview from './Tab/overviewTab';
+import TeamManageTab from './Tab/teamManageTab';
+import ThemeManageTab from './Tab/themeManageTab';
+import ResultManageTab from './Tab/resultManageTab';
+import PsManageTab from './Tab/psManageTab';
 
-const Home = () => <div>Welcome to the Super Admin Home!</div>
-const Settings = () => <div>Settings Page (Coming Soon)</div>
-const LoggedOut = () => <div className='p-4'>You are being logged out...</div>
+const Home = () => <div><Overview /></div>;
+const Team = () => <div><TeamManageTab /></div>;
+const Theme = () => <div><ThemeManageTab /></div>;
+const Result = () => <div><ResultManageTab /></div>;
+const Ps = () => <div><PsManageTab /></div>;
+const LoggedOut = () => <div className="p-8">You are logged out.</div>;
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('home')
+  // initial active tab should match NAV_ITEMS keys (case-sensitive)
+  const [activeTab, setActiveTab] = useState('Home');
 
-  let content
-  if (activeTab === 'home') content = <Home />
-  else if (activeTab === 'settings') content = <Settings />
-  else if (activeTab === 'logout') content = <LoggedOut />
+  let content;
+  if (activeTab === 'Home') content = <Home />;
+  else if (activeTab === 'Team') content = <Team />;
+  else if (activeTab === 'Theme') content = <Theme />;
+  else if (activeTab === 'Result') content = <Result />;
+  else if (activeTab === 'Ps') content = <Ps />;
+  else if (activeTab === 'logout') content = <LoggedOut />;
 
   return (
-    <div className='flex min-h-screen'>
+    <div className='min-h-screen flex'>
       <Sidebar onTabChange={setActiveTab} activeTab={activeTab} />
-      <main className='flex-1 p-8'>{content}</main>
+      {/* use CSS variable set by Sidebar to control left margin responsively */}
+      <main
+        className='flex-1 p-6'
+        style={{ marginLeft: 'var(--sidebar-width, 16rem)', transition: 'margin-left 200ms' }}
+      >
+        {content}
+      </main>
     </div>
-  )
+  );
 }

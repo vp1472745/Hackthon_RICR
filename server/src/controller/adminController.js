@@ -1,5 +1,10 @@
+
+import Team from "../models/TeamModel.js";
+import ProblemStatement from "../models/problemStatementModel.js";
 import Admin from "../models/adminRegisterModel.js";
 import User from "../models/UserModel.js";
+import Theme from "../models/projectTheme.js";
+import Payment from "../models/PaymentModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -71,6 +76,207 @@ export const adminLogout = (req, res) => {
   });
   res.status(200).json({ message: "Logout successful" });
 };
+
+
+
+// Create a new theme
+export const createTheme = async (req, res) => {
+  try {
+    const { themeName, themeShortDescription, themeDescription } = req.body;
+    if (!themeName || !themeShortDescription || !themeDescription) {
+      return res.status(400).json({ message: "All theme fields are required." });
+    }
+    const theme = new Theme({ themeName, themeShortDescription, themeDescription });
+    await theme.save();
+    res.status(201).json({ message: "Theme created successfully", theme });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to create theme", error: error.message });
+  }
+};
+
+// Get all themes
+export const getAllThemes = async (req, res) => {
+  try {
+    const themes = await Theme.find().sort({ createdAt: -1 });
+    // For each theme, count how many teams have selected it and get their info
+    const teams = await Team.find({ teamTheme: { $ne: null } }).select('_id teamName teamCode teamTheme');
+    // Map theme _id to array of teams
+    const teamMap = {};
+    teams.forEach(team => {
+      const themeId = team.teamTheme?.toString();
+      if (!themeId) return;
+      if (!teamMap[themeId]) teamMap[themeId] = [];
+      teamMap[themeId].push({ _id: team._id, teamName: team.teamName, teamCode: team.teamCode });
+    });
+    // Attach count and teams to each theme
+    const themesWithTeams = themes.map(theme => {
+      const enrolledTeams = teamMap[theme._id.toString()] || [];
+      return {
+        ...theme.toObject(),
+        teamCount: enrolledTeams.length,
+        enrolledTeams
+      };
+    });
+    res.status(200).json({ themes: themesWithTeams });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch themes", error: error.message });
+  }
+};
+
+
+//edit theme
+export const editTheme = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { themeName, themeShortDescription, themeDescription } = req.body;
+    const updatedTheme = await Theme.findByIdAndUpdate(id, {
+      themeName,
+      themeShortDescription,
+      themeDescription
+    }, { new: true });
+    if (!updatedTheme) {
+      return res.status(404).json({ message: "Theme not found" });
+    }
+    res.status(200).json({ message: "Theme updated successfully", theme: updatedTheme });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update theme", error: error.message });
+  }
+};
+
+
+
+// delete theme 
+export const deleteTheme = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedTheme = await Theme.findByIdAndDelete(id);
+    if (!deletedTheme) {
+      return res.status(404).json({ message: "Theme not found" });
+    }
+    res.status(200).json({ message: "Theme deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete theme", error: error.message });
+  }
+};
+
+
+// Create a new problem statement
+export const createProblemStatement = async (req, res) => {
+  try {
+    const { PStitle, PSdescription, PSTheme } = req.body;
+
+    // Validation
+    if (!PStitle || !PSdescription || !PSTheme) {
+      return res.status(400).json({
+        success: false,
+        message: "PStitle, PSdescription and PSTheme are required",
+      });
+    }
+
+    // Check if PSTheme is valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(String(PSTheme))) {
+      return res.status(400).json({
+        success: false,
+        message: "PSTheme must be a valid Theme ObjectId",
+      });
+    }
+
+    // Create problem statement (Mongoose string ko khud ObjectId me convert karega)
+    const newProblem = await ProblemStatement.create({
+      PStitle,
+      PSdescription,
+      PSTheme: String(PSTheme),
+    });
+
+    // Populate theme details
+    await newProblem.populate("PSTheme");
+
+    return res.status(201).json({
+      success: true,
+      message: "Problem Statement created successfully",
+      problem: newProblem,
+    });
+  } catch (error) {
+    console.error("createProblemStatement error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// Get all problem statements (admin, no filter)
+export const getAllProblemStatementsAdmin = async (req, res) => {
+  try {
+    const problemStatements = await ProblemStatement.find().populate('PSTheme').lean();
+    res.status(200).json({ success: true, problemStatements });
+  } catch (error) {
+    console.error('getAllProblemStatementsAdmin error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+// edit problem statement 
+export const editProblemStatement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { PStitle, PSdescription, PSTheme } = req.body;
+    const updatedProblem = await ProblemStatement.findByIdAndUpdate(id, {
+      PStitle,
+      PSdescription,
+      PSTheme
+    }, { new: true });
+    if (!updatedProblem) {
+      return res.status(404).json({ message: "Problem Statement not found" });
+    }
+    await updatedProblem.populate('PSTheme');
+    res.status(200).json({ message: "Problem Statement updated successfully", problem: updatedProblem });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update Problem Statement", error: error.message });
+  }
+};
+
+
+// delete problem statement
+export const deleteProblemStatement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedProblem = await ProblemStatement
+      .findByIdAndDelete(id);
+    if (!deletedProblem) {
+      return res.status(404).json({ message: "Problem Statement not found" });
+    }
+    res.status(200).json({ message: "Problem Statement deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete Problem Statement", error: error.message });
+  }
+};
+
+
+// GET ALL TEAMS WITH THEIR MEMBERS
+export const getAllTeams = async (req, res) => {
+  try {
+    const teams = await Team.find()
+      .populate('teamTheme')
+      .populate('teamProblemStatement')
+      .select('-__v')
+      .lean();
+    const teamsWithMembers = await Promise.all(teams.map(async (team) => {
+      const teamMembers = await User.find({ teamId: team._id })
+        .select('_id fullName email phone role collegeName course collegeBranch collegeSemester GitHubProfile termsAccepted createdAt updatedAt')
+        .sort({ role: 1, createdAt: 1 });
+      return { ...team, members: teamMembers };
+    }));
+    res.status(200).json({ teams: teamsWithMembers });
+  } catch (error) {
+    console.error('getAllTeams error:', error);
+    res.status(500).json({ message: 'Failed to fetch teams', error: error.message });
+  }
+};
+
+
 
 
 //get all users

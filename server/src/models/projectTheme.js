@@ -5,6 +5,10 @@ const themeSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    themeShortDescription: {
+        type: String,
+        required: true,
+    },
     themeDescription: {
         type: String,
         required: true,

@@ -1,4 +1,9 @@
+
+
 import axios from 'axios';
+
+
+
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -105,12 +110,36 @@ export const problemStatementAPI = {
 
 
 export const AdminAPI = {
+    getAllUsers: () => api.get('/admin/users'),
+    getAllTeams: () => api.get('/admin/teamsWithMembers'),
 // router.post("/login", adminLogin);
 login: (loginData) => api.post('/admin/login', loginData),
 // router.post("/logout", authenticateAdmin, adminLogout);
 logout: () => api.post('/admin/logout'),
 
+teamsWithMembers: () => api.get('/admin/teamsWithMembers'),
 
+createTheme: (themeData) => api.post('/admin/createTheme', themeData),
+
+
+getAllThemes: () => api.get('/admin/themes'),
+createProblemStatement: (data) => api.post('/admin/createProblemStatement', data),
+
+
+getAllProblemStatementsAdmin: () => api.get('/admin/problemStatements'),
+
+getAllUsers: () => api.get('/admin/users'),
+getAllTeams: () => api.get('/admin/teamsWithMembers'),
+editTheme: (id, data) => api.put(`/admin/editTheme/${id}`, data),
+// router.delete("/deleteTheme/:id", deleteTheme);
+deleteTheme: (id) => api.delete(`/admin/deleteTheme/${id}`),
+
+editProblemStatement: (id, data) => api.put(`/admin/editProblemStatement/${id}`, data),
+deleteProblemStatement: (id) => api.delete(`/admin/deleteProblemStatement/${id}`),
+
+
+// router.post('/createProblemStatement', createProblemStatement);
+createProblemStatement: (data) => api.post('/admin/createProblemStatement', data),
 };
 
 

@@ -30,20 +30,7 @@ export const selectThemeForTeam = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-// Create a new theme
-export const createTheme = async (req, res) => {
-  try {
-    const { themeName, themeDescription } = req.body;
-    if (!themeName || !themeDescription) {
-      return res.status(400).json({ message: "Theme name and description are required." });
-    }
-    const theme = new Theme({ themeName, themeDescription });
-    await theme.save();
-    res.status(201).json({ message: "Theme created successfully", theme });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to create theme", error: error.message });
-  }
-};
+
 
 // Get all themes
 export const getAllThemes = async (req, res) => {

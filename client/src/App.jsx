@@ -6,7 +6,7 @@ import Home from "./pages/home.jsx";
 import RegisterMain from "../src/pages/register/RegisterMain.jsx";
 import Login from "./pages/login/login.jsx";
 import LeaderDashboard from "./pages/leaderDashboard/leaderDashboard.jsx";
-import AdminLogin from "./pages/superAdminDashboard/SuperAdminLogin.jsx";
+import AdminLogin from "./pages/login/adminsLogin.jsx";
 import AdminDashboard from "./pages/superAdminDashboard/adminDashboard.jsx";
 import Admin from "./pages/AdminDashboard/adminDashboard.jsx";
 import 'react-toastify/dist/ReactToastify.css';
