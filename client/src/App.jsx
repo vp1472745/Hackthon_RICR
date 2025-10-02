@@ -8,7 +8,9 @@ import Login from "./pages/login/login.jsx";
 import LeaderDashboard from "./pages/leaderDashboard/leaderDashboard.jsx";
 import AdminLogin from "./pages/login/adminsLogin.jsx";
 import AdminDashboard from "./pages/superAdminDashboard/adminDashboard.jsx";
-import Admin from "./pages/AdminDashboard/adminDashboard.jsx";
+import Admin from "./pages/superAdminDashboard/adminDashboard.jsx";
+import AdminResgister from "./pages/superAdminDashboard/Tab/adminRegister.jsx";
+import SAdminDashboard from "./pages/adminDashboard/adminDashboard.jsx";
 import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -47,6 +49,8 @@ function App() {
                                     <Route path="/dashboard/login" element={<AdminLogin />} />
                                     <Route path="/dashboard/super-admin" element={<AdminDashboard />} />
                                     <Route path="/dashboard/admin" element={<Admin />} />
+                                    <Route path="/dashboard/admin-register" element={<AdminResgister />} />
+                                    <Route path="/dashboard/sadmin" element={<SAdminDashboard />} />    
                                 </Routes>
                             </main>
                         </>

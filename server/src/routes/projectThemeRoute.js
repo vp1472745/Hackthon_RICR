@@ -1,9 +1,7 @@
-import express from "express";
-import {
 
-	selectThemeForTeam,
-getAllThemes	
-} from "../controller/projectThemeController.js";
+import express from "express";
+import { selectThemeForTeam, getAllThemes } from "../controller/projectThemeController.js";
+
 
 const router = express.Router();
 

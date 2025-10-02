@@ -18,12 +18,14 @@ const adminData = [
   {
     username: "admin",
     email: "admin@example.com",
+    phone: "6268923703",
     password: "admin123",
     role: "admin",
   },
   {
     username: "superadmin",
     email: "superadmin@example.com",
+    phone: "9425706872",
     password: "superadmin123",
     role: "superadmin",
   },
@@ -56,6 +58,7 @@ const seedAdmins = async () => {
       const doc = new Admin({
         username: admin.username,
         email: admin.email,
+        phone: admin.phone,
         password: hashed,
         role: admin.role,
       });

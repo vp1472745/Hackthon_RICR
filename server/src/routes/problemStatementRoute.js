@@ -1,7 +1,7 @@
+
 import express from 'express';
-import {
-	getAllProblemStatements,
-} from '../controller/projectProblemController.js';
+import { getAllProblemStatements } from '../controller/projectProblemController.js';
+
 
 const router = express.Router();
 

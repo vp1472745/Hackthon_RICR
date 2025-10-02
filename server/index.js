@@ -7,7 +7,8 @@ import cors from 'cors';
 import AuthRouter from './src/routes/authRoutes.js';
 import UserRoute from './src/routes/userRoute.js';
 import ProjectThemeRouter from './src/routes/projectThemeRoute.js';
-import AdminRoute from './src/routes/adminRoute.js';
+import SuperAdminRoute from './src/routes/SuperadminRoute.js';
+import AdminRegister from './src/routes/adminRoutes.js';  
 
 import ProblemStatementRoute from './src/routes/problemStatementRoute.js';
 import morgan from 'morgan';
@@ -31,8 +32,8 @@ app.use('/auth', AuthRouter);
 app.use('/user', UserRoute);
 app.use('/theme', ProjectThemeRouter);
 app.use('/problem', ProblemStatementRoute);
-app.use('/admin', AdminRoute);
-
+app.use('/admin', SuperAdminRoute);
+app.use('/S/admin', AdminRegister);
 
 app.get('/', (req, res) => {
     res.send('API is running...');

@@ -16,7 +16,7 @@ function AdminLogin() {
         if (admin.role === "superadmin") {
             navigate("/dashboard/super-admin");
         } else if (admin.role === "admin") {
-            navigate("/dashboard/admin");
+            navigate("/dashboard/sadmin");
         } else {
             setError("Unauthorized role. Access denied.");
         }

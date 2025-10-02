@@ -7,11 +7,27 @@ import {
   Headset,
   UserSquare,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Users
 } from 'lucide-react';
-import { userAPI } from '../configs/api';
+import { userAPI } from '../../configs/api';
 
-const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
+
+const iconMap = {
+  overview: LayoutDashboard,
+  projectTheme: Layers,
+  problemStatement: BookOpen,
+  team: UserSquare,
+  result: Award,
+  contact: Headset,
+  // Admin dashboard custom icons (fallback to BookOpen if not found)
+  manageTheme: Layers,
+  viewUsers: UserSquare,
+  viewTeams: Users,
+  problemStatements: BookOpen,
+};
+
+const SideBar = ({ activeSection, setActiveSection, onSidebarToggle, menuItems: customMenuItems }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [teamName, setTeamName] = useState('');
 
@@ -19,22 +35,16 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
     const fetchTeamName = async () => {
       try {
         const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
-        console.log('Session Storage hackathonUser:', hackathonUser);
-
         if (hackathonUser.team && hackathonUser.team.teamName) {
-          console.log('Team Name from sessionStorage:', hackathonUser.team.teamName);
           setTeamName(hackathonUser.team.teamName);
         } else {
-          console.log('Fetching team info from API...');
           const response = await userAPI.getTeamInfo();
-          console.log('API Response:', response);
           setTeamName(response.data?.team?.name || '');
         }
       } catch (error) {
-        console.error('Error fetching team name:', error);
+        // ignore
       }
     };
-
     fetchTeamName();
   }, []);
 
@@ -46,7 +56,7 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
     }
   };
 
-  const menuItems = [
+  const menuItems = customMenuItems || [
     {
       id: 'overview',
       title: 'Overview',
@@ -117,26 +127,23 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
       <nav className="flex-1 p-2 sm:p-3 overflow-y-auto">
         <ul className="space-y-1">
           {menuItems.map((item) => {
-            const Icon = item.icon;
+            // Use icon from iconMap if id matches, else fallback to item.icon
+            const Icon = iconMap[item.id] || item.icon || BookOpen;
             const isActive = activeSection === item.id;
-
             return (
               <li key={item.id} className="relative">
                 <button
-                  onClick={() => {
-                    setActiveSection(item.id);
-                  }}
+                  onClick={() => setActiveSection(item.id)}
                   className={`w-full flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg transition-all duration-200 group ${isActive
                     ? 'bg-[#0B2A4A] text-white shadow-md'
                     : 'hover:bg-gray-50 text-gray-700 hover:text-[#0B2A4A]'
-                    }`}
+                  }`}
                 >
                   <Icon
                     size={16}
                     className={`flex-shrink-0 sm:w-[18px] sm:h-[18px] ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-[#0B2A4A]'
                       }`}
                   />
-
                   {!isCollapsed && (
                     <div className="flex-1 text-center sm:text-left min-w-0">
                       <div className={`font-medium text-xs sm:text-sm truncate ${isActive ? 'text-white' : 'text-gray-900'
@@ -149,12 +156,10 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle }) => {
                       </div>
                     </div>
                   )}
-
                   {!isCollapsed && isActive && (
                     <ChevronRight size={12} className="text-white flex-shrink-0 sm:w-[14px] sm:h-[14px]" />
                   )}
                 </button>
-
                 {/* Tooltip for collapsed state */}
                 {isCollapsed && (
                   <div className="absolute left-12 sm:left-16 bg-gray-900 text-white px-2 py-1 rounded text-xs sm:text-sm opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50 whitespace-nowrap">

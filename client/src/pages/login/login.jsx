@@ -75,27 +75,7 @@ const Login = () => {
     }
   };
 
-  const handleForgotPassword = () => {
-    toast.info(
-      <div className="flex flex-col gap-3">
-        <h4 className="font-semibold text-blue-800">Team Code Recovery</h4>
-        <p className="text-sm">Contact event organizers with your registered email:</p>
-        <div className="text-sm space-y-1">
-          <p><strong>Email:</strong> futuremaze@ricr.ac.in</p>
-          <p><strong>Phone:</strong> +91 99999 99999</p>
-        </div>
-        <p className="text-xs text-gray-600">Only registered team leaders can request team code recovery.</p>
-      </div>, {
-      position: "top-center",
-      autoClose: 8000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      className: 'toast-info-large'
-    }
-    );
-  };
+
 
   return (
     <div className="bg-gradient-to-br from-[#0B2A4A] via-[#1D5B9B] to-[#0B2A4A] flex items-center h-full justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -160,6 +140,7 @@ const Login = () => {
                   className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#1D5B9B] focus:border-transparent transition-colors duration-200 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                   placeholder="Enter your registered email"
                   autoComplete="email"
+                  style={{ textTransform: 'none' }}
                 />
               </div>
               {errors.email && (

@@ -1,7 +1,4 @@
-
-
 import axios from 'axios';
-
 
 
 
@@ -14,7 +11,6 @@ const api = axios.create({
         'Content-Type': 'application/json',
     },
 });
-
 
 // Add request interceptor to include auth token
 api.interceptors.request.use(
@@ -30,7 +26,13 @@ api.interceptors.request.use(
     }
 );
 
-// Add response interceptor to handle token expiry
+// Custom permission modal handler (set by components)
+let showGlobalPermissionModal = null;
+
+export function setGlobalPermissionModalHandler(fn) {
+    showGlobalPermissionModal = fn;
+}
+
 api.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -39,6 +41,8 @@ api.interceptors.response.use(
             sessionStorage.removeItem('authToken');
             sessionStorage.removeItem('hackathonUser');
             window.location.href = '/login';
+        } else if (error.response?.status === 403 && typeof showGlobalPermissionModal === 'function') {
+            showGlobalPermissionModal();
         }
         return Promise.reject(error);
     }
@@ -110,8 +114,21 @@ export const problemStatementAPI = {
 
 
 export const AdminAPI = {
+    // Fetch admin by email (for live permission updates)
+    getByEmail: (email) => api.get(`/admin/admin-by-email?email=${encodeURIComponent(email)}`),
     getAllUsers: () => api.get('/admin/users'),
     getAllTeams: () => api.get('/admin/teamsWithMembers'),
+
+
+    // Two-step admin registration
+    sendAdminOTP: (data) => api.post('admin/sendAdminOTP', data),
+    verifyAdminOTP: (data) => api.post('admin/verifyAdminOTP', data),
+
+
+// router.post("/register", registerAdmin);
+registerAdmin: (adminData) => api.post('/admin/register', adminData),
+
+
 // router.post("/login", adminLogin);
 login: (loginData) => api.post('/admin/login', loginData),
 // router.post("/logout", authenticateAdmin, adminLogout);
@@ -140,7 +157,39 @@ deleteProblemStatement: (id) => api.delete(`/admin/deleteProblemStatement/${id}`
 
 // router.post('/createProblemStatement', createProblemStatement);
 createProblemStatement: (data) => api.post('/admin/createProblemStatement', data),
+
 };
+
+
+export const subAdminAPI = {
+    setAdminPermissions: (email, permissions) => api.put(`/s/admin/set-permissions/${email}`, { permissions }),
+    getAllAdmins: () => api.get('/s/admin/admins'),
+    getAdminPermissions: (email) => api.get(`/s/admin/admin-permissions/${email}`),
+    // Admin permissions
+    setAdminPermissions: (email, permissions) => api.put(`/s/admin/set-permissions/${email}`, { permissions }),
+    getAdminPermissions: (email) => api.get(`/s/admin/admin-permissions/${email}`),
+//    // Admin 
+// // Theme routes
+// router.post('', requireAdminPermission('createTheme'), createTheme);
+// router.get('/themes', requireAdminPermission('viewThemes'), getAllThemes);
+// router.put('/editTheme/:id', requireAdminPermission('editTheme'), editTheme);
+// router.delete('/deleteTheme/:id', requireAdminPermission('deleteTheme'), deleteTheme);
+
+// // Problem Statement routes
+// router.post('/createProblemStatement', requireAdminPermission('createProblemStatement'), createProblemStatement);
+// router.get('/problemStatements', requireAdminPermission('viewProblemStatements'), getAllProblemStatementsAdmin);
+// router.put('/editProblemStatement/:id', requireAdminPermission('editProblemStatement'), editProblemStatement);
+// router.delete('/deleteProblemStatement/:id', requireAdminPermission('deleteProblemStatement'), deleteProblemStatement);
+
+// // Teams and Users
+// router.get('/teamsWithMembers', requireAdminPermission('viewTeams'), getAllTeams);
+// router.get('/users', requireAdminPermission('viewUsers'), getAllUsers);
+
+
+
+
+};  
+
 
 
 

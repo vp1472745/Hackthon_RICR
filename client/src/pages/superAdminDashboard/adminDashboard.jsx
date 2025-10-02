@@ -5,12 +5,14 @@ import TeamManageTab from './Tab/teamManageTab';
 import ThemeManageTab from './Tab/themeManageTab';
 import ResultManageTab from './Tab/resultManageTab';
 import PsManageTab from './Tab/psManageTab';
+import AdminAcessTab from './Tab/adminAcessTab';
 
 const Home = ({ onTabChange }) => <div><Overview onTabChange={onTabChange} /></div>;
 const Team = () => <div><TeamManageTab /></div>;
 const Theme = () => <div><ThemeManageTab /></div>;
 const Result = () => <div><ResultManageTab /></div>;
 const Ps = () => <div><PsManageTab /></div>;
+const AdminAccess = () => <div><AdminAcessTab /></div>;
 const LoggedOut = () => <div className="p-8">You are logged out.</div>;
 
 export default function AdminDashboard() {
@@ -23,6 +25,7 @@ export default function AdminDashboard() {
   else if (activeTab === 'Theme') content = <Theme />;
   else if (activeTab === 'Result') content = <Result />;
   else if (activeTab === 'Ps') content = <Ps />;
+  else if (activeTab === 'Admin Access') content = <AdminAccess />;
   else if (activeTab === 'logout') content = <LoggedOut />;
 
   return (
