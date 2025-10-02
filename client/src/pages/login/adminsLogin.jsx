@@ -11,6 +11,13 @@ function AdminLogin() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    // Clear any localStorage data on component mount
+    React.useEffect(() => {
+        localStorage.removeItem("adminEmail");
+        localStorage.removeItem("permissions");
+        localStorage.removeItem("adminUser");
+    }, []);
+
     // Helper to check role and redirect accordingly
     const handleRoleRedirect = (admin) => {
         if (admin.role === "superadmin") {
@@ -29,6 +36,13 @@ function AdminLogin() {
         try {
             const res = await AdminAPI.login({ email, password });
             const admin = res.data.admin;
+            
+            // Clear any previous localStorage data that might be interfering
+            localStorage.removeItem("adminEmail");
+            localStorage.removeItem("permissions");
+            localStorage.removeItem("adminUser");
+            
+            // Store admin data in sessionStorage only
             sessionStorage.setItem("adminUser", JSON.stringify(admin));
             handleRoleRedirect(admin);
         } catch (err) {

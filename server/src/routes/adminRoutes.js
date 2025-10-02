@@ -20,7 +20,7 @@ const router = express.Router();
 
 // Admin permissions
 router.put('/set-permissions/:email', setAdminPermissions);
-router.get('/admin-permissions/:email', requireAdminPermission('viewAdminPermissions'), getAdminPermissions);
+router.get('/admin-permissions/:email', getAdminPermissions);
 
 // Theme routes
 router.post('/createTheme', requireAdminPermission('createTheme'), createTheme);

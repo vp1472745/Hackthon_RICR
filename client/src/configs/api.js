@@ -162,32 +162,28 @@ createProblemStatement: (data) => api.post('/admin/createProblemStatement', data
 
 
 export const subAdminAPI = {
-    setAdminPermissions: (email, permissions) => api.put(`/s/admin/set-permissions/${email}`, { permissions }),
-    getAllAdmins: () => api.get('/s/admin/admins'),
-    getAdminPermissions: (email) => api.get(`/s/admin/admin-permissions/${email}`),
     // Admin permissions
     setAdminPermissions: (email, permissions) => api.put(`/s/admin/set-permissions/${email}`, { permissions }),
     getAdminPermissions: (email) => api.get(`/s/admin/admin-permissions/${email}`),
-//    // Admin 
-// // Theme routes
-// router.post('', requireAdminPermission('createTheme'), createTheme);
-// router.get('/themes', requireAdminPermission('viewThemes'), getAllThemes);
-// router.put('/editTheme/:id', requireAdminPermission('editTheme'), editTheme);
-// router.delete('/deleteTheme/:id', requireAdminPermission('deleteTheme'), deleteTheme);
-
-// // Problem Statement routes
-// router.post('/createProblemStatement', requireAdminPermission('createProblemStatement'), createProblemStatement);
-// router.get('/problemStatements', requireAdminPermission('viewProblemStatements'), getAllProblemStatementsAdmin);
-// router.put('/editProblemStatement/:id', requireAdminPermission('editProblemStatement'), editProblemStatement);
-// router.delete('/deleteProblemStatement/:id', requireAdminPermission('deleteProblemStatement'), deleteProblemStatement);
-
-// // Teams and Users
-// router.get('/teamsWithMembers', requireAdminPermission('viewTeams'), getAllTeams);
-// router.get('/users', requireAdminPermission('viewUsers'), getAllUsers);
-
-
-
-
+    
+    // Theme routes
+    createTheme: (data) => api.post('/s/admin/createTheme', data),
+    getAllThemes: () => api.get('/s/admin/themes'),
+    editTheme: (id, data) => api.put(`/s/admin/editTheme/${id}`, data),
+    deleteTheme: (id) => api.delete(`/s/admin/deleteTheme/${id}`),
+    
+    // Problem Statement routes
+    createProblemStatement: (data) => api.post('/s/admin/createProblemStatement', data),
+    getAllProblemStatementsAdmin: () => api.get('/s/admin/problemStatements'),
+    editProblemStatement: (id, data) => api.put(`/s/admin/editProblemStatement/${id}`, data),
+    deleteProblemStatement: (id) => api.delete(`/s/admin/deleteProblemStatement/${id}`),
+    
+    // Teams and Users
+    getAllTeams: () => api.get('/s/admin/teamsWithMembers'),
+    getAllUsers: () => api.get('/s/admin/users'),
+    
+    // Admins
+    getAllAdmins: () => api.get('/s/admin/admins')
 };  
 
 

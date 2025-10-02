@@ -15,6 +15,11 @@ const AdminDashboard = () => {
 
   // Fetch admin email from sessionStorage on mount
   useEffect(() => {
+    // Clear any localStorage data that might be interfering
+    localStorage.removeItem("adminEmail");
+    localStorage.removeItem("permissions");
+    localStorage.removeItem("adminUser");
+    
     const adminUser = sessionStorage.getItem('adminUser');
     if (adminUser) {
       const parsed = JSON.parse(adminUser);
