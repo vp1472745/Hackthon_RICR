@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FiUsers, FiLayers, FiAward, FiRefreshCw, FiFileText } from 'react-icons/fi';
+import {  FiLayers, FiAward, FiRefreshCw, FiFileText } from 'react-icons/fi';
+import { BsMicrosoftTeams } from 'react-icons/bs';
 import { AdminAPI } from '../../../configs/api';
 
 
@@ -54,7 +55,7 @@ const OverviewTab = ({ onTabChange }) => {
           onClick={() => onTabChange && onTabChange('Team')}
           title="Go to Team Manage"
         >
-          <FiUsers size={28} className="text-blue-500 mb-2" />
+          <BsMicrosoftTeams size={28} className="text-blue-500 mb-2" />
           <div className="text-3xl font-bold text-blue-800 mb-1">{stats.users}</div>
           <div className="text-gray-500 text-sm font-medium">Total Users</div>
         </div>
@@ -81,7 +82,7 @@ const OverviewTab = ({ onTabChange }) => {
           onClick={() => onTabChange && onTabChange('Team')}
           title="Go to Team Manage"
         >
-          <FiAward size={28} className="text-purple-500 mb-2" />
+          <BsMicrosoftTeams size={28} className="text-purple-500 mb-2" />
           <div className="text-3xl font-bold text-purple-700 mb-1">{stats.teams}</div>
           <div className="text-gray-500 text-sm font-medium">Total Teams</div>
         </div>
