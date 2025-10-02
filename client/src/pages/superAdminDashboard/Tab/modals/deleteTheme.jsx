@@ -35,13 +35,12 @@ const DeleteTheme = ({ theme, onClose, onThemeDeleted }) => {
         ) : (
           <span className="text-red-600">Theme data is missing or invalid.</span>
         )}
-        {/* Debug info for developers */}
-        <pre className="text-xs text-gray-400 bg-gray-50 p-2 rounded mt-2">{JSON.stringify(theme, null, 2)}</pre>
+       
       </div>
       {error && <div className="text-red-600">{error}</div>}
       <div className="flex gap-4 justify-end">
-        <button type="button" onClick={onClose} className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
-        <button type="button" onClick={handleDelete} disabled={loading || !theme || !theme._id} className="px-6 py-2 rounded bg-red-600 text-white font-semibold hover:bg-red-700">
+        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg bg-gray-200 cursor-pointer hover:bg-gray-300">Cancel</button>
+        <button type="button" onClick={handleDelete} disabled={loading || !theme || !theme._id} className="px-6 cursor-pointer py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700">
           {loading ? 'Deleting...' : 'Delete'}
         </button>
       </div>

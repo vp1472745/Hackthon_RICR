@@ -39,12 +39,12 @@ const DeletePS = ({ problem, onClose, onPSDeleted }) => {
       </div>
       {error && <div className="text-red-600">{error}</div>}
       <div className="flex gap-4 justify-end">
-        <button type="button" onClick={onClose} className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
-        <button type="button" onClick={handleDelete} disabled={loading || !problem || !problem._id} className="px-6 py-2 rounded bg-red-600 text-white font-semibold hover:bg-red-700">
+        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg cursor-pointer bg-gray-200 hover:bg-gray-300">Cancel</button>
+        <button type="button" onClick={handleDelete} disabled={loading || !problem || !problem._id} className="px-6 py-2 rounded-lg cursor-pointer  bg-red-600 text-white font-semibold hover:bg-red-700">
           {loading ? 'Deleting...' : 'Delete'}
         </button>
       </div>
-    </div>
+    </div> 
   );
 };
 

@@ -6,7 +6,7 @@ import ThemeManageTab from './Tab/themeManageTab';
 import ResultManageTab from './Tab/resultManageTab';
 import PsManageTab from './Tab/psManageTab';
 
-const Home = () => <div><Overview /></div>;
+const Home = ({ onTabChange }) => <div><Overview onTabChange={onTabChange} /></div>;
 const Team = () => <div><TeamManageTab /></div>;
 const Theme = () => <div><ThemeManageTab /></div>;
 const Result = () => <div><ResultManageTab /></div>;
@@ -18,7 +18,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('Home');
 
   let content;
-  if (activeTab === 'Home') content = <Home />;
+  if (activeTab === 'Home') content = <Home onTabChange={setActiveTab} />;
   else if (activeTab === 'Team') content = <Team />;
   else if (activeTab === 'Theme') content = <Theme />;
   else if (activeTab === 'Result') content = <Result />;

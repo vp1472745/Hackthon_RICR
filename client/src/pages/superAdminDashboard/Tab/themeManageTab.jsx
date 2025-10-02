@@ -184,8 +184,8 @@ const ThemeCard = ({ theme, index, onEdit, onDelete, onViewTeams, onViewDescript
           </button>
 
           <div className={`px-4 py-2 rounded-full text-sm font-semibold shadow-md transition-all duration-300 ${(theme.teamCount || 0) > 0
-              ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200'
-              : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 border border-gray-200'
+            ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200'
+            : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 border border-gray-200'
             }`}>
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${(theme.teamCount || 0) > 0 ? 'bg-green-500' : 'bg-gray-400'}`}></div>
@@ -289,7 +289,7 @@ const ThemeManageTab = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-4">
-             
+
                 <div>
                   <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent mb-2">
                     Theme Management
@@ -383,37 +383,37 @@ const ThemeManageTab = () => {
                   onViewDescription={(theme) => { setSelectedTheme(theme); setDescModalOpen(true); }}
                 />
               ))}
-        {/* Delete Theme Modal */}
-        <Modal
-          open={deleteModalOpen}
-          onClose={() => setDeleteModalOpen(false)}
-          title={selectedTheme?.themeName ? `Delete Theme: ${selectedTheme.themeName}` : 'Delete Theme'}
-          size="md"
-        >
-          {selectedTheme && (
-            <DeleteTheme
-              theme={selectedTheme}
-              onClose={() => setDeleteModalOpen(false)}
-              onThemeDeleted={() => { setDeleteModalOpen(false); fetchThemes(); }}
-            />
-          )}
-        </Modal>
-        {/* Edit Theme Modal */}
-        <Modal
-          open={editModalOpen}
-          onClose={() => setEditModalOpen(false)}
-          title={selectedTheme?.themeName ? `Edit Theme: ${selectedTheme.themeName}` : 'Edit Theme'}
-          size="lg"
-        >
-          {selectedTheme && (
-            <EditTheme
-              theme={selectedTheme}
-              onClose={() => setEditModalOpen(false)}
-              onThemeUpdated={() => { setEditModalOpen(false); fetchThemes(); }}
-            />
-          )}
-        </Modal
-        >
+              {/* Delete Theme Modal */}
+              <Modal
+                open={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                title={selectedTheme?.themeName ? `Delete Theme: ${selectedTheme.themeName}` : 'Delete Theme'}
+                size="md"
+              >
+                {selectedTheme && (
+                  <DeleteTheme
+                    theme={selectedTheme}
+                    onClose={() => setDeleteModalOpen(false)}
+                    onThemeDeleted={() => { setDeleteModalOpen(false); fetchThemes(); }}
+                  />
+                )}
+              </Modal>
+              {/* Edit Theme Modal */}
+              <Modal
+                open={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                title={selectedTheme?.themeName ? `Edit Theme: ${selectedTheme.themeName}` : 'Edit Theme'}
+                size="lg"
+              >
+                {selectedTheme && (
+                  <EditTheme
+                    theme={selectedTheme}
+                    onClose={() => setEditModalOpen(false)}
+                    onThemeUpdated={() => { setEditModalOpen(false); fetchThemes(); }}
+                  />
+                )}
+              </Modal
+              >
             </div>
 
             {/* Results Count */}

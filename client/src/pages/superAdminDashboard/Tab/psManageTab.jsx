@@ -17,7 +17,7 @@ const Modal = ({ open, onClose, title, children, size = 'md' }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
-      <div 
+      <div
         className={`bg-white rounded-3xl shadow-2xl w-full ${sizeClasses[size]} max-h-[90vh] overflow-hidden transform transition-all duration-300 scale-95 hover:scale-100`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -30,7 +30,7 @@ const Modal = ({ open, onClose, title, children, size = 'md' }) => {
           </h2>
           <button
             onClick={onClose}
-            className="p-3 hover:bg-gray-100 rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700 transform hover:scale-110 hover:rotate-90"
+            className="p-3 hover:bg-gray-100 cursor-pointer rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700 transform hover:scale-110 hover:rotate-90"
           >
             <FiX size={22} />
           </button>
@@ -69,9 +69,9 @@ const ProblemStatementCard = ({ ps, index, onEdit, onDelete, onView }) => {
   };
 
   return (
-    <div 
+    <div
       className="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl border border-gray-100/80 transition-all duration-500 transform hover:-translate-y-2 overflow-hidden"
-      style={{ 
+      style={{
         animationDelay: `${index * 100}ms`,
       }}
       onMouseEnter={() => setIsHovered(true)}
@@ -79,7 +79,7 @@ const ProblemStatementCard = ({ ps, index, onEdit, onDelete, onView }) => {
     >
       {/* Animated Background */}
       <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(index)} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}></div>
-      
+
       {/* Hover Effect Border */}
       <div className={`absolute inset-0 rounded-3xl bg-gradient-to-r ${getGradient(index)} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}>
         <div className="absolute inset-[2px] rounded-3xl bg-white"></div>
@@ -99,31 +99,31 @@ const ProblemStatementCard = ({ ps, index, onEdit, onDelete, onView }) => {
               {ps.PStitle?.charAt(0)?.toUpperCase() || 'P'}
             </div>
             <div className="flex gap-2 transition-all duration-300 opacity-100 translate-x-0">
-              <button 
+              <button
                 onClick={() => onView(ps)}
                 className="p-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm hover:scale-110 shadow-lg border border-white/30"
                 title="View details"
               >
                 <FiEye size={16} />
               </button>
-                <button
-                onClick={() => onEdit(ps)} 
+              <button
+                onClick={() => onEdit(ps)}
                 className="p-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm hover:scale-110 shadow-lg border border-white/30"
                 title="Edit problem statement"
-                >
-                    <FiEdit2 size={16} />
-                </button>
+              >
+                <FiEdit2 size={16} />
+              </button>
 
-              <button 
-                              onClick={() => onDelete(ps)}
-                              className="p-2 bg-white/20 hover:bg-red-500 text-white rounded-xl transition-all duration-200 backdrop-blur-sm hover:scale-110 shadow-lg border border-white/30"
-                              title="Delete problem statement"
-                            >
-                              <FiTrash2 size={16} />
-                            </button>
+              <button
+                onClick={() => onDelete(ps)}
+                className="p-2 bg-white/20 hover:bg-red-500 text-white rounded-xl transition-all duration-200 backdrop-blur-sm hover:scale-110 shadow-lg border border-white/30"
+                title="Delete problem statement"
+              >
+                <FiTrash2 size={16} />
+              </button>
             </div>
           </div>
-          
+
           <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 leading-tight">
             {ps.PStitle}
           </h3>
@@ -162,8 +162,8 @@ const ProblemStatementCard = ({ ps, index, onEdit, onDelete, onView }) => {
           </div>
         </div>
 
-  
-  
+
+
       </div>
     </div>
   );
@@ -206,11 +206,11 @@ const PsManageTab = ({ teamId }) => {
       const matchesSearch = ps.PStitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         ps.PSdescription?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         ps.PSTheme?.themeName?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesFilter = filter === 'all' || 
+
+      const matchesFilter = filter === 'all' ||
         (filter === 'withTheme' && ps.PSTheme) ||
         (filter === 'withoutTheme' && !ps.PSTheme);
-      
+
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
@@ -241,7 +241,7 @@ const PsManageTab = ({ teamId }) => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-4">
-            
+
                 <div>
                   <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-purple-800 bg-clip-text text-transparent mb-2">
                     Problem Statement Management
@@ -249,47 +249,47 @@ const PsManageTab = ({ teamId }) => {
                   <p className="text-gray-600 text-lg">Manage and organize problem statements for teams</p>
                 </div>
               </div>
-              
+
             </div>
-            
-       
+
+
           </div>
 
-              <div className="flex gap-4 w-full lg:w-auto flex-col sm:flex-row sm:items-center sm:justify-between mb-6  ">
-              {/* Search Bar */}
-              <div className="relative w-full max-auto">
-                <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors group-focus-within:text-purple-500" />
-                  <input
-                    type="text"
-                    placeholder="Search problem statements..."
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                    className="w-full  pl-12 pr-4 py-4 border border-gray-300 rounded-2xl focus:ring-3 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                  />
-              </div>
-              
-              {/* Add Problem Statement Button */}
-              <button 
-                onClick={() => setAddModalOpen(true)}
-                className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
-              >
-                <FiPlus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                <span>Add New Problem</span>
-              </button>
-              {/* Add Problem Statement Modal */}
-              <Modal
-                open={addModalOpen}
-                onClose={() => setAddModalOpen(false)}
-                title="Add New Problem Statement"
-                size="lg"
-              >
-                <AddPS
-                  onClose={() => setAddModalOpen(false)}
-                  onPSCreated={fetchProblemStatements}
-                />
-              </Modal>
+          <div className="flex gap-4 w-full lg:w-auto flex-col sm:flex-row sm:items-center sm:justify-between mb-6  ">
+            {/* Search Bar */}
+            <div className="relative w-full max-auto">
+              <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors group-focus-within:text-purple-500" />
+              <input
+                type="text"
+                placeholder="Search problem statements..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="w-full  pl-12 pr-4 py-4 border border-gray-300 rounded-2xl focus:ring-3 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
+              />
             </div>
-     
+
+            {/* Add Problem Statement Button */}
+            <button
+              onClick={() => setAddModalOpen(true)}
+              className="flex items-center px-9 cursor-pointer py-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group whitespace-nowrap"
+            >
+              <FiPlus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+              <span className="text-sm">Add New Problem</span>
+            </button>
+            {/* Add Problem Statement Modal */}
+            <Modal
+              open={addModalOpen}
+              onClose={() => setAddModalOpen(false)}
+              title="Add New Problem Statement"
+              size="lg"
+            >
+              <AddPS
+                onClose={() => setAddModalOpen(false)}
+                onPSCreated={fetchProblemStatements}
+              />
+            </Modal>
+          </div>
+
         </div>
 
         {/* Problem Statements Grid */}
@@ -300,7 +300,7 @@ const PsManageTab = ({ teamId }) => {
             </div>
             <h3 className="text-xl font-bold text-gray-700 mb-2">Error Loading Data</h3>
             <p className="text-gray-500 mb-6">{error}</p>
-            <button 
+            <button
               onClick={fetchProblemStatements}
               className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
             >
@@ -316,24 +316,24 @@ const PsManageTab = ({ teamId }) => {
             <p className="text-gray-500 text-lg mb-8 max-w-md mx-auto">
               {searchTerm ? 'No problem statements match your search. Try different keywords.' : 'Start by creating your first problem statement.'}
             </p>
-            <button 
+            <button
               onClick={() => setAddModalOpen(true)}
               className="px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
             >
               Create Your First Problem Statement
             </button>
-        {/* Add Problem Statement Modal */}
-        <Modal
-          open={addModalOpen}
-          onClose={() => setAddModalOpen(false)}
-          title="Add New Problem Statement"
-          size="lg"
-        >
-          <AddPS
-            onClose={() => setAddModalOpen(false)}
-            onPSCreated={fetchProblemStatements}
-          />
-        </Modal>
+            {/* Add Problem Statement Modal */}
+            <Modal
+              open={addModalOpen}
+              onClose={() => setAddModalOpen(false)}
+              title="Add New Problem Statement"
+              size="lg"
+            >
+              <AddPS
+                onClose={() => setAddModalOpen(false)}
+                onPSCreated={fetchProblemStatements}
+              />
+            </Modal>
           </div>
         ) : (
           <>
@@ -348,37 +348,37 @@ const PsManageTab = ({ teamId }) => {
                   onView={(ps) => { setSelectedPS(ps); setDetailModalOpen(true); }}
                 />
               ))}
-            {/* Edit Problem Statement Modal */}
-            <Modal
-              open={editModalOpen}
-              onClose={() => setEditModalOpen(false)}
-              title={selectedPS?.PStitle ? `Edit Problem Statement: ${selectedPS.PStitle}` : 'Edit Problem Statement'}
-              size="lg"
-            >
-              {selectedPS && (
-                <EditPS
-                  problem={selectedPS}
-                  onClose={() => setEditModalOpen(false)}
-                  onPSUpdated={() => { setEditModalOpen(false); fetchProblemStatements(); }}
-                  themes={themes}
-                />
-              )}
-            </Modal>
-        {/* Delete Problem Statement Modal */}
-        <Modal
-          open={deleteModalOpen}
-          onClose={() => setDeleteModalOpen(false)}
-          title={selectedPS?.PStitle ? `Delete Problem Statement: ${selectedPS.PStitle}` : 'Delete Problem Statement'}
-          size="md"
-        >
-          {selectedPS && (
-            <DeletePS
-              problem={selectedPS}
-              onClose={() => setDeleteModalOpen(false)}
-              onPSDeleted={() => { setDeleteModalOpen(false); fetchProblemStatements(); }}
-            />
-          )}
-        </Modal>
+              {/* Edit Problem Statement Modal */}
+              <Modal
+                open={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                title={selectedPS?.PStitle ? `Edit Problem Statement: ${selectedPS.PStitle}` : 'Edit Problem Statement'}
+                size="lg"
+              >
+                {selectedPS && (
+                  <EditPS
+                    problem={selectedPS}
+                    onClose={() => setEditModalOpen(false)}
+                    onPSUpdated={() => { setEditModalOpen(false); fetchProblemStatements(); }}
+                    themes={themes}
+                  />
+                )}
+              </Modal>
+              {/* Delete Problem Statement Modal */}
+              <Modal
+                open={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                title={selectedPS?.PStitle ? `Delete Problem Statement: ${selectedPS.PStitle}` : 'Delete Problem Statement'}
+                size="md"
+              >
+                {selectedPS && (
+                  <DeletePS
+                    problem={selectedPS}
+                    onClose={() => setDeleteModalOpen(false)}
+                    onPSDeleted={() => { setDeleteModalOpen(false); fetchProblemStatements(); }}
+                  />
+                )}
+              </Modal>
             </div>
 
             {/* Results Count */}
@@ -412,16 +412,6 @@ const PsManageTab = ({ teamId }) => {
                       <p className="text-purple-700 font-medium">
                         {selectedPS.PSTheme?.themeName || selectedPS.PSTheme || 'No theme assigned'}
                       </p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-gray-600 font-medium">Status</label>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        selectedPS.status === 'active' 
-                          ? 'bg-green-100 text-green-800 border border-green-200' 
-                          : 'bg-gray-100 text-gray-600 border border-gray-200'
-                      }`}>
-                        {selectedPS.status || 'Draft'}
-                      </span>
                     </div>
                   </div>
                 </div>

@@ -84,8 +84,8 @@ const EditPS = ({ problem, onClose, onPSUpdated, themes: propThemes }) => {
       </div>
       {error && <div className="text-red-600">{error}</div>}
       <div className="flex gap-4 justify-end">
-        <button type="button" onClick={onClose} className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
-        <button type="submit" disabled={loading} className="px-6 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700">
+        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg cursor-pointer  bg-gray-200 hover:bg-gray-300">Cancel</button>
+        <button type="submit" disabled={loading} className="px-6 py-2 rounded-lg cursor-pointer bg-blue-600 text-white font-semibold hover:bg-blue-700">
           {loading ? 'Saving...' : 'Save Changes'}
         </button>
       </div>

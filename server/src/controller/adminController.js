@@ -1,4 +1,5 @@
 
+import mongoose from "mongoose";
 import Team from "../models/TeamModel.js";
 import ProblemStatement from "../models/problemStatementModel.js";
 import Admin from "../models/adminRegisterModel.js";
