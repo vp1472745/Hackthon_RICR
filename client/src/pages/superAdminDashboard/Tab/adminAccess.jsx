@@ -8,28 +8,35 @@ const ALL_PERMISSIONS = [
   { key: 'manageThemes', label: 'Access Theme Management', category: 'Dashboard Tabs' },
   { key: 'manageResults', label: 'Access Result Management', category: 'Dashboard Tabs' },
   { key: 'manageProblemStatements', label: 'Access Problem Statement Management', category: 'Dashboard Tabs' },
-  
+
+  // User & Team Permissions
+  { key: 'viewUsers', label: 'View Users', category: 'Overview' },
+  { key: 'viewTeams', label: 'View Teams', category: 'Overview' },
+  { key: 'viewThemes', label: 'View Themes', category: 'Overview' },
+  { key: 'viewProblemStatements', label: 'View Problem Statements', category: 'Overview' },
+  // { key: 'manageTeamMembers', label: 'Manage Team Members', category: 'Users & Teams' },
+
+
+
+
   // Theme Permissions
   { key: 'createTheme', label: 'Create Theme', category: 'Themes' },
   { key: 'editTheme', label: 'Edit Theme', category: 'Themes' },
   { key: 'deleteTheme', label: 'Delete Theme', category: 'Themes' },
-  { key: 'viewThemes', label: 'View Themes', category: 'Themes' },
-  
+
+
   // Problem Statement Permissions
   { key: 'createProblemStatement', label: 'Create Problem Statement', category: 'Problem Statements' },
   { key: 'editProblemStatement', label: 'Edit Problem Statement', category: 'Problem Statements' },
   { key: 'deleteProblemStatement', label: 'Delete Problem Statement', category: 'Problem Statements' },
-  { key: 'viewProblemStatements', label: 'View Problem Statements', category: 'Problem Statements' },
-  
-  // User & Team Permissions
-  { key: 'viewUsers', label: 'View Users', category: 'Users & Teams' },
-  { key: 'viewTeams', label: 'View Teams', category: 'Users & Teams' },
-  { key: 'manageTeamMembers', label: 'Manage Team Members', category: 'Users & Teams' },
-  
+
+
+
+
   // Result Management Permissions
-  { key: 'viewResults', label: 'View Results', category: 'Results' },
-  { key: 'editResults', label: 'Edit Results', category: 'Results' },
-  { key: 'publishResults', label: 'Publish Results', category: 'Results' },
+  // { key: 'viewResults', label: 'View Results', category: 'Results' },
+  // { key: 'editResults', label: 'Edit Results', category: 'Results' },
+  // { key: 'publishResults', label: 'Publish Results', category: 'Results' },
 ];
 
 const AdminAccess = () => {
@@ -56,15 +63,15 @@ const AdminAccess = () => {
       try {
         const response = await subAdminAPI.getAllAdmins();
         let adminsList = [];
-        
+
         if (response.data && response.data.admins) {
           adminsList = response.data.admins;
         } else if (Array.isArray(response.data)) {
           adminsList = response.data;
         }
-        
+
         setAdmins(adminsList);
-        
+
         // Fetch permissions for each admin
         adminsList.forEach(admin => {
           fetchAdminPermissions(admin.email);
@@ -76,7 +83,7 @@ const AdminAccess = () => {
     fetchAdmins();
   }, []);
 
-  const filteredAdmins = admins.filter(admin => 
+  const filteredAdmins = admins.filter(admin =>
     admin.email.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -91,7 +98,7 @@ const AdminAccess = () => {
   const handleSelectAll = (category) => {
     const categoryPerms = groupedPermissions[category].map(p => p.key);
     const allSelected = categoryPerms.every(perm => selected.includes(perm));
-    
+
     if (allSelected) {
       setSelected(selected.filter(perm => !categoryPerms.includes(perm)));
     } else {
@@ -113,10 +120,10 @@ const AdminAccess = () => {
     try {
       await subAdminAPI.setAdminPermissions(email, selected);
       setMsg('Permissions updated successfully');
-      
+
       // Refresh the permissions for this admin
       await fetchAdminPermissions(email);
-      
+
       setEmail('');
       setSelected([]);
     } catch (err) {
@@ -162,21 +169,19 @@ const AdminAccess = () => {
             <nav className="flex -mb-px">
               <button
                 onClick={() => setActiveTab('assign')}
-                className={`py-4 px-6 font-medium text-sm border-b-2 transition-colors ${
-                  activeTab === 'assign'
-                    ? 'border-indigo-600 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                className={`py-4 px-6 font-medium text-sm border-b-2 transition-colors ${activeTab === 'assign'
+                  ? 'border-indigo-600 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
               >
                 Assign Permissions
               </button>
               <button
                 onClick={() => setActiveTab('view')}
-                className={`py-4 px-6 font-medium text-sm border-b-2 transition-colors ${
-                  activeTab === 'view'
-                    ? 'border-indigo-600 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                className={`py-4 px-6 font-medium text-sm border-b-2 transition-colors ${activeTab === 'view'
+                  ? 'border-indigo-600 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
               >
                 View Admins
               </button>
@@ -326,7 +331,7 @@ const AdminAccess = () => {
                     </svg>
                   </div>
                 </div>
-                
+
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                   <div className="grid grid-cols-1 divide-y divide-gray-200">
                     {filteredAdmins.map((admin) => (

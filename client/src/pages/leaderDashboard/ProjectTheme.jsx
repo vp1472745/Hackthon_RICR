@@ -106,29 +106,29 @@ const ProjectTheme = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/20 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/20 p-4 sm:p-6 overflow-hidden">
+      <div className="max-w-4xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg mb-6">
-            <Lightbulb className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Project Themes</h1>
-          <div className="max-w-2xl mx-auto">
-            <p className="text-lg text-gray-600 mb-6">
-              Choose a theme that inspires your hackathon project. Your selection guides your innovation journey.
-            </p>
-            <div className="inline-flex items-center gap-2 bg-white rounded-lg px-4 py-3 shadow-sm border border-gray-200">
-              <Calendar className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-medium text-gray-700">
-                Theme selection deadline: <strong className="text-blue-600">November 6, 2025</strong>
-              </span>
+        <div className=" ">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
+              <Lightbulb className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Project Themes</h1>
+              <p className="text-gray-600 text-lg">Choose a theme that inspires your hackathon project. Your selection guides your innovation journey.</p>
             </div>
           </div>
         </div>
 
-
-
+<div className='text-center mb-10'>
+          <div className="inline-flex items-center gap-2 mb-10 bg-white rounded-lg px-4 py-3 shadow-sm border border-gray-200">
+          <Calendar className="w-5 h-5 text-blue-600" />
+          <span className="text-sm font-medium text-gray-700 text-center justify-center">
+            Theme selection deadline: <strong className="text-blue-600">November 6, 2025</strong>
+          </span>
+        </div>
+</div>
 
         {/* Loading State */}
         {loading && themes.length === 0 && (
@@ -148,11 +148,10 @@ const ProjectTheme = () => {
             return (
               <div
                 key={theme._id}
-                className={`group relative bg-white rounded-2xl shadow-sm border-2 transition-all duration-300 hover:shadow-md ${
-                  isSelected
-                    ? 'border-green-500 shadow-lg ring-2 ring-green-100'
-                    : 'border-gray-200 hover:border-blue-300'
-                }`}
+                className={`group relative bg-white rounded-2xl shadow-sm border-2 transition-all duration-300 hover:shadow-md ${isSelected
+                  ? 'border-green-500 shadow-lg ring-2 ring-green-100'
+                  : 'border-gray-200 hover:border-blue-300'
+                  }`}
               >
                 {/* Selected Badge */}
                 {isSelected && (
@@ -222,11 +221,10 @@ const ProjectTheme = () => {
                   <button
                     onClick={() => handleThemeSelect(theme.themeName)}
                     disabled={isSelected}
-                    className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-200 ${
-                      isSelected
-                        ? 'bg-green-100 text-green-700 border border-green-200 cursor-default'
-                        : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md'
-                    }`}
+                    className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-200 ${isSelected
+                      ? 'bg-green-100 text-green-700 border border-green-200 cursor-default'
+                      : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md'
+                      }`}
                   >
                     {isSelected ? (
                       <div className="flex items-center justify-center gap-2">
