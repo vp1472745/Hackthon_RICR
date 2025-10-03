@@ -45,7 +45,7 @@ export default function RegistrationCTASection() {
             whileTap={{ scale: 0.95 }}
             aria-label="Register Now - ₹1,500"
           >
-            Register Now - ₹1,500
+            Register Now
           </motion.button>
 
           <motion.button

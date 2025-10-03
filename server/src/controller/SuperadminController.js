@@ -7,8 +7,8 @@ import User from "../models/UserModel.js";
 import Theme from "../models/projectTheme.js";
 import Payment from "../models/PaymentModel.js";
 import bcrypt from "bcrypt";
-import { sendOTPEmail } from "../utils/emailService.js";
-import { sendOTPPhone } from "../utils/phoneService.js";
+import { sendOTPEmail } from "../utils/adminemailService.js";
+import { sendOTPPhone } from "../utils/adminPhoneService.js";
 import Otp from "../models/otpModelAdmin.js";
 import jwt from "jsonwebtoken";
 

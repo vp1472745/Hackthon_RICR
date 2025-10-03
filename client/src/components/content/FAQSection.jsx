@@ -127,7 +127,7 @@ export default function FAQSection() {
             Frequently Asked Questions
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-            Find answers to common questions about the hackathon registration process and event details
+            Get quick answer to common question about registeration and event details 
           </p>
         </motion.div>
 

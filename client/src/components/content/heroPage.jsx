@@ -69,7 +69,7 @@ function HeroPage() {
             to="/register"
             className="bg-[#0B2A4A] hover:bg-[#1D5B9B] text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl flex items-center gap-2"
           >
-            <span>Register Now - ₹1,500</span>
+            <span>Register Now </span>
             <FaArrowUp className="h-5 w-5" />
           </Link>
           <button className="border-2 border-[#0B2A4A] text-[#0B2A4A] hover:bg-[#0B2A4A] hover:text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:-translate-y-1 flex items-center gap-2">

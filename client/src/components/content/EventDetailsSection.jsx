@@ -123,7 +123,7 @@ export default function EventDetailsSection() {
 
             <InfoCard icon={<FaCreditCard />} heading="Registration">
               <div className="space-y-2 text-gray-700">
-                <p className="font-semibold text-[#0B2A4A]">Registration Fee: ₹1,000 (Non-refundable)</p>
+                <p className="font-semibold text-[#0B2A4A]">Registration Fee: ₹1,500 (Non-refundable)</p>
                 <p>Payment via UPI QR Code</p>
               </div>
             </InfoCard>
