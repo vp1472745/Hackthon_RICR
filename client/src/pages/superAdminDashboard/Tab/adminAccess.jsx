@@ -2,16 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { subAdminAPI } from '../../../configs/api';
 
 const ALL_PERMISSIONS = [
+  // Tab Access Permissions
+  { key: 'viewOverview', label: 'View Overview Tab', category: 'Dashboard Tabs' },
+  { key: 'manageTeams', label: 'Access Team Management', category: 'Dashboard Tabs' },
+  { key: 'manageThemes', label: 'Access Theme Management', category: 'Dashboard Tabs' },
+  { key: 'manageResults', label: 'Access Result Management', category: 'Dashboard Tabs' },
+  { key: 'manageProblemStatements', label: 'Access Problem Statement Management', category: 'Dashboard Tabs' },
+  
+  // Theme Permissions
   { key: 'createTheme', label: 'Create Theme', category: 'Themes' },
   { key: 'editTheme', label: 'Edit Theme', category: 'Themes' },
   { key: 'deleteTheme', label: 'Delete Theme', category: 'Themes' },
   { key: 'viewThemes', label: 'View Themes', category: 'Themes' },
-  { key: 'createProblemStatement', label: 'Create Problem Statement', category: 'Problems' },
-  { key: 'editProblemStatement', label: 'Edit Problem Statement', category: 'Problems' },
-  { key: 'deleteProblemStatement', label: 'Delete Problem Statement', category: 'Problems' },
-  { key: 'viewUsers', label: 'View Users', category: 'Users' },
-  { key: 'viewTeams', label: 'View Teams', category: 'Teams' },
-  { key: 'viewProblemStatements', label: 'View Problem Statements', category: 'Problems' },
+  
+  // Problem Statement Permissions
+  { key: 'createProblemStatement', label: 'Create Problem Statement', category: 'Problem Statements' },
+  { key: 'editProblemStatement', label: 'Edit Problem Statement', category: 'Problem Statements' },
+  { key: 'deleteProblemStatement', label: 'Delete Problem Statement', category: 'Problem Statements' },
+  { key: 'viewProblemStatements', label: 'View Problem Statements', category: 'Problem Statements' },
+  
+  // User & Team Permissions
+  { key: 'viewUsers', label: 'View Users', category: 'Users & Teams' },
+  { key: 'viewTeams', label: 'View Teams', category: 'Users & Teams' },
+  { key: 'manageTeamMembers', label: 'Manage Team Members', category: 'Users & Teams' },
+  
+  // Result Management Permissions
+  { key: 'viewResults', label: 'View Results', category: 'Results' },
+  { key: 'editResults', label: 'Edit Results', category: 'Results' },
+  { key: 'publishResults', label: 'Publish Results', category: 'Results' },
 ];
 
 const AdminAccess = () => {

@@ -11,20 +11,46 @@ import {
   FiChevronRight,
   FiX
 } from "react-icons/fi";
+import { usePermissions } from "../../hooks/usePermissions";
 
 const NAV_ITEMS = [
-  { key: "Home", label: "Overview", icon: <FiHome size={20} /> },
-  { key: "Team", label: "Team Manage", icon: <FiUsers size={20} /> },
-  { key: "Theme", label: "Theme Manage", icon: <FiLayers size={20} /> },
-  { key: "Result", label: "Result Manage", icon: <FiAward size={20} /> },
-  { key: "Ps", label: "PS Manage", icon: <FiFileText size={20} /> },
- 
+  { 
+    key: "Home", 
+    label: "Overview", 
+    icon: <FiHome size={20} />,
+    permission: "viewOverview"
+  },
+  { 
+    key: "Team", 
+    label: "Team Manage", 
+    icon: <FiUsers size={20} />,
+    permission: "manageTeams"
+  },
+  { 
+    key: "Theme", 
+    label: "Theme Manage", 
+    icon: <FiLayers size={20} />,
+    permission: "manageThemes"
+  },
+  { 
+    key: "Result", 
+    label: "Result Manage", 
+    icon: <FiAward size={20} />,
+    permission: "manageResults"
+  },
+  { 
+    key: "Ps", 
+    label: "PS Manage", 
+    icon: <FiFileText size={20} />,
+    permission: "manageProblemStatements"
+  },
 ];
 
 const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
   const [open, setOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+  const { hasPermission, loading, error } = usePermissions();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -78,8 +104,20 @@ const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
 
         {/* Navigation */}
         <nav className={`flex-1 py-6 ${open ? "px-2" : "px-1"}`}>
+          {loading && (
+            <div className={`text-center ${open ? "px-4" : "px-2"} py-4`}>
+              <div className="text-white text-sm">Loading permissions...</div>
+            </div>
+          )}
+          
+          {error && (
+            <div className={`text-center ${open ? "px-4" : "px-2"} py-4`}>
+              <div className="text-red-300 text-sm">Error loading permissions</div>
+            </div>
+          )}
+
           <ul className="space-y-2">
-            {NAV_ITEMS.map((item) => {
+            {NAV_ITEMS.filter((item) => hasPermission(item.permission)).map((item) => {
               const isActive = activeTab === item.key;
               return (
                 <li key={item.key}>
