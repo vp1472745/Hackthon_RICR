@@ -4,7 +4,15 @@ import { useAuth } from "../configs/authContext"; // adjust path if needed
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const { isAuthenticated, leaderName, logout } = useAuth();
+  const { 
+    isAuthenticated, 
+    leaderName, 
+    logout,
+    isAdminAuthenticated,
+    adminEmail,
+    adminType,
+    adminLogout 
+  } = useAuth();
   const navigate = useNavigate();
 
   // Scroll shadow effect
@@ -32,6 +40,7 @@ const Navbar = () => {
 
         {/* Navbar links / actions */}
         <div className="flex justify-center items-center gap-3">
+          {/* Normal User Authentication */}
           {isAuthenticated && leaderName && (
             <button
               onClick={() => navigate("/leader-dashboard")}
@@ -41,9 +50,28 @@ const Navbar = () => {
             </button>
           )}
 
-          {isAuthenticated ? (
+          {/* Admin Authentication */}
+          {isAdminAuthenticated && adminEmail && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  if (adminType === 'superadmin') {
+                    navigate("/superadmin-dashboard");
+                  } else {
+                    navigate("/admin-dashboard");
+                  }
+                }}
+                className="text-[#2A6EBB] cursor-pointer font-semibold mr-2 hidden sm:inline hover:underline transition-colors"
+              >
+                {adminType === 'superadmin' ? 'Super Admin' : 'Admin'}: {adminEmail}
+              </button>
+            </div>
+          )}
+
+          {/* Show logout if either user or admin is authenticated */}
+          {(isAuthenticated || isAdminAuthenticated) ? (
             <button
-              onClick={logout}
+              onClick={isAdminAuthenticated ? adminLogout : logout}
               className="bg-red-500 hover:bg-red-600 text-white cursor-pointer rounded-md px-4 py-1 transition-colors duration-200"
             >
               Logout

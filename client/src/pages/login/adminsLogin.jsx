@@ -51,6 +51,9 @@ function AdminLogin() {
                 console.error('❌ Client - No token received in response');
             }
             
+            // Trigger auth state update
+            window.dispatchEvent(new Event("authChange"));
+            
             handleRoleRedirect(admin);
         } catch (err) {
             console.error("Login error:", err);

@@ -7,6 +7,9 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [leaderName, setLeaderName] = useState("");
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminType, setAdminType] = useState(""); // 'admin' or 'superadmin'
 
   // Safely parse JSON from sessionStorage
   const getUserData = () => {
@@ -17,8 +20,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Safely parse admin data from sessionStorage
+  const getAdminData = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem("adminUser"));
+    } catch {
+      return null;
+    }
+  };
+
   // Update auth state
   const updateAuthState = () => {
+    // Check normal user authentication
     const userData = getUserData();
     if (userData?.user && sessionStorage.getItem("authToken")) {
       setIsAuthenticated(true);
@@ -26,6 +39,20 @@ export const AuthProvider = ({ children }) => {
     } else {
       setIsAuthenticated(false);
       setLeaderName("");
+    }
+
+    // Check admin authentication
+    const adminData = getAdminData();
+    const adminToken = sessionStorage.getItem("adminAuthToken") || sessionStorage.getItem("authToken");
+    
+    if (adminData && adminToken) {
+      setIsAdminAuthenticated(true);
+      setAdminEmail(adminData.email || adminData.admin?.email || "");
+      setAdminType(adminData.role || adminData.admin?.role || "admin");
+    } else {
+      setIsAdminAuthenticated(false);
+      setAdminEmail("");
+      setAdminType("");
     }
   };
 
@@ -45,17 +72,64 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  // Logout
+  // Normal user logout
   const logout = () => {
     sessionStorage.removeItem("hackathonUser");
     sessionStorage.removeItem("authToken");
     setIsAuthenticated(false);
     setLeaderName("");
+    
+    // Trigger auth change event
+    window.dispatchEvent(new Event("authChange"));
+    navigate("/");
+  };
+
+  // Admin logout
+  const adminLogout = async () => {
+    try {
+      // Call backend logout API to clear cookies
+      await fetch("http://localhost:3000/admin/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('authToken') || sessionStorage.getItem('adminAuthToken')}`
+        }
+      });
+    } catch (error) {
+      console.log("Logout API call failed, but clearing local session anyway");
+    }
+
+    // Clear all admin session data
+    sessionStorage.removeItem("adminUser");
+    sessionStorage.removeItem("adminAuthToken");
+    sessionStorage.removeItem("authToken");
+    sessionStorage.clear();
+
+    // Update state
+    setIsAdminAuthenticated(false);
+    setAdminEmail("");
+    setAdminType("");
+
+    // Trigger auth change event
+    window.dispatchEvent(new Event("authChange"));
     navigate("/");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, leaderName, logout }}>
+    <AuthContext.Provider 
+      value={{ 
+        // Normal user auth
+        isAuthenticated, 
+        leaderName, 
+        logout,
+        // Admin auth
+        isAdminAuthenticated,
+        adminEmail,
+        adminType,
+        adminLogout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

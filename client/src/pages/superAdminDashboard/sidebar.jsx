@@ -41,14 +41,6 @@ const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
     document.documentElement.style.setProperty("--sidebar-width", width);
   }, [open]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("adminUser");
-    sessionStorage.removeItem("authToken");
-    sessionStorage.clear(); // Clear all session storage
-    onTabChange("logout");
-    navigate("/dashboard/login", { replace: true });
-  };
-
   const toggle = () => setOpen((v) => !v);
 
   return (
@@ -103,23 +95,7 @@ const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
           </ul>
         </nav>
 
-        {/* Logout */}
-        <div className={`mt-auto w-full flex flex-col gap-3 ${open ? "px-4 pb-6" : "px-2 pb-6"}`}>
-          <button
-            type="button"
-            onClick={handleLogout}
-            title="Logout"
-            className={`flex items-center ${open ? "justify-start" : "justify-center"} gap-3 w-full py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold transition shadow min-w-0`}
-          >
-            {/* Icon always visible */}
-            <div className="flex items-center justify-center" style={{ width: 24 }}>
-              <FiLogOut size={20} />
-            </div>
 
-            {/* Text hidden when collapsed */}
-            {open && <span className="ml-2">Logout</span>}
-          </button>
-        </div>
       </aside>
     </>
   );
