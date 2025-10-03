@@ -26,12 +26,7 @@ api.interceptors.request.use(
     }
 );
 
-// Custom permission modal handler (set by components)
-let showGlobalPermissionModal = null;
 
-export function setGlobalPermissionModalHandler(fn) {
-    showGlobalPermissionModal = fn;
-}
 
 api.interceptors.response.use(
     (response) => response,

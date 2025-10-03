@@ -1,6 +1,8 @@
 import Admin from '../models/adminRegisterModel.js';
 import jwt from 'jsonwebtoken';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'defaultsecret';
+
 // Middleware to authenticate admin and check for a specific permission
 export const requireAdminPermission = (permission) => async (req, res, next) => {
   try {
@@ -9,8 +11,9 @@ export const requireAdminPermission = (permission) => async (req, res, next) => 
     if (!token) {
       return res.status(401).json({ message: 'Access token required' });
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
-    const adminId = decoded.userId || decoded.user_id;
+    console.log('🔒 Permission Check - JWT_SECRET:', JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const adminId = decoded.id || decoded.userId || decoded.user_id;
     const admin = await Admin.findById(adminId);
     if (!admin || admin.role !== 'admin') {
       return res.status(403).json({ message: 'Admin access required' });

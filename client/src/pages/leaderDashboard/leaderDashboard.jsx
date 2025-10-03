@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MultiStepModal from './pop/MultiStepModal.jsx';
-import SideBar from '../adminDashboard/sideBar.jsx';
+import SideBar from './sideBar.jsx';
 import Overview from './overView/Overview.jsx';
 import ProjectTheme from './ProjectTheme.jsx';
 import ProblemStatements from './ProblemStatements.jsx';

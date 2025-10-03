@@ -43,6 +43,8 @@ const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("adminUser");
+    sessionStorage.removeItem("authToken");
+    sessionStorage.clear(); // Clear all session storage
     onTabChange("logout");
     navigate("/dashboard/login", { replace: true });
   };

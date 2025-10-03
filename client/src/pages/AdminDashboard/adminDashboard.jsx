@@ -1,139 +1,42 @@
+import React, { useState } from 'react';
+import Sidebar from './Sidebar';
+import Overview from './Tab/overviewTab';
+import TeamManageTab from './Tab/teamManageTab';
+import ThemeManageTab from './Tab/themeManageTab';
+import ResultManageTab from './Tab/resultManageTab';
+import PsManageTab from './Tab/psManageTab';
 
-import React, { useState, useEffect } from 'react';
-import SideBar from './sideBar';
-import ManageTheme from './ManageTheme';
-import ViewUsers from './ViewUsers';
-import ViewTeams from './ViewTeams';
-import ProblemStatementsAdmin from './ProblemStatementsAdmin';
-import { subAdminAPI } from '../../configs/api';
+const Home = ({ onTabChange }) => <div><Overview onTabChange={onTabChange} /></div>;
+const Team = () => <div><TeamManageTab /></div>;
+const Theme = () => <div><ThemeManageTab /></div>;
+const Result = () => <div><ResultManageTab /></div>;
+const Ps = () => <div><PsManageTab /></div>;
+const AdminAccess = () => <div><AdminAcessTab /></div>;
+const LoggedOut = () => <div className="p-8">You are logged out.</div>;
 
-const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('manageTheme');
-  const [permissions, setPermissions] = useState([]);
-  const [adminEmail, setAdminEmail] = useState('');
-  const [showPermissionModal, setShowPermissionModal] = useState(false);
+export default function AdminDashboard() {
+  // initial active tab should match NAV_ITEMS keys (case-sensitive)
+  const [activeTab, setActiveTab] = useState('Home');
 
-  // Fetch admin email from sessionStorage on mount
-  useEffect(() => {
-    // Clear any localStorage data that might be interfering
-    localStorage.removeItem("adminEmail");
-    localStorage.removeItem("permissions");
-    localStorage.removeItem("adminUser");
-    
-    const adminUser = sessionStorage.getItem('adminUser');
-    if (adminUser) {
-      const parsed = JSON.parse(adminUser);
-      setAdminEmail(parsed.email);
-    }
-  }, []);
+  let content;
+  if (activeTab === 'Home') content = <Home onTabChange={setActiveTab} />;
+  else if (activeTab === 'Team') content = <Team />;
+  else if (activeTab === 'Theme') content = <Theme />;
+  else if (activeTab === 'Result') content = <Result />;
+  else if (activeTab === 'Ps') content = <Ps />;
 
-  // Fetch permissions from backend on mount and poll every 10s
-  useEffect(() => {
-    let interval;
-    const fetchPermissions = async () => {
-      if (adminEmail) {
-        try {
-          const res = await SadminAPI.getAdminPermissions(adminEmail);
-          setPermissions(res.data.permissions || []);
-        } catch {
-          setPermissions([]);
-        }
-      }
-    };
-    fetchPermissions();
-    if (adminEmail) {
-      interval = setInterval(fetchPermissions, 10000);
-    }
-    return () => interval && clearInterval(interval);
-  }, [adminEmail]);
-
-
-  // Show tabs/features if permission exists (view or create/edit/delete)
-  const menuItems = [
-    (permissions.includes('viewThemes') || permissions.includes('createTheme') || permissions.includes('editTheme') || permissions.includes('deleteTheme')) && {
-      id: 'manageTheme',
-      title: 'Manage Theme',
-      description: 'Create, Edit, Delete & View Themes'
-    },
-    permissions.includes('viewUsers') && { id: 'viewUsers', title: 'View Users', description: 'All User Details' },
-    permissions.includes('viewTeams') && { id: 'viewTeams', title: 'View Teams', description: 'All Team Details' },
-    (permissions.includes('createProblemStatement') || permissions.includes('editProblemStatement') || permissions.includes('deleteProblemStatement') || permissions.includes('viewProblemStatements')) && {
-      id: 'problemStatements',
-      title: 'Problem Statement',
-      description: 'Create, Edit, Delete & View Problems'
-    },
-  ].filter(Boolean);
-
-  // If no permissions, show message
-  if (menuItems.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="bg-white p-8 rounded shadow text-center">
-          <h2 className="text-xl font-bold mb-2 text-red-600">No Permissions Assigned</h2>
-          <p className="text-gray-600">You do not have access to any dashboard features. Please contact the superadmin.</p>
-        </div>
-      </div>
-    );
-  }
-
-
-  // Permission check for each tab
-  const hasTabPermission = (tab) => {
-    if (tab === 'manageTheme') {
-      return permissions.includes('viewThemes') || permissions.includes('createTheme') || permissions.includes('editTheme') || permissions.includes('deleteTheme');
-    }
-    if (tab === 'viewUsers') {
-      return permissions.includes('viewUsers');
-    }
-    if (tab === 'viewTeams') {
-      return permissions.includes('viewTeams');
-    }
-    if (tab === 'problemStatements') {
-      return permissions.includes('createProblemStatement') || permissions.includes('editProblemStatement') || permissions.includes('deleteProblemStatement') || permissions.includes('viewProblemStatements');
-    }
-    return false;
-  };
-
-  // Custom tab click handler
-  const handleTabClick = (tab) => {
-    if (hasTabPermission(tab)) {
-      setActiveTab(tab);
-    } else {
-      setShowPermissionModal(true);
-    }
-  };
+  else if (activeTab === 'logout') content = <LoggedOut />;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <SideBar
-        activeSection={activeTab}
-        setActiveSection={handleTabClick}
-        onSidebarToggle={() => {}}
-        menuItems={menuItems}
-      />
-      <main className="flex-1 p-6 ml-12 sm:ml-64">
-        {activeTab === 'manageTheme' && hasTabPermission('manageTheme') && <ManageTheme />}
-        {activeTab === 'viewUsers' && hasTabPermission('viewUsers') && <ViewUsers />}
-        {activeTab === 'viewTeams' && hasTabPermission('viewTeams') && <ViewTeams />}
-        {activeTab === 'problemStatements' && hasTabPermission('problemStatements') && <ProblemStatementsAdmin />}
-        {/* Permission Modal */}
-        {showPermissionModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-            <div className="bg-white p-8 rounded shadow-lg text-center max-w-xs">
-              <h2 className="text-lg font-bold text-red-600 mb-2">Super Permission Not Allowed</h2>
-              <p className="mb-4 text-gray-700">You do not have permission to access this feature. Please contact the superadmin.</p>
-              <button
-                className="bg-indigo-600 text-white px-6 py-2 rounded font-semibold"
-                onClick={() => setShowPermissionModal(false)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
+    <div className='min-h-screen flex'>
+      <Sidebar onTabChange={setActiveTab} activeTab={activeTab} />
+      {/* use CSS variable set by Sidebar to control left margin responsively */}
+      <main
+        className='flex-1 p-6'
+        style={{ marginLeft: 'var(--sidebar-width, 16rem)', transition: 'margin-left 200ms' }}
+      >
+        {content}
       </main>
     </div>
   );
-};
-
-export default AdminDashboard;
+}

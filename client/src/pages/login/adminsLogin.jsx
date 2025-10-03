@@ -23,7 +23,7 @@ function AdminLogin() {
         if (admin.role === "superadmin") {
             navigate("/dashboard/super-admin");
         } else if (admin.role === "admin") {
-            navigate("/dashboard/sadmin");
+            navigate("/dashboard/sub-admin" );
         } else {
             setError("Unauthorized role. Access denied.");
         }
@@ -36,14 +36,21 @@ function AdminLogin() {
         try {
             const res = await AdminAPI.login({ email, password });
             const admin = res.data.admin;
+            const token = res.data.token;
             
-            // Clear any previous localStorage data that might be interfering
-            localStorage.removeItem("adminEmail");
-            localStorage.removeItem("permissions");
-            localStorage.removeItem("adminUser");
+            // Clear any previous data that might be interfering
+            localStorage.clear();
+            sessionStorage.clear();
             
-            // Store admin data in sessionStorage only
+            // Store fresh admin data and token in sessionStorage
             sessionStorage.setItem("adminUser", JSON.stringify(admin));
+            if (token) {
+                sessionStorage.setItem("authToken", token);
+                console.log('🎫 Client - Token stored:', token.substring(0, 50) + '...');
+            } else {
+                console.error('❌ Client - No token received in response');
+            }
+            
             handleRoleRedirect(admin);
         } catch (err) {
             console.error("Login error:", err);

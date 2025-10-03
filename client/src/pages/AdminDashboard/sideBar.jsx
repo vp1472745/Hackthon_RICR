@@ -1,178 +1,128 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Layers,
-  BookOpen,
-  Award,
-  Headset,
-  UserSquare,
-  ChevronRight,
-  ChevronDown,
-  Users
-} from 'lucide-react';
-import { userAPI } from '../../configs/api';
+  FiHome,
+  FiUsers,
+  FiLayers,
+  FiAward,
+  FiFileText,
+  FiLogOut,
+  FiChevronLeft,
+  FiChevronRight,
+  FiX
+} from "react-icons/fi";
 
+const NAV_ITEMS = [
+  { key: "Home", label: "Overview", icon: <FiHome size={20} /> },
+  { key: "Team", label: "Team Manage", icon: <FiUsers size={20} /> },
+  { key: "Theme", label: "Theme Manage", icon: <FiLayers size={20} /> },
+  { key: "Result", label: "Result Manage", icon: <FiAward size={20} /> },
+  { key: "Ps", label: "PS Manage", icon: <FiFileText size={20} /> },
+ 
+];
 
-const iconMap = {
-  overview: LayoutDashboard,
-  projectTheme: Layers,
-  problemStatement: BookOpen,
-  team: UserSquare,
-  result: Award,
-  contact: Headset,
-  // Admin dashboard custom icons (fallback to BookOpen if not found)
-  manageTheme: Layers,
-  viewUsers: UserSquare,
-  viewTeams: Users,
-  problemStatements: BookOpen,
-};
-
-const SideBar = ({ activeSection, setActiveSection, onSidebarToggle, menuItems: customMenuItems }) => {
-  const [isCollapsed, setIsCollapsed] = useState(true);
-  const [teamName, setTeamName] = useState('');
+const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
+  const [open, setOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchTeamName = async () => {
-      try {
-        const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
-        if (hackathonUser.team && hackathonUser.team.teamName) {
-          setTeamName(hackathonUser.team.teamName);
-        } else {
-          const response = await userAPI.getTeamInfo();
-          setTeamName(response.data?.team?.name || '');
-        }
-      } catch (error) {
-        // ignore
-      }
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
     };
-    fetchTeamName();
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const handleToggle = () => {
-    const newCollapsedState = !isCollapsed;
-    setIsCollapsed(newCollapsedState);
-    if (onSidebarToggle) {
-      onSidebarToggle(newCollapsedState);
-    }
+  useEffect(() => {
+    const width = open ? "16rem" : "4rem";
+    document.documentElement.style.setProperty("--sidebar-width", width);
+  }, [open]);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("adminUser");
+    sessionStorage.removeItem("authToken");
+    sessionStorage.clear(); // Clear all session storage
+    onTabChange("logout");
+    navigate("/dashboard/login", { replace: true });
   };
 
-  const menuItems = customMenuItems || [
-    {
-      id: 'overview',
-      title: 'Overview',
-      icon: LayoutDashboard,
-      description: 'Dashboard Overview'
-    },
-    {
-      id: 'projectTheme',
-      title: 'Project Theme',
-      icon: Layers,
-      description: 'Select Challenge Theme'
-    },
-    {
-      id: 'problemStatement',
-      title: 'Problem Statement',
-      icon: BookOpen,
-      description: 'Challenge Details'
-    },
-    {
-      id: 'team',
-      title: 'Manage Team',
-      icon: UserSquare,
-      description: 'Team Members'
-    },
-    {
-      id: 'result',
-      title: 'Results',
-      icon: Award,
-      description: 'Competition Results'
-    },
-    {
-      id: 'contact',
-      title: 'Help Desk',
-      icon: Headset,
-      description: 'Support & Help'
-    }
-  ];
+  const toggle = () => setOpen((v) => !v);
 
   return (
-    <div className={`bg-white border-r border-gray-200 fixed left-0 top-0 ${isCollapsed ? 'w-12 sm:w-16' : 'w-56 sm:w-64'} h-full flex flex-col overflow-hidden z-10 mt-12 sm:mt-14 transition-all duration-300`}>
-      {/* Team Header Section */}
-      <div className="p-2 sm:p-3 border-b border-gray-200 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-2">
-              {/* Team Name */}
-              <div className="min-w-0">
-                <p className="text-md text-black truncate font-bold text-center sm:text-left">{teamName || 'Loading...'}</p>
-              </div>
-            </div>
-          )}
+    <>
+      <aside
+        className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-blue-900 to-blue-700 text-white shadow-xl flex flex-col z-40 transition-all duration-300
+          ${open ? "w-64" : "w-16"}
+        `}
+      >
+        {/* Header */}
+        <div
+          className={`flex items-center gap-3 px-4 py-4 border-b mt-15 border-blue-800 w-full relative ${
+            open ? "" : "justify-center"
+          }`}
+        >
+          {open && <span className="text-xl font-bold tracking-wide">Super Admin</span>}
 
-          {/* Collapse Toggle */}
+          {/* Toggle button (works on both desktop & mobile) */}
           <button
-            onClick={handleToggle}
-            className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 flex-shrink-0"
+            className="ml-auto text-white p-1 rounded-lg hover:bg-blue-800 transition cursor-pointer"
+            onClick={toggle}
+            aria-label={isMobile ? (open ? "Close sidebar" : "Open sidebar") : (open ? "Collapse sidebar" : "Expand sidebar")}
           >
-            {isCollapsed ? (
-              <ChevronRight size={14} className="text-gray-600 sm:w-4 sm:h-4" />
-            ) : (
-              <ChevronDown size={14} className="text-gray-600 sm:w-4 sm:h-4" />
-            )}
+            {open ? (isMobile ? <FiX size={20} /> : <FiChevronLeft size={20} />) : <FiChevronRight size={20} />}
           </button>
         </div>
-      </div>
 
-      {/* Navigation Menu */}
-      <nav className="flex-1 p-2 sm:p-3 overflow-y-auto">
-        <ul className="space-y-1">
-          {menuItems.map((item) => {
-            // Use icon from iconMap if id matches, else fallback to item.icon
-            const Icon = iconMap[item.id] || item.icon || BookOpen;
-            const isActive = activeSection === item.id;
-            return (
-              <li key={item.id} className="relative">
-                <button
-                  onClick={() => setActiveSection(item.id)}
-                  className={`w-full flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg transition-all duration-200 group ${isActive
-                    ? 'bg-[#0B2A4A] text-white shadow-md'
-                    : 'hover:bg-gray-50 text-gray-700 hover:text-[#0B2A4A]'
-                  }`}
-                >
-                  <Icon
-                    size={16}
-                    className={`flex-shrink-0 sm:w-[18px] sm:h-[18px] ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-[#0B2A4A]'
-                      }`}
-                  />
-                  {!isCollapsed && (
-                    <div className="flex-1 text-center sm:text-left min-w-0">
-                      <div className={`font-medium text-xs sm:text-sm truncate ${isActive ? 'text-white' : 'text-gray-900'
-                        }`}>
-                        {item.title}
-                      </div>
-                      <div className={`text-xs truncate hidden sm:block ${isActive ? 'text-blue-100' : 'text-gray-500'
-                        }`}>
-                        {item.description}
-                      </div>
-                    </div>
-                  )}
-                  {!isCollapsed && isActive && (
-                    <ChevronRight size={12} className="text-white flex-shrink-0 sm:w-[14px] sm:h-[14px]" />
-                  )}
-                </button>
-                {/* Tooltip for collapsed state */}
-                {isCollapsed && (
-                  <div className="absolute left-12 sm:left-16 bg-gray-900 text-white px-2 py-1 rounded text-xs sm:text-sm opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50 whitespace-nowrap">
-                    {item.title}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-    </div>
+        {/* Navigation */}
+        <nav className={`flex-1 py-6 ${open ? "px-2" : "px-1"}`}>
+          <ul className="space-y-2">
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeTab === item.key;
+              return (
+                <li key={item.key}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onTabChange(item.key);
+                    }}
+                    title={item.label}
+                    className={`flex items-center gap-3 w-full px-4 py-2 rounded-lg transition font-medium text-base
+                      ${isActive ? "bg-white text-blue-800 shadow" : "hover:bg-blue-800 hover:text-white"}
+                      ${open ? "" : "justify-center px-2"}
+                    `}
+                  >
+                    {item.icon}
+                    {open && <span className="truncate">{item.label}</span>}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* Logout */}
+        <div className={`mt-auto w-full flex flex-col gap-3 ${open ? "px-4 pb-6" : "px-2 pb-6"}`}>
+          <button
+            type="button"
+            onClick={handleLogout}
+            title="Logout"
+            className={`flex items-center ${open ? "justify-start" : "justify-center"} gap-3 w-full py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold transition shadow min-w-0`}
+          >
+            {/* Icon always visible */}
+            <div className="flex items-center justify-center" style={{ width: 24 }}>
+              <FiLogOut size={20} />
+            </div>
+
+            {/* Text hidden when collapsed */}
+            {open && <span className="ml-2">Logout</span>}
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 
-export default SideBar;
+export default Sidebar;

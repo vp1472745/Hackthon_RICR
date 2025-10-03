@@ -15,6 +15,7 @@ import {
 	getAllAdmins
 } from '../controller/adminController.js';
 import { requireAdminPermission } from '../middlewares/requireAdminPermission.js';
+import { authenticateAdmin } from '../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -24,19 +25,19 @@ router.get('/admin-permissions/:email', getAdminPermissions);
 
 // Theme routes
 router.post('/createTheme', requireAdminPermission('createTheme'), createTheme);
-router.get('/themes', requireAdminPermission('viewThemes'), getAllThemes);
+router.get('/themes', authenticateAdmin, getAllThemes);
 router.put('/editTheme/:id', requireAdminPermission('editTheme'), editTheme);
 router.delete('/deleteTheme/:id', requireAdminPermission('deleteTheme'), deleteTheme);
 
 // Problem Statement routes
 router.post('/createProblemStatement', requireAdminPermission('createProblemStatement'), createProblemStatement);
-router.get('/problemStatements', requireAdminPermission('viewProblemStatements'), getAllProblemStatementsAdmin);
+router.get('/problemStatements', authenticateAdmin, getAllProblemStatementsAdmin);
 router.put('/editProblemStatement/:id', requireAdminPermission('editProblemStatement'), editProblemStatement);
 router.delete('/deleteProblemStatement/:id', requireAdminPermission('deleteProblemStatement'), deleteProblemStatement);
 
 // Teams and Users
-router.get('/teamsWithMembers', requireAdminPermission('viewTeams'), getAllTeams);
-router.get('/users', requireAdminPermission('viewUsers'), getAllUsers);
+router.get('/teamsWithMembers', authenticateAdmin, getAllTeams);
+router.get('/users', authenticateAdmin, getAllUsers);
 
 // Admins
 router.get('/admins', getAllAdmins);

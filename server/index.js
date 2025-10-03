@@ -33,7 +33,7 @@ app.use('/user', UserRoute);
 app.use('/theme', ProjectThemeRouter);
 app.use('/problem', ProblemStatementRoute);
 app.use('/admin', SuperAdminRoute);
-app.use('/S/admin', AdminRegister);
+app.use('/s/admin', AdminRegister);
 
 app.get('/', (req, res) => {
     res.send('API is running...');
