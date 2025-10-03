@@ -10,7 +10,7 @@ const FAQS = [
   },
   {
     question: "How many members are allowed per team?",
-    answer: "Minimum: 1 (Team Leader), Maximum: 4 (Team Leader + up to 3 members)"
+    answer: "Minimum: 1 , Maximum: 4 (Team Leader + up to 3 members)"
   },
   {
     question: "Until when can teams be updated or altered?",
@@ -18,7 +18,7 @@ const FAQS = [
   },
   {
     question: "Can one person be part of multiple teams?",
-    answer: "Generally, no. Each participant should register for only one team. (If multiple-team participation is to be allowed, database validations and policies must be updated accordingly.)"
+    answer: "No"
   },
   {
     question: "Should each team member's email be unique?",
