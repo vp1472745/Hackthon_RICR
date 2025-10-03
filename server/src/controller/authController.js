@@ -31,6 +31,17 @@ export const SendOTP = async (req, res, next) => {
 
         const emailOTP = Math.floor(100000 + Math.random() * 900000).toString();
         const phoneOTP = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        console.log('🎲 Generated OTPs:', {
+            emailOTP,
+            phoneOTP,
+            emailOTPLength: emailOTP.length,
+            phoneOTPLength: phoneOTP.length
+        });
+
+        // Delete any existing OTPs for this email and phone before creating new ones
+        await Otp.deleteMany({ otpfor: email, type: 'email' });
+        await Otp.deleteMany({ otpfor: phone.toString(), type: 'phone' });
 
         // Send OTPs to user
         await sendOTPEmail(email, emailOTP);
@@ -38,6 +49,12 @@ export const SendOTP = async (req, res, next) => {
 
         const hashedEmailOTP = await bcrypt.hash(emailOTP, 10);
         const hashedPhoneOTP = await bcrypt.hash(phoneOTP, 10);
+
+        console.log('📧 Creating Email OTP:', {
+            email,
+            plainOTP: emailOTP,
+            hashedOTP: hashedEmailOTP
+        });
 
         const newPhoneOTPentry = await Otp.create({
             otpfor: phone.toString(),
@@ -50,6 +67,8 @@ export const SendOTP = async (req, res, next) => {
             otp: hashedEmailOTP,
             type: 'email',
         });
+
+        console.log('✅ OTP entries created successfully');
 
         res.status(200).json({ message: 'OTPs sent successfully on email and phone' });
     } catch (error) {
@@ -67,13 +86,35 @@ export const Register = async (req, res, next) => {
         }
 
         const emailOTPEntry = await Otp.findOne({ otpfor: email, type: 'email' });
+        console.log('🔍 Debug Email OTP:', {
+            email,
+            emailOTP,
+            emailOTPEntry: emailOTPEntry ? {
+                id: emailOTPEntry._id,
+                otpfor: emailOTPEntry.otpfor,
+                hashedOTP: emailOTPEntry.otp,
+                type: emailOTPEntry.type,
+                createdAt: emailOTPEntry.createdAt
+            } : null
+        });
+        
         if (!emailOTPEntry) {
             const error = new Error('Email OTP not found or expired');
             error.statusCode = 400;
             return next(error);
         }
 
-        const isEmailOTPValid = await bcrypt.compare(emailOTP, emailOTPEntry.otp);
+        // Ensure OTP is string and trim any whitespace
+        const cleanEmailOTP = emailOTP.toString().trim();
+        const isEmailOTPValid = await bcrypt.compare(cleanEmailOTP, emailOTPEntry.otp);
+        console.log('🔐 Email OTP Validation:', {
+            providedOTP: cleanEmailOTP,
+            providedOTPType: typeof cleanEmailOTP,
+            providedOTPLength: cleanEmailOTP.length,
+            hashedOTP: emailOTPEntry.otp,
+            isValid: isEmailOTPValid
+        });
+        
         if (!isEmailOTPValid) {
             const error = new Error('Invalid Email OTP');
             error.statusCode = 400;
@@ -87,7 +128,15 @@ export const Register = async (req, res, next) => {
             return next(error);
         }
 
-        const isPhoneOTPValid = await bcrypt.compare(phoneOTP, phoneOTPEntry.otp);
+        // Ensure Phone OTP is string and trim any whitespace  
+        const cleanPhoneOTP = phoneOTP.toString().trim();
+        const isPhoneOTPValid = await bcrypt.compare(cleanPhoneOTP, phoneOTPEntry.otp);
+        console.log('📱 Phone OTP Validation:', {
+            providedOTP: cleanPhoneOTP,
+            hashedOTP: phoneOTPEntry.otp,
+            isValid: isPhoneOTPValid
+        });
+        
         if (!isPhoneOTPValid) {
             const error = new Error('Invalid Phone OTP');
             error.statusCode = 400;
