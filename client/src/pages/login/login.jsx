@@ -85,7 +85,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#07203a] via-[#0b3b67] to-[#07203a] py-8 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#07203a] via-[#0b3b67] to-[#07203a] py-8 px-4 ">
       {/* Decorative background shapes (responsive & subtle) */}
       <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="hidden md:block absolute -top-36 -right-36 w-80 h-80 rounded-full bg-white opacity-5" />
