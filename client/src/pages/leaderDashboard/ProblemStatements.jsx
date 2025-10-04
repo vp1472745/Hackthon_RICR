@@ -88,8 +88,6 @@ const ProblemStatements = () => {
         setAvailableProblems(problems);
         
         // Check if team has already selected a problem
-        // TEMPORARY: Comment out to test selection functionality
-        /*
         const teamData = hackathonUser?.team;
         const selectedId = teamData?.selectedProblemStatement || teamData?.teamProblemStatement;
         
@@ -103,7 +101,6 @@ const ProblemStatements = () => {
             console.log('❌ Selected problem not found in available problems');
           }
         }
-        */
         
         setShowFetchOption(false); // Hide the fetch option after fetching
         setError(''); // Clear any previous errors
@@ -285,41 +282,6 @@ const ProblemStatements = () => {
               </div>
             </div>
           )}
-        </div>
-
-        {/* Debug Panel - Remove in production */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-          <h4 className="font-semibold text-yellow-800 mb-2">Debug Info</h4>
-          <div className="text-sm text-yellow-700 space-y-1">
-            <p>TeamId: {teamId || 'Not found'}</p>
-            <p>HasTheme: {hasTheme ? 'Yes' : 'No'}</p>
-            <p>ShowFetchOption: {showFetchOption ? 'Yes' : 'No'}</p>
-            <p>Loading: {loading ? 'Yes' : 'No'}</p>
-            <p>Available Problems: {availableProblems.length}</p>
-            <p>Selected Theme: {hackathonUser?.theme?.themeName || sessionStorage.getItem('selectedTheme') || 'None'}</p>
-            <p>API URL: `/problem/team/${teamId}/problemstatements`</p>
-            {error && <p className="text-red-600">Error: {error}</p>}
-          </div>
-          <div className="flex gap-2 mt-3">
-            <button
-              onClick={fetchProblemStatements}
-              disabled={loading}
-              className="bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-yellow-700 disabled:opacity-50"
-            >
-              {loading ? 'Fetching...' : 'Manual Fetch (Debug)'}
-            </button>
-            <button
-              onClick={() => {
-                console.log('🧪 Testing API directly...');
-                console.log('Base URL:', import.meta.env.VITE_API_URL);
-                console.log('Team ID:', teamId);
-                console.log('Full URL:', `${import.meta.env.VITE_API_URL}/problem/team/${teamId}/problemstatements`);
-              }}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
-            >
-              Test API URL
-            </button>
-          </div>
         </div>
 
         {/* Fetch Problem Statements Option */}

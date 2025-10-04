@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { act } from 'react';
+import { activateAllProblemStatements } from '../../../server/src/controller/projectProblemController';
 
 
 
@@ -79,15 +81,29 @@ export const userAPI = {
 
     //update theme selection
     updateThemeSelection: (teamId, themeName) => api.put(`/theme/select/${teamId}`, { themeName }),
-    // Refresh user data
-   
+
+    // Activate all themes (SuperAdmin)
+    activateAllThemes: () => api.patch('/theme/activate-all'),
+
+    // Deactivate all themes (SuperAdmin)
+    deactivateAllThemes: () => api.patch('/theme/deactivate-all'),
+
+    // Get all themes for admin (active + inactive)
+    getAllThemesAdmin: () => api.get('/theme/admin/all'),
+
 };
 
 export const projectThemeAPI = {
-    // Fetch all themes
+    // Fetch all active themes (for users)
     getAllThemes: () => api.get('/theme'),
+    // Fetch all themes for admin (active + inactive)
+    getAllThemesAdmin: () => api.get('/theme/admin/all'),
     // Select a theme for a team
     selectThemeForTeam: (teamId, themeName) => api.put(`/theme/select/${teamId}`, { themeName }),
+    // Activate all themes (SuperAdmin)
+    activateAllThemes: () => api.patch('/theme/activate-all'),
+    // Deactivate all themes (SuperAdmin)
+    deactivateAllThemes: () => api.patch('/theme/deactivate-all'),
 };
 
 

@@ -9,6 +9,11 @@ const themeSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active',
+    },
     themeDescription: {
         type: String,
         required: true,

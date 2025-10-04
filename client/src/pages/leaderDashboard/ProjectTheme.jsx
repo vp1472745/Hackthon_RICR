@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, CheckCircle, Loader, Calendar, Info } from 'lucide-react';
-import { projectThemeAPI, userAPI, authAPI, AdminAPI } from '../../configs/api';
+import { projectThemeAPI, userAPI, authAPI } from '../../configs/api';
 
 const ProjectTheme = () => {
   const [themes, setThemes] = useState([]);
@@ -30,7 +30,9 @@ const ProjectTheme = () => {
     const fetchThemes = async () => {
       try {
         setLoading(true);
-        const res = await AdminAPI.getAllThemes();
+        // Use projectThemeAPI to get only active themes for users
+        const res = await projectThemeAPI.getAllThemes();
+        console.log('🎯 Active themes fetched:', res.data.themes);
         setThemes(res.data.themes || []);
       } catch (err) {
         console.error('Error fetching themes:', err);
