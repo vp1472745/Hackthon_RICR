@@ -158,6 +158,11 @@ deleteProblemStatement: (id) => api.delete(`/admin/deleteProblemStatement/${id}`
 // router.post('/createProblemStatement', createProblemStatement);
 createProblemStatement: (data) => api.post('/admin/createProblemStatement', data),
 
+
+// Deactivate all problem statements (SuperAdmin)
+deactivateAllProblemStatements: () => api.patch('/problem/deactivate-all'),
+// Activate all problem statements (SuperAdmin) 
+activateAllProblemStatements: () => api.patch('/problem/activate-all'),
 };
 
 

@@ -201,6 +201,38 @@ const PsManageTab = ({ teamId }) => {
     setLoading(false);
   };
 
+  // Activate all problem statements
+  const handleActivateAll = async () => {
+    if (!window.confirm('Are you sure you want to activate ALL problem statements?')) return;
+    
+    setActionLoading(true);
+    try {
+      const response = await AdminAPI.activateAllProblemStatements();
+      alert(`Success! ${response.data.modifiedCount} problem statements activated.`);
+      fetchProblemStatements(); // Refresh the list
+    } catch (err) {
+      console.error('Error activating problem statements:', err);
+      alert('Failed to activate problem statements. Please try again.');
+    }
+    setActionLoading(false);
+  };
+
+  // Deactivate all problem statements
+  const handleDeactivateAll = async () => {
+    if (!window.confirm('Are you sure you want to deactivate ALL problem statements? This will affect ongoing hackathons!')) return;
+    
+    setActionLoading(true);
+    try {
+      const response = await AdminAPI.deactivateAllProblemStatements();
+      alert(`Success! ${response.data.modifiedCount} problem statements deactivated.`);
+      fetchProblemStatements(); // Refresh the list
+    } catch (err) {
+      console.error('Error deactivating problem statements:', err);
+      alert('Failed to deactivate problem statements. Please try again.');
+    }
+    setActionLoading(false);
+  };
+
   const filteredProblemStatements = problemStatements
     .filter(ps => {
       const matchesSearch = ps.PStitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -275,6 +307,26 @@ const PsManageTab = ({ teamId }) => {
             >
               <FiPlus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
               <span className="text-sm">Add New Problem</span>
+            </button>
+
+            {/* Activate All Button */}
+            <button
+              onClick={handleActivateAll}
+              disabled={actionLoading}
+              className="flex items-center px-6 cursor-pointer py-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group whitespace-nowrap"
+            >
+              
+              <span className="text-sm">{actionLoading ? 'Processing...' : 'PS Activate All'}</span>
+            </button>
+
+            {/* Deactivate All Button */}
+            <button
+              onClick={handleDeactivateAll}
+              disabled={actionLoading}
+              className="flex items-center px-6 cursor-pointer py-4 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group whitespace-nowrap"
+            >
+              
+              <span className="text-sm">{actionLoading ? 'Processing...' : 'PS Deactivate All'}</span>
             </button>
             {/* Add Problem Statement Modal */}
             <Modal
