@@ -9,7 +9,7 @@ import RegistrationCTASection from "../components/content/RegistrationCTASection
 
 function Home() {
   return (
-    <div className="min-w-[65vh] bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Hero Section (full width) */}
       <HeroPage />
 
