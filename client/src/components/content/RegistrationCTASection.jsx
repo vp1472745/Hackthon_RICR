@@ -1,8 +1,17 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { fadeInUp, THEME } from "./constants";
+import { Link } from "react-router-dom";
+
+
+
+
+
+
+
 
 export default function RegistrationCTASection() {
+
   return (
     <motion.section
       className="w-full py-16 md:py-20 bg-[#0B2A4A] text-white text-center rounded-2xl md:rounded-3xl shadow-xl relative overflow-hidden mt-16"
@@ -39,14 +48,16 @@ export default function RegistrationCTASection() {
         </motion.p>
 
         <motion.div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8" variants={fadeInUp} transition={{ delay: 0.4 }}>
-          <motion.button
-            className="bg-white text-[#0B2A4A] hover:bg-gray-100 font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg shadow-lg text-sm md:text-base"
-            whileHover={{ y: -5, scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 10 } }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Register Now - ₹1,500"
-          >
-            Register Now
-          </motion.button>
+          <Link to="/register">
+            <motion.button
+              className="bg-white text-[#0B2A4A] hover:bg-gray-100 font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg shadow-lg text-sm md:text-base"
+              whileHover={{ y: -5, scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 10 } }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Register Now - ₹1,500"
+            >
+              Register Now
+            </motion.button>
+          </Link>
 
           <motion.button
             className="border-2 border-white text-white hover:bg-white hover:text-[#0B2A4A] font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg text-sm md:text-base"
