@@ -14,7 +14,8 @@ const ProblemStatements = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingProblem, setPendingProblem] = useState(null);
   const [isDeactivatedMode, setIsDeactivatedMode] = useState(false);
-
+  const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
+  const [isPolling, setIsPolling] = useState(false);
 
   // Get teamId from user info or cookie
   const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser'));
@@ -25,30 +26,30 @@ const ProblemStatements = () => {
     const checkTheme = () => {
       console.log('🔍 checkTheme function called');
       if (!teamId) {
-     
+
         setError('Team ID not found');
         setLoading(false);
         return;
       }
 
 
-      
-      const teamTheme = hackathonUser?.theme?.themeName || 
-                       hackathonUser?.team?.teamTheme?.themeName ||
-                       sessionStorage.getItem('selectedTheme');
-      
+
+      const teamTheme = hackathonUser?.theme?.themeName ||
+        hackathonUser?.team?.teamTheme?.themeName ||
+        sessionStorage.getItem('selectedTheme');
+
       console.log('🔍 Checking theme sources:');
       console.log('  - hackathonUser.theme.themeName:', hackathonUser?.theme?.themeName);
       console.log('  - hackathonUser.team.teamTheme.themeName:', hackathonUser?.team?.teamTheme?.themeName);
       console.log('  - sessionStorage selectedTheme:', sessionStorage.getItem('selectedTheme'));
       console.log('  - Final teamTheme:', teamTheme);
-      
+
       if (teamTheme) {
         setHasTheme(true);
         setShowFetchOption(true);
         console.log('✅ Team has theme:', teamTheme);
         console.log('✅ Setting showFetchOption to true');
-        
+
         // Auto-fetch problems immediately when theme is found
         console.log('🚀 Auto-fetching problems...');
         setTimeout(() => {
@@ -65,9 +66,60 @@ const ProblemStatements = () => {
     checkTheme();
   }, [teamId]);
 
+  // Add real-time update polling
+  useEffect(() => {
+    if (!hasTheme || !teamId) return;
+
+    const pollForUpdates = async () => {
+      try {
+        // Only poll if we already have problems loaded (to avoid initial load conflicts)
+        if (availableProblems.length > 0 || selectedProblem) {
+          setIsPolling(true);
+          console.log('🔄 Polling for problem statement updates...');
+          const res = await problemStatementAPI.getActiveForTeam(teamId);
+          
+          if (res.data) {
+            const newIsDeactivated = res.data.isDeactivated || false;
+            const currentTime = Date.now();
+            
+            // Check if activation/deactivation status changed
+            if (newIsDeactivated !== isDeactivatedMode) {
+              console.log('🔄 Activation status changed:', !newIsDeactivated ? 'ACTIVATED' : 'DEACTIVATED');
+              setIsDeactivatedMode(newIsDeactivated);
+              setLastUpdateTime(currentTime);
+              
+              // Show toast notification about the change
+              if (newIsDeactivated) {
+                toast.warning('🔒 Problem statement selection has been deactivated by admin');
+              } else {
+                toast.success('✅ Problem statement selection is now active!');
+              }
+              
+              // Refresh the problems list
+              await fetchProblemStatements(true); // Silent refresh
+            } else {
+              // Update last check time even if no changes
+              setLastUpdateTime(currentTime);
+            }
+          }
+        }
+      } catch (err) {
+        // Silently handle polling errors to avoid spam
+        console.log('Polling error (silent):', err.message);
+      } finally {
+        setIsPolling(false);
+      }
+    };
+
+    // Poll every 5 seconds
+    const pollInterval = setInterval(pollForUpdates, 5000);
+    
+    return () => clearInterval(pollInterval);
+  }, [hasTheme, teamId, isDeactivatedMode, availableProblems.length, selectedProblem]);
+
   // Function to fetch problem statements manually
-  const fetchProblemStatements = async () => {
-    console.log('🚀 fetchProblemStatements called');
+  const fetchProblemStatements = async (isRefresh = false) => {
+    console.log('🚀 fetchProblemStatements called', isRefresh ? '(REFRESH)' : '');
     if (!teamId) {
       console.log('❌ No teamId found');
       setError('Team ID not found');
@@ -76,23 +128,25 @@ const ProblemStatements = () => {
 
     console.log('🔍 Fetching problems for teamId:', teamId);
     console.log('🔗 API URL will be:', `/problem/team/${teamId}/problemstatements`);
-    setLoading(true);
+    if (!isRefresh) {
+      setLoading(true);
+    }
     try {
       // Fetch available problem statements for team
       const res = await problemStatementAPI.getActiveForTeam(teamId);
       console.log('🎯 Available problems response:', res.data);
       console.log('🎯 Full response:', res);
-      
+
       if (res.data.success) {
         const problems = res.data.problemStatements || [];
         const isDeactivated = res.data.isDeactivated || false;
-        
+
         console.log('📋 Found problems:', problems.length);
         console.log('🔒 Is deactivated mode:', isDeactivated);
-        
+
         setAvailableProblems(problems);
         setIsDeactivatedMode(isDeactivated);
-        
+
         // If deactivated, automatically set the selected problem (should be only one)
         if (isDeactivated && problems.length > 0) {
           console.log('🔒 Deactivated mode - showing selected problem only');
@@ -102,32 +156,40 @@ const ProblemStatements = () => {
           setLoading(false);
           return;
         }
-        
+
         // Check if team has already selected a problem
-        // TEMPORARY: Comment out for testing selection functionality
-        /*
         const teamData = hackathonUser?.team;
         const selectedId = teamData?.selectedProblemStatement || teamData?.teamProblemStatement;
-        
+
         if (selectedId) {
           console.log('🔍 Looking for selected problem with ID:', selectedId);
           const selected = problems.find(p => p._id === selectedId);
           if (selected) {
-            console.log('✅ Found selected problem:', selected.PStitle);
+            console.log('✅ Found previously selected problem:', selected.PStitle);
             setSelectedProblem(selected);
           } else {
             console.log('❌ Selected problem not found in available problems');
+            // If deactivated mode and team has selection but problem not in list,
+            // try to fetch the specific problem details
+            if (isDeactivated) {
+              console.log('🔒 Deactivated mode: Team has selection but details not found');
+              setSelectedProblem({
+                _id: selectedId,
+                PStitle: 'Previously Selected Problem Statement',
+                PSdescription: 'Your team has already selected a problem statement. Details are being loaded...',
+                PSTheme: { themeName: 'N/A' }
+              });
+            }
           }
         }
-        */
-        
+
         setShowFetchOption(false); // Hide the fetch option after fetching
         setError(''); // Clear any previous errors
         console.log('✅ Problems loaded successfully');
       } else {
         console.log('❌ API returned error:', res.data.message);
         const isDeactivated = res.data.isDeactivated || false;
-        
+
         if (isDeactivated) {
           // Problem statements are deactivated and team has no selection
           setError('Problem statements are currently deactivated by admin. Please contact support.');
@@ -141,7 +203,7 @@ const ProblemStatements = () => {
       console.error('🚨 Fetch error:', err);
       console.error('🚨 Error response:', err.response?.data);
       console.error('🚨 Error status:', err.response?.status);
-      
+
       // Check if it's a theme issue
       if (err.response?.status === 400) {
         const errorMsg = err.response?.data?.message || 'Bad request';
@@ -154,12 +216,30 @@ const ProblemStatements = () => {
       }
     } finally {
       console.log('🔄 Setting loading to false');
-      setLoading(false);
+      if (!isRefresh) {
+        setLoading(false);
+      }
+      setLastUpdateTime(Date.now());
     }
+  };
+
+  // Manual refresh function
+  const handleRefresh = () => {
+    console.log('🔄 Manual refresh triggered');
+    toast.info('Refreshing problem statements...');
+    fetchProblemStatements(false); // Full refresh with loading
   };
 
   // Show confirmation modal before selection
   const handleSelectProblem = (problemStatement) => {
+    // Check if problem statements are deactivated
+    if (isDeactivatedMode) {
+      toast.error('Problem statement selection is currently deactivated by admin');
+      return;
+    }
+
+    // In activated mode, allow multiple selections (user can change their selection)
+    console.log('🎯 Problem selection initiated for:', problemStatement.PStitle);
     setPendingProblem(problemStatement);
     setShowConfirmModal(true);
   };
@@ -167,26 +247,21 @@ const ProblemStatements = () => {
   // Actual selection after confirmation
   const confirmSelection = async () => {
     if (!teamId || selecting || !pendingProblem) return;
-    
+
     setSelecting(true);
     setShowConfirmModal(false);
-    
+
     try {
       const res = await problemStatementAPI.selectForTeam(teamId, pendingProblem._id);
-      
+
       if (res.data.success) {
         setSelectedProblem(pendingProblem);
         toast.success('Problem statement selected successfully!');
         console.log('✅ Problem selected:', pendingProblem.PStitle);
-        
-        // Hide other problem statements - keep only selected one
-        const updatedProblems = availableProblems.map(p => ({
-          ...p,
-          isHidden: p._id !== pendingProblem._id
-        }));
-        setAvailableProblems(updatedProblems);
-        console.log('🙈 Other problems hidden, showing only selected one');
-        
+
+        // Keep all problems visible for potential selection changes
+        console.log('✅ All problems remain visible for potential changes');
+
         // Update session storage
         const updatedUser = { ...hackathonUser };
         if (updatedUser.team) {
@@ -243,7 +318,7 @@ const ProblemStatements = () => {
               </div>
             </div>
           </div>
-          
+
           <div className={`${isThemeError ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200'} border rounded-2xl p-6 text-center`}>
             <AlertCircle className={`w-12 h-12 ${isThemeError ? 'text-yellow-600' : 'text-red-600'} mx-auto mb-4`} />
             <h3 className={`text-xl font-semibold ${isThemeError ? 'text-yellow-800' : 'text-red-800'} mb-2`}>
@@ -292,29 +367,60 @@ const ProblemStatements = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header Section */}
         <div className="p-8 mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
-              <FileText className="w-7 h-7 text-white" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
+                <FileText className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Problem Statements</h1>
+                <p className="text-gray-600 text-lg">
+                  {selectedProblem
+                    ? 'Your selected hackathon challenge'
+                    : isDeactivatedMode
+                      ? 'View available problem statements (Selection disabled)'
+                      : 'Choose your hackathon challenge'
+                  }
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Problem Statements</h1>
-              <p className="text-gray-600 text-lg">
-                {selectedProblem ? 'Your selected hackathon challenge' : 'Choose your hackathon challenge'}
-              </p>
+            
+            {/* Refresh Button and Status */}
+            <div className="flex flex-col items-end gap-2">
+              <button
+                onClick={handleRefresh}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors disabled:opacity-50"
+                title="Refresh problem statements"
+              >
+                <Loader className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className={`w-2 h-2 rounded-full ${isPolling ? 'bg-blue-500 animate-pulse' : isDeactivatedMode ? 'bg-orange-500' : 'bg-green-500'}`}></div>
+                <span>
+                  {isPolling ? 'Checking...' : isDeactivatedMode ? 'Deactivated' : 'Active'}
+                </span>
+                <span>•</span>
+                <span>Updated: {new Date(lastUpdateTime).toLocaleTimeString()}</span>
+              </div>
             </div>
           </div>
 
-          {/* Status Indicator */}
-          {selectedProblem && (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
-              <CheckCircle className="w-6 h-6 text-green-600" />
+          {/* Deactivated Mode Notice */}
+          {isDeactivatedMode && !selectedProblem && (
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+              <AlertCircle className="w-6 h-6 text-orange-600" />
               <div>
-                <p className="font-medium text-green-800">Problem Statement Selected</p>
-                <p className="text-sm text-green-700">Your team has selected: {selectedProblem.PStitle}</p>
+                <p className="font-medium text-orange-800">Problem Statement Selection Deactivated</p>
+                <p className="text-sm text-orange-700">
+                  Problem statement selection is currently disabled by admin.
+                  {availableProblems.length > 0 ? ' You can view available problems but cannot select them.' : ''}
+                </p>
               </div>
             </div>
           )}
-          
+
           {!teamId && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
@@ -327,7 +433,112 @@ const ProblemStatements = () => {
             </div>
           )}
         </div>
+        {/* Available Problem Statements - Always show when problems are available */}
+        {availableProblems.length > 0 && (
+          // Show available problems for selection
+          availableProblems.length > 0 && (
+            <div className="space-y-6 mb-10">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Available Problem Statements
+                  {isDeactivatedMode && (
+                    <span className="text-sm font-normal text-orange-600 ml-2">(View Only)</span>
+                  )}
+                </h2>
+                <div className="text-sm text-gray-500">
+                  {isDeactivatedMode
+                    ? 'Selection is currently disabled'
+                    : selectedProblem
+                      ? 'You can change your selection below'
+                      : 'Choose one problem statement for your team'
+                  }
+                </div>
+              </div>
 
+
+
+              <div className="space-y-4">
+                {availableProblems.map((problemStatement, index) => {
+                  return (
+                    <div key={problemStatement._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                              <span className="text-blue-600 font-bold">{index + 1}</span>
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-900">{problemStatement.PStitle}</h3>
+                              <p className="text-sm text-gray-500">
+                                Theme: {problemStatement.PSTheme?.themeName || 'N/A'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mb-4">
+                          <p className="text-gray-700 text-sm leading-relaxed">
+                            {problemStatement.PSdescription}
+                          </p>
+                        </div>
+
+                        <div className="flex justify-end">
+                          {isDeactivatedMode ? (
+                            <div className="bg-gray-100 text-gray-500 py-2 px-6 rounded-lg font-medium">
+                              🔒 Selection Disabled
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => handleSelectProblem(problemStatement)}
+                              disabled={selecting}
+                              className={`py-2 px-6 rounded-lg font-medium transition-colors disabled:opacity-50 ${selectedProblem && selectedProblem._id === problemStatement._id
+                                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                }`}
+                            >
+                              {selecting ? (
+                                <>
+                                  <Loader className="w-4 h-4 animate-spin inline mr-2" />
+                                  Selecting...
+                                </>
+                              ) : selectedProblem && selectedProblem._id === problemStatement._id ? (
+                                <>
+                                  <CheckCircle className="w-4 h-4 inline mr-2" />
+                                  Selected (Click to Change)
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle className="w-4 h-4 inline mr-2" />
+                                  Select This Problem
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )
+        )}
+
+        {/* Status Indicator */}
+        {selectedProblem && (
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+            <CheckCircle className="w-6 h-6 text-green-600" />
+            <div className="flex-1">
+              <p className="font-medium text-green-800">Problem Statement Selected</p>
+              <p className="text-sm text-green-700">Your team has selected: {selectedProblem.PStitle}</p>
+              {isDeactivatedMode && (
+                <p className="text-xs text-orange-600 mt-1">
+                  🔒 Selection is locked (Problem statements are currently deactivated)
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Fetch Problem Statements Option */}
         {console.log('🔍 Render check - showFetchOption:', showFetchOption, 'hasTheme:', hasTheme)}
@@ -360,10 +571,11 @@ const ProblemStatements = () => {
           </div>
         )}
 
-        {/* Main Content - Problem Statements */}
-        {selectedProblem ? (
-          // Show only selected problem
-          <div className="space-y-6">
+        {/* Selected Problem Details - Show when a problem is selected */}
+        {selectedProblem && (
+          <div className="space-y-6 mb-8">
+
+
             {/* Selected Problem Statement Card */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="bg-gradient-to-r from-green-50 to-blue-50 border-b border-green-200 p-6">
@@ -381,7 +593,7 @@ const ProblemStatements = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="p-6">
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
@@ -397,120 +609,37 @@ const ProblemStatements = () => {
               </div>
             </div>
 
-            {/* Action Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <Target className="w-6 h-6 text-blue-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-1">Understand the Problem</h4>
-                <p className="text-gray-600 text-sm">Analyze requirements and identify key challenges</p>
-              </div>
-              
-              <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <Users className="w-6 h-6 text-green-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-1">Plan & Collaborate</h4>
-                <p className="text-gray-600 text-sm">Discuss approach and divide tasks with your team</p>
-              </div>
-              
-              <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <Lightbulb className="w-6 h-6 text-purple-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-1">Start Building</h4>
-                <p className="text-gray-600 text-sm">Begin developing your innovative solution</p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          // Show available problems for selection
-          availableProblems.length > 0 && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">Available Problem Statements</h2>
-                <div className="text-sm text-gray-500">
-                  Choose one problem statement for your team
-                </div>
-              </div>
-              
-              {/* Show All Button - appears when some problems are hidden */}
-              {availableProblems.some(p => p.isHidden) && (
-                <div className="mb-4 text-center">
-                  <button
-                    onClick={() => {
-                      // Show all problems again
-                      const updatedProblems = availableProblems.map(p => ({
-                        ...p,
-                        isHidden: false
-                      }));
-                      setAvailableProblems(updatedProblems);
-                      setSelectedProblem(null);
-                      console.log('👁️ Showing all problems again');
-                    }}
-                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-                  >
-                    Show All Problems Again
-                  </button>
-                </div>
-              )}
 
-              <div className="space-y-4">
-                {availableProblems.map((problemStatement, index) => {
-                  // Hide problems that are marked as hidden
-                  if (problemStatement.isHidden) return null;
-                  
-                  return (
-                    <div key={problemStatement._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                            <span className="text-blue-600 font-bold">{index + 1}</span>
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900">{problemStatement.PStitle}</h3>
-                            <p className="text-sm text-gray-500">
-                              Theme: {problemStatement.PSTheme?.themeName || 'N/A'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="mb-4">
-                        <p className="text-gray-700 text-sm leading-relaxed">
-                          {problemStatement.PSdescription}
-                        </p>
-                      </div>
-                      
-                      <div className="flex justify-end">
-                        <button
-                          onClick={() => handleSelectProblem(problemStatement)}
-                          disabled={selecting}
-                          className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg font-medium transition-colors disabled:opacity-50"
-                        >
-                          {selecting ? (
-                            <>
-                              <Loader className="w-4 h-4 animate-spin inline mr-2" />
-                              Selecting...
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="w-4 h-4 inline mr-2" />
-                              Select This Problem
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  );
-                })}
-              </div>
-            </div>
-          )
+          </div>
         )}
+
+        {/* Action Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <Target className="w-6 h-6 text-blue-600" />
+            </div>
+            <h4 className="font-semibold text-gray-900 mb-1">Understand the Problem</h4>
+            <p className="text-gray-600 text-sm">Analyze requirements and identify key challenges</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <Users className="w-6 h-6 text-green-600" />
+            </div>
+            <h4 className="font-semibold text-gray-900 mb-1">Plan & Collaborate</h4>
+            <p className="text-gray-600 text-sm">Discuss approach and divide tasks with your team</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <Lightbulb className="w-6 h-6 text-purple-600" />
+            </div>
+            <h4 className="font-semibold text-gray-900 mb-1">Start Building</h4>
+            <p className="text-gray-600 text-sm">Begin developing your innovative solution</p>
+          </div>
+        </div>
+
       </div>
 
       {/* Confirmation Modal */}
@@ -522,8 +651,15 @@ const ProblemStatements = () => {
               <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertCircle className="w-8 h-8 text-yellow-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Confirm Your Selection</h3>
-              <p className="text-gray-600 text-sm">This is a permanent decision that cannot be changed later</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {selectedProblem ? 'Change Your Selection' : 'Confirm Your Selection'}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {selectedProblem
+                  ? 'You can change your problem statement selection'
+                  : 'Please confirm your problem statement choice'
+                }
+              </p>
             </div>
 
             {/* Problem Statement Preview */}
@@ -534,14 +670,18 @@ const ProblemStatements = () => {
             </div>
 
             {/* Warning Message */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+            <div className={`${selectedProblem ? 'bg-blue-50 border-blue-200' : 'bg-yellow-50 border-yellow-200'} border rounded-xl p-4 mb-6`}>
               <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <AlertCircle className={`w-5 h-5 ${selectedProblem ? 'text-blue-600' : 'text-yellow-600'} mt-0.5 flex-shrink-0`} />
                 <div className="text-sm">
-                  <p className="text-yellow-800 font-semibold mb-1">⚠️ Important Warning</p>
-                  <p className="text-yellow-700">
-                    आपको केवल <strong>एक ही मौका</strong> मिलेगा problem statement select करने के लिए। 
-                    एक बार select करने के बाद आप इसे बदल नहीं सकेंगे।
+                  <p className={`${selectedProblem ? 'text-blue-800' : 'text-yellow-800'} font-semibold mb-1`}>
+                    {selectedProblem ? '🔄 Changing Selection' : '⚠️ Important Notice'}
+                  </p>
+                  <p className={selectedProblem ? 'text-blue-700' : 'text-yellow-700'}>
+                    {selectedProblem
+                      ? 'आप अपना problem statement बदल सकते हैं। यह selection आपके पुराने selection को replace कर देगा।'
+                      : 'आप problem statement select कर रहे हैं। आप बाद में इसे बदल भी सकते हैं।'
+                    }
                   </p>
                 </div>
               </div>
@@ -559,15 +699,16 @@ const ProblemStatements = () => {
               <button
                 onClick={confirmSelection}
                 disabled={selecting}
-                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className={`flex-1 px-4 py-3 text-white rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${selectedProblem ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700'
+                  }`}
               >
                 {selecting ? (
                   <>
                     <Loader className="w-4 h-4 animate-spin" />
-                    Selecting...
+                    {selectedProblem ? 'Changing...' : 'Selecting...'}
                   </>
                 ) : (
-                  'Yes, Select This Problem'
+                  selectedProblem ? 'Yes, Change Selection' : 'Yes, Select This Problem'
                 )}
               </button>
             </div>
