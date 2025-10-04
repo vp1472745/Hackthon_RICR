@@ -291,19 +291,32 @@ const ProblemStatements = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
       <div className="max-w-6xl mx-auto">
+  
         {/* Header Section */}
-        <div className="p-8 mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
-              <FileText className="w-7 h-7 text-white" />
+        <div className="p-4 sm:p-6 md:p-8 ">
+          <div className="flex flex-row sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+            <div className="flex flex-row sm:flex-row items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl shadow-lg">
+                <FileText className="w-7 h-7 text-white" />
+              </div>
+              <div className="text-center sm:text-left">
+                <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-gray-900 ">Problem Statements</h1>
+                <p className="text-gray-600 text-sm sm:text-base md:text-lg">
+                  {selectedProblem
+                    ? 'Your selected hackathon challenge'
+                    : isDeactivatedMode
+                      ? 'View available problem statements (Selection disabled)'
+                      : 'Choose your hackathon challenge'
+                  }
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Problem Statements</h1>
-              <p className="text-gray-600 text-lg">
-                View available hackathon problem statements selected by your team leader
-              </p>
-            </div>
-          </div>
+            
+  
+    
+
+ 
+        </div>
 
           {/* Member Permission Notice */}
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-center gap-3">

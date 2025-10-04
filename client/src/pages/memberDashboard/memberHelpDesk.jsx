@@ -178,10 +178,10 @@ const HelpDesk = () => {
         <div className="p-8 mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-3">
             <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
-              <HelpCircle className="w-6 sm:w-8 h-6 sm:h-8 text-white" />
+              <HelpCircle className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Help & Support Center</h1>
+              <h1 className="text-2xl sm:text-2xl font-bold text-gray-900 ">Help & Support Center</h1>
               <p className="text-sm sm:text-lg text-gray-600">
                 Get instant help with our comprehensive knowledge base or connect with our support team.
               </p>
