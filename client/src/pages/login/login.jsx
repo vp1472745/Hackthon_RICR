@@ -41,7 +41,9 @@ const Login = () => {
       });
 
       if (response.data.message) {
-        setLoginMessage('Login successful! Redirecting to dashboard...');
+        const userRole = response.data.user.role;
+        const dashboardType = userRole === 'Leader' ? 'Leader Dashboard' : 'Member Dashboard';
+        setLoginMessage(`Login successful! Redirecting to ${dashboardType}...`);
 
         // Store token
         if (response.data.token) sessionStorage.setItem('authToken', response.data.token);
@@ -64,7 +66,16 @@ const Login = () => {
         // Dispatch custom event to update AuthContext immediately
         window.dispatchEvent(new Event('authChange'));
 
-        setTimeout(() => navigate('/leader-dashboard'), 500);
+        // Role-based redirection
+        let redirectPath = '/leader-dashboard'; // default
+        
+        if (userRole === 'Leader') {
+          redirectPath = '/leader-dashboard';
+        } else if (userRole === 'Member') {
+          redirectPath = '/member-dashboard';
+        }
+
+        setTimeout(() => navigate(redirectPath), 500);
       }
     } catch (error) {
       console.error('Login error:', error);

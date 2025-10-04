@@ -10,6 +10,7 @@ import AdminLogin from "./pages/login/adminsLogin.jsx";
 import AdminDashboard from "./pages/superAdminDashboard/adminDashboard.jsx"; // keep one import
 import AdminRegister from "./pages/superAdminDashboard/Tab/adminRegister.jsx"; // fixed name
 import SubAdminDashboard from "./pages/subAdminDashboard/subAdminDashboard.jsx";
+import MemberDashboard from "./pages/memberDashboard/memberDashboard.jsx";
 
 import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -49,6 +50,7 @@ function App() {
                       <Route path="/dashboard/super-admin" element={<AdminDashboard />} />
                       <Route path="/dashboard/admin-register" element={<AdminRegister />} />
                       <Route path="/dashboard/sub-admin" element={<SubAdminDashboard />} />
+                      <Route path="/member-dashboard" element={<MemberDashboard />} />
                     </Routes>
                   </main>
                 </>

@@ -10,7 +10,7 @@ import {
   ChevronDown,
   Users
 } from 'lucide-react';
-import { userAPI } from '../../configs/api';
+import { userAPI } from '../configs/api';
 
 
 const iconMap = {

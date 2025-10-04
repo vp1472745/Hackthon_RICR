@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import MultiStepModal from './pop/MultiStepModal.jsx';
 import SideBar from '../../components/leaderSideBar.jsx';
-import Overview from './overView/Overview.jsx';
-import ProjectTheme from './ProjectTheme.jsx';
-import ProblemStatements from './ProblemStatements.jsx';
-import ManageTeam from './TeamManage/ManageTeam.jsx';
-import HelpDesk from './HelpDesk.jsx';
-import Result from './Result.jsx';
-import { userAPI } from '../../configs/api';
+import Overview from './overView/memberOverview.jsx';
+import ProjectTheme from './memberProjectTheme.jsx';
+import ProblemStatements from './memberProblemStatements.jsx';
+import ManageTeam from './TeamManage/memberManageTeam.jsx';
+import HelpDesk from './memberHelpDesk.jsx';
+import Result from './memberResult.jsx';
+import { userAPI } from '../../configs/api.js';
 
 const LeaderDashboard = () => {
   const [activeSection, setActiveSection] = useState('overview');
@@ -73,10 +72,7 @@ const LeaderDashboard = () => {
           ? 'ml-12 sm:ml-16' 
           : 'ml-56 sm:ml-64'
       }`}>
-        {/* Multi-step Modal */}
-        {showModal && (
-          <MultiStepModal isOpen={true} onClose={() => setShowModal(false)} />
-        )}
+
         {/* Page Content */}
         <div className="flex-1 overflow-auto p-4 sm:p-6">
           <div className="min-h-full">
