@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from './sidebar';
+import Sidebar from './Subsidebar';
 import Overview from './Tab/overViewTab';
 import TeamManageTab from './Tab/teamManageTab';
 import ThemeManageTab from './Tab/themeManageTab';
