@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import Sidebar from './superSidebar';
-import Overview from './Tab/overviewTab';
+import Overview from './Tab/overViewTab';
 import TeamManageTab from './Tab/teamManageTab';
 import ThemeManageTab from './Tab/themeManageTab';
 import ResultManageTab from './Tab/resultManageTab';
 import PsManageTab from './Tab/psManageTab';
-import AdminAcessTab from './Tab/adminAcessTab';
+import AdminAccessTab from './Tab/adminAcessTab';
 
 const Home = ({ onTabChange }) => <div><Overview onTabChange={onTabChange} /></div>;
 const Team = () => <div><TeamManageTab /></div>;
 const Theme = () => <div><ThemeManageTab /></div>;
 const Result = () => <div><ResultManageTab /></div>;
 const Ps = () => <div><PsManageTab /></div>;
-const AdminAccess = () => <div><AdminAcessTab /></div>;
+const AdminAccess = () => <div><AdminAccessTab /></div>;
 const LoggedOut = () => <div className="p-8">You are logged out.</div>;
 
 export default function AdminDashboard() {
