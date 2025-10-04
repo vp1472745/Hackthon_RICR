@@ -28,7 +28,7 @@ const Navbar = () => {
         isScrolled ? "shadow-lg py-2" : "shadow-md py-3"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 flex justify-between items-center">
+      <div className="max-w-8xl mx-auto px-2 sm:px-4 lg:px-6 flex justify-between items-center">
         {/* Logo */}
         <Link to="/">
           <h1 className="text-xl md:text-2xl font-bold tracking-wide">
