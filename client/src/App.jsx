@@ -9,7 +9,7 @@ import LeaderDashboard from "./pages/leaderDashboard/leaderDashboard.jsx";
 import AdminLogin from "./pages/login/adminsLogin.jsx";
 import AdminDashboard from "./pages/superAdminDashboard/adminDashboard.jsx"; // keep one import
 import AdminRegister from "./pages/superAdminDashboard/Tab/adminRegister.jsx"; // fixed name
-import SubAdminDashboard from "./pages/adminDashboard/adminDashboard.jsx";
+import SubAdminDashboard from "./pages/adminDashboard/AdminDashboard.jsx";
 
 import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
