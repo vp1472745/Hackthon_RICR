@@ -40,7 +40,6 @@ const ManageTeam = () => {
       if (storedLeader && storedMembers) {
         setLeaderProfile(storedLeader);
         setTeamMembers(storedMembers);
-        toast.info('Loaded team data from session storage.');
         return;
       }
 
