@@ -50,6 +50,7 @@ const ManageTeam = () => {
       if (storedLeader && Array.isArray(storedMembers)) {
         setLeaderProfile(storedLeader);
         setTeamMembers(storedMembers);
+    
         return;
       }
 

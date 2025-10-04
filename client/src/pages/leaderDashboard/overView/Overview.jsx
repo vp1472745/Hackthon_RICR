@@ -17,7 +17,6 @@ const Overview = () => {
   const [apiTeamMembers, setApiTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-    
 
   // Stats state
   const [teamStats, setTeamStats] = useState({
@@ -63,12 +62,15 @@ const Overview = () => {
       }
     } finally {
       setLoading(false);
-      
     }
   };
 
-
-
+  // Handle refresh
+  const handleRefresh = () => {
+    setLoading(true);
+    setError(null);
+    fetchLeaderProfile();
+  };
 
   // Update selectedTheme dynamically from sessionStorage
   useEffect(() => {
@@ -106,26 +108,23 @@ const Overview = () => {
         themeSelected,
         registrationComplete
     };
-};
+  };
 
   return (
-    <div className="min-w-[20vh] bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
-      {/* Header Section */}
-      
-
+    <div className="min-w-[20vh] bg-gradient-to-br from-gray-50 to-blue-50/30 p-3 sm:p-4 md:p-6 lg:p-8">
       {/* Error Banner */}
       {error && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-          <div className="flex-1">
-            <p className="font-medium text-yellow-800">Offline Mode</p>
-            <p className="text-sm text-yellow-700 mt-1">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 flex items-start gap-3">
+          <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-yellow-800 text-sm sm:text-base">Offline Mode</p>
+            <p className="text-xs sm:text-sm text-yellow-700 mt-1 break-words">
               You're viewing cached data. Some information might not be up to date.
             </p>
           </div>
           <button 
             onClick={handleRefresh}
-            className="text-yellow-800 hover:text-yellow-900 text-sm font-medium"
+            className="text-yellow-800 hover:text-yellow-900 text-xs sm:text-sm font-medium flex-shrink-0 ml-2"
           >
             Try Again
           </button>
@@ -133,14 +132,14 @@ const Overview = () => {
       )}
 
       {/* Progress Bar Section */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <HackathonTimer />
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        {/* Left Side - Team Profiles (2/3 width) */}
-        <div className="xl:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        {/* Left Side - Team Profiles (2/3 width on large screens) */}
+        <div className="lg:col-span-2">
           <TeamProfileCard
             leaderProfile={leaderProfile}
             teamData={teamData}
@@ -152,16 +151,14 @@ const Overview = () => {
           />
         </div>
 
-        {/* Right Side Panel (1/3 width) */}
-        <div className="xl:col-span-1">
+        {/* Right Side Panel (1/3 width on large screens) */}
+        <div className="lg:col-span-1">
           <RightSidePanel
             selectedTheme={selectedTheme}
             teamStats={teamStats}
           />
         </div>
       </div>
-
-
     </div>
   );
 };

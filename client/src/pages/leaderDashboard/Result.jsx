@@ -92,7 +92,7 @@ const Result = () => {
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8 ">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex  items-center gap-3 mb-2">
           <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
             <Trophy className="w-6 h-6 text-white" />
           </div>
