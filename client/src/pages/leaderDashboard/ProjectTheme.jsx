@@ -116,7 +116,7 @@ const ProjectTheme = () => {
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-row sm:flex-row items-center gap-3 sm:gap-4 mb-4 ">
             <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
-              <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+              <Lightbulb className="w-7 h-7 text-white" />
             </div>
             <div className="  ">
               <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-gray-900 mb-2">Project Themes</h1>

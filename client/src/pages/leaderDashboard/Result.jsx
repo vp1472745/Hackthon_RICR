@@ -94,7 +94,7 @@ const Result = () => {
       <div className="mb-8">
         <div className="flex  items-center gap-3 mb-2">
           <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
-            <Trophy className="w-6 h-6 text-white" />
+            <Trophy className="w-7 h-7 text-white" />
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Competition Results</h1>

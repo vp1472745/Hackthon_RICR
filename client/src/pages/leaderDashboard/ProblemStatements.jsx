@@ -365,7 +365,7 @@ const ProblemStatements = () => {
           <div className="flex flex-row sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
             <div className="flex flex-row sm:flex-row items-center gap-3 sm:gap-4">
               <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl shadow-lg">
-                <FileText className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+                <FileText className="w-7 h-7 text-white" />
               </div>
               <div className="text-center sm:text-left">
                 <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-gray-900 ">Problem Statements</h1>
