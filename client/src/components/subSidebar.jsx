@@ -11,7 +11,7 @@ import {
   FiChevronRight,
   FiX
 } from "react-icons/fi";
-import { usePermissions } from "../../hooks/usePermissions";
+import { usePermissions } from "../hooks/usePermissions";
 
 const NAV_ITEMS = [
   {
