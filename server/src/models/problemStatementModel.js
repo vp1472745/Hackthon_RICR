@@ -13,6 +13,10 @@ const problemStatementSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Theme',
         required: true,
+    },
+    isActive: {
+        type: Boolean,
+        default: false, // By default inactive rahega
     }
 }, { timestamps: true });
 

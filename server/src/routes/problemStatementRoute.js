@@ -1,15 +1,23 @@
-
-import express from 'express';
-import { getAllProblemStatements } from '../controller/projectProblemController.js';
-
+import express from "express";
+import {
+    activateAllProblemStatements,
+    getProblemStatementsForTeam,
+    teamSelectProblemStatement,
+    deactivateAllProblemStatements
+} from "../controller/projectProblemController.js";
 
 const router = express.Router();
 
+// Activate all problem statements (SuperAdmin)
+router.patch("/activate-all", activateAllProblemStatements);
 
-// Get all problem statements for a team's theme
-router.get('/team/:teamId', getAllProblemStatements);
+// Get active problem statements for a team
+router.get("/team/:teamId/problemstatements", getProblemStatementsForTeam);
 
+// Team selects a problem statement
+router.post("/team/select-problem", teamSelectProblemStatement);
 
-
+// Deactivate all problem statements (SuperAdmin)
+router.patch("/deactivate-all", deactivateAllProblemStatements);
 
 export default router;

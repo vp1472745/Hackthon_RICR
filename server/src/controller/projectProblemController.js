@@ -3,32 +3,128 @@ import mongoose from 'mongoose';
 import ProblemStatement from '../models/problemStatementModel.js';
 import Team from '../models/TeamModel.js';
 
+// Activate all problem statements
+export const activateAllProblemStatements = async (req, res, next) => {
+  try {
+    const result = await ProblemStatement.updateMany(
+      {},           // all records
+      { isActive: true } // set isActive = true
+    );
 
+    res.status(200).json({
+      success: true,
+      message: "All problem statements have been activated",
+      modifiedCount: result.modifiedCount
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
+// Deactivate all problem statements
+export const deactivateAllProblemStatements = async (req, res, next) => {
+  try {
+    const result = await ProblemStatement.updateMany(
+      {},           // all records
+      { isActive: false } // set isActive = false
+    );
 
-// Get all problem statements for a team's theme
-export const getAllProblemStatements = async (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: "All problem statements have been deactivated",
+      modifiedCount: result.modifiedCount
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get active problem statements filtered by team's selected theme
+export const getProblemStatementsForTeam = async (req, res, next) => {
   try {
     const { teamId } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(String(teamId))) {
-      return res.status(400).json({ success: false, message: 'Invalid teamId' });
+    if (!mongoose.Types.ObjectId.isValid(teamId)) {
+      return res.status(400).json({ success: false, message: "Invalid team ID" });
     }
 
-    const team = await Team.findById(teamId).select('teamTheme').lean();
+    const team = await Team.findById(teamId).lean();
+    if (!team) return res.status(404).json({ success: false, message: "Team not found" });
 
-    if (!team) return res.status(404).json({ success: false, message: 'Team not found' });
+    console.log('🔍 Team Data Debug:', {
+      teamId,
+      teamTheme: team.teamTheme,
+      teamProblemStatement: team.teamProblemStatement,
+      fullTeam: team
+    });
 
-    const teamTheme = team.teamTheme;
+    let rawTheme = team.selectedTheme ?? team.teamTheme ?? team.teamThemeId ?? null;
+    if (!rawTheme) {
+      console.log('❌ No theme found for team:', teamId);
+      return res.status(400).json({ success: false, message: "Please select a theme first before viewing problem statements" });
+    }
 
-    // ✅ Directly use teamTheme (already ObjectId) in query
-    const problemStatements = await ProblemStatement.find({ PSTheme: teamTheme })
-      .populate('PSTheme')
-      .lean();
+    // Determine ObjectId safely
+    let themeId;
+    if (typeof rawTheme === "string") {
+      if (!mongoose.Types.ObjectId.isValid(rawTheme)) {
+        return res.status(400).json({ success: false, message: "Invalid theme ID" });
+      }
+      themeId = new mongoose.Types.ObjectId(rawTheme);
+    } else if (rawTheme instanceof mongoose.Types.ObjectId) {
+      themeId = rawTheme;
+    } else if (typeof rawTheme === "object" && rawTheme._id) {
+      themeId = new mongoose.Types.ObjectId(rawTheme._id);
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid theme type" });
+    }
 
-    return res.json({ success: true, problemStatements });
+    const problemStatements = await ProblemStatement.find({
+      isActive: true,
+      PSTheme: themeId
+    }).populate("PSTheme");
+
+    return res.status(200).json({ success: true, problemStatements });
   } catch (error) {
-    console.error('getAllProblemStatements error:', error);
-    res.status(500).json({ success: false, message: error.message });
+    next(error);
+  }
+};
+
+// Team selects a problem statement
+export const teamSelectProblemStatement = async (req, res, next) => {
+  try {
+    const { teamId, problemStatementId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(teamId) || !mongoose.Types.ObjectId.isValid(problemStatementId)) {
+      return res.status(400).json({ success: false, message: "Invalid IDs" });
+    }
+
+    const team = await Team.findById(teamId);
+    if (!team) return res.status(404).json({ success: false, message: "Team not found" });
+
+    const problemStatement = await ProblemStatement.findById(problemStatementId);
+    if (!problemStatement) return res.status(404).json({ success: false, message: "Problem statement not found" });
+
+    // Safely get the team's theme
+    const teamTheme = team.selectedTheme ?? team.teamTheme ?? team.teamThemeId;
+    if (!teamTheme) {
+      return res.status(400).json({ success: false, message: "Team has no theme assigned" });
+    }
+
+    // Convert to ObjectId if needed
+    const teamThemeId = typeof teamTheme === "string" ? new mongoose.Types.ObjectId(teamTheme) : teamTheme;
+
+    // Compare ObjectIds
+    if (!teamThemeId.equals(problemStatement.PSTheme)) {
+      return res.status(400).json({ success: false, message: "Problem statement does not match team's theme" });
+    }
+
+    // Save selected ProblemStatement in both fields (backward compatible)
+    team.selectedProblemStatement = problemStatementId;
+    team.teamProblemStatement = problemStatementId;
+    await team.save();
+
+    res.status(200).json({ success: true, message: "Problem statement selected successfully" });
+  } catch (error) {
+    next(error);
   }
 };

@@ -105,6 +105,11 @@ export const problemStatementAPI = {
     edit: (id, data) => api.put(`/problem/${id}`, data),
     // Delete a problem statement
     delete: (id) => api.delete(`/problemt/${id}`),
+
+    // Get active problem statements for team (filtered by team's theme)
+    getActiveForTeam: (teamId) => api.get(`/problem/team/${teamId}/problemstatements`),
+    // Team selects a problem statement
+    selectForTeam: (teamId, problemStatementId) => api.post('/problem/team/select-problem', { teamId, problemStatementId }),
 };
 
 
