@@ -11,6 +11,9 @@ const ProblemStatements = () => {
   const [error, setError] = useState('');
   const [showFetchOption, setShowFetchOption] = useState(false);
   const [hasTheme, setHasTheme] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingProblem, setPendingProblem] = useState(null);
+  const [isDeactivatedMode, setIsDeactivatedMode] = useState(false);
 
 
   // Get teamId from user info or cookie
@@ -84,10 +87,27 @@ const ProblemStatements = () => {
       
       if (res.data.success) {
         const problems = res.data.problemStatements || [];
+        const isDeactivated = res.data.isDeactivated || false;
+        
         console.log('📋 Found problems:', problems.length);
+        console.log('🔒 Is deactivated mode:', isDeactivated);
+        
         setAvailableProblems(problems);
+        setIsDeactivatedMode(isDeactivated);
+        
+        // If deactivated, automatically set the selected problem (should be only one)
+        if (isDeactivated && problems.length > 0) {
+          console.log('🔒 Deactivated mode - showing selected problem only');
+          setSelectedProblem(problems[0]);
+          setError(''); // Clear any errors
+          setShowFetchOption(false);
+          setLoading(false);
+          return;
+        }
         
         // Check if team has already selected a problem
+        // TEMPORARY: Comment out for testing selection functionality
+        /*
         const teamData = hackathonUser?.team;
         const selectedId = teamData?.selectedProblemStatement || teamData?.teamProblemStatement;
         
@@ -101,13 +121,23 @@ const ProblemStatements = () => {
             console.log('❌ Selected problem not found in available problems');
           }
         }
+        */
         
         setShowFetchOption(false); // Hide the fetch option after fetching
         setError(''); // Clear any previous errors
         console.log('✅ Problems loaded successfully');
       } else {
         console.log('❌ API returned error:', res.data.message);
-        setError(res.data.message || 'Failed to load problem statements');
+        const isDeactivated = res.data.isDeactivated || false;
+        
+        if (isDeactivated) {
+          // Problem statements are deactivated and team has no selection
+          setError('Problem statements are currently deactivated by admin. Please contact support.');
+          setAvailableProblems([]);
+          setSelectedProblem(null);
+        } else {
+          setError(res.data.message || 'Failed to load problem statements');
+        }
       }
     } catch (err) {
       console.error('🚨 Fetch error:', err);
@@ -130,22 +160,31 @@ const ProblemStatements = () => {
     }
   };
 
-  const handleSelectProblem = async (problemStatement) => {
-    if (!teamId || selecting) return;
+  // Show confirmation modal before selection
+  const handleSelectProblem = (problemStatement) => {
+    setPendingProblem(problemStatement);
+    setShowConfirmModal(true);
+  };
+
+  // Actual selection after confirmation
+  const confirmSelection = async () => {
+    if (!teamId || selecting || !pendingProblem) return;
     
     setSelecting(true);
+    setShowConfirmModal(false);
+    
     try {
-      const res = await problemStatementAPI.selectForTeam(teamId, problemStatement._id);
+      const res = await problemStatementAPI.selectForTeam(teamId, pendingProblem._id);
       
       if (res.data.success) {
-        setSelectedProblem(problemStatement);
+        setSelectedProblem(pendingProblem);
         toast.success('Problem statement selected successfully!');
-        console.log('✅ Problem selected:', problemStatement.PStitle);
+        console.log('✅ Problem selected:', pendingProblem.PStitle);
         
         // Hide other problem statements - keep only selected one
         const updatedProblems = availableProblems.map(p => ({
           ...p,
-          isHidden: p._id !== problemStatement._id
+          isHidden: p._id !== pendingProblem._id
         }));
         setAvailableProblems(updatedProblems);
         console.log('🙈 Other problems hidden, showing only selected one');
@@ -153,8 +192,8 @@ const ProblemStatements = () => {
         // Update session storage
         const updatedUser = { ...hackathonUser };
         if (updatedUser.team) {
-          updatedUser.team.selectedProblemStatement = problemStatement._id;
-          updatedUser.team.teamProblemStatement = problemStatement._id;
+          updatedUser.team.selectedProblemStatement = pendingProblem._id;
+          updatedUser.team.teamProblemStatement = pendingProblem._id;
           sessionStorage.setItem('hackathonUser', JSON.stringify(updatedUser));
         }
       } else {
@@ -165,7 +204,14 @@ const ProblemStatements = () => {
       toast.error(err.response?.data?.message || 'Failed to select problem statement');
     } finally {
       setSelecting(false);
+      setPendingProblem(null);
     }
+  };
+
+  // Cancel selection
+  const cancelSelection = () => {
+    setShowConfirmModal(false);
+    setPendingProblem(null);
   };
 
 
@@ -282,6 +328,20 @@ const ProblemStatements = () => {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Debug Panel */}
+        <div className="bg-gray-100 rounded-lg p-4 mb-4 text-sm">
+          <h4 className="font-bold text-gray-800 mb-2">🐛 Debug Info:</h4>
+          <div className="space-y-1">
+            <div>TeamId: {teamId ? '✅ Found' : '❌ Missing'} ({teamId})</div>
+            <div>HasTheme: {hasTheme ? '✅ Yes' : '❌ No'}</div>
+            <div>ShowFetchOption: {showFetchOption ? '✅ Yes' : '❌ No'}</div>
+            <div>SelectedProblem: {selectedProblem ? '✅ Selected' : '❌ None'} ({selectedProblem?.PStitle})</div>
+            <div>Available Problems: {availableProblems.length}</div>
+            <div>Loading: {loading ? '🔄 Yes' : '✅ No'}</div>
+            <div>🔒 Deactivated Mode: {isDeactivatedMode ? '🚫 Yes' : '✅ No'}</div>
+          </div>
         </div>
 
         {/* Fetch Problem Statements Option */}
@@ -467,6 +527,68 @@ const ProblemStatements = () => {
           )
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all duration-300 scale-95 hover:scale-100">
+            {/* Header */}
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-yellow-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Confirm Your Selection</h3>
+              <p className="text-gray-600 text-sm">This is a permanent decision that cannot be changed later</p>
+            </div>
+
+            {/* Problem Statement Preview */}
+            <div className="bg-gray-50 rounded-xl p-4 mb-6">
+              <h4 className="font-semibold text-gray-800 mb-2">Selected Problem Statement:</h4>
+              <p className="text-gray-700 font-medium">{pendingProblem?.PStitle}</p>
+              <p className="text-gray-600 text-sm mt-2 line-clamp-3">{pendingProblem?.PSdescription}</p>
+            </div>
+
+            {/* Warning Message */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm">
+                  <p className="text-yellow-800 font-semibold mb-1">⚠️ Important Warning</p>
+                  <p className="text-yellow-700">
+                    आपको केवल <strong>एक ही मौका</strong> मिलेगा problem statement select करने के लिए। 
+                    एक बार select करने के बाद आप इसे बदल नहीं सकेंगे।
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={cancelSelection}
+                disabled={selecting}
+                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmSelection}
+                disabled={selecting}
+                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {selecting ? (
+                  <>
+                    <Loader className="w-4 h-4 animate-spin" />
+                    Selecting...
+                  </>
+                ) : (
+                  'Yes, Select This Problem'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

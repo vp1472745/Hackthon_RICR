@@ -78,12 +78,52 @@ export const getProblemStatementsForTeam = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Invalid theme type" });
     }
 
+    // Check if problem statements are currently active
+    const activeProblemsCount = await ProblemStatement.countDocuments({
+      isActive: true,
+      PSTheme: themeId
+    });
+
+    console.log('🔍 Active problems count:', activeProblemsCount);
+
+    // If problem statements are deactivated, only return selected one (if any)
+    if (activeProblemsCount === 0) {
+      console.log('❌ Problem statements are deactivated');
+      
+      // Check if team has already selected a problem statement
+      if (team.teamProblemStatement) {
+        const selectedProblem = await ProblemStatement.findById(team.teamProblemStatement).populate("PSTheme");
+        if (selectedProblem) {
+          console.log('✅ Returning only selected problem (deactivated mode)');
+          return res.status(200).json({ 
+            success: true, 
+            problemStatements: [selectedProblem],
+            isDeactivated: true,
+            message: "Problem statements are currently deactivated. Showing your selected problem only."
+          });
+        }
+      }
+      
+      // No selected problem and problems are deactivated
+      return res.status(400).json({ 
+        success: false, 
+        message: "Problem statements are currently deactivated. Please contact admin.",
+        isDeactivated: true 
+      });
+    }
+
+    // Problem statements are active - return all active ones for selection
     const problemStatements = await ProblemStatement.find({
       isActive: true,
       PSTheme: themeId
     }).populate("PSTheme");
 
-    return res.status(200).json({ success: true, problemStatements });
+    console.log('✅ Returning active problems for selection');
+    return res.status(200).json({ 
+      success: true, 
+      problemStatements,
+      isDeactivated: false 
+    });
   } catch (error) {
     next(error);
   }

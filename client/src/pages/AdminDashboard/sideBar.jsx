@@ -14,39 +14,39 @@ import {
 import { usePermissions } from "../../hooks/usePermissions";
 
 const NAV_ITEMS = [
-  { 
-    key: "Home", 
-    label: "Overview", 
+  {
+    key: "Home",
+    label: "Overview",
     icon: <FiHome size={20} />,
     permission: "viewOverview"
   },
-  { 
-    key: "Team", 
-    label: "Team Manage", 
+  {
+    key: "Team",
+    label: "Team Manage",
     icon: <FiUsers size={20} />,
     permission: "manageTeams"
   },
-  { 
-    key: "Theme", 
-    label: "Theme Manage", 
+  {
+    key: "Theme",
+    label: "Theme Manage",
     icon: <FiLayers size={20} />,
     permission: "manageThemes"
   },
-  { 
-    key: "Result", 
-    label: "Result Manage", 
+  {
+    key: "Result",
+    label: "Result Manage",
     icon: <FiAward size={20} />,
     permission: "manageResults"
   },
-  { 
-    key: "Ps", 
-    label: "PS Manage", 
+  {
+    key: "Ps",
+    label: "PS Manage",
     icon: <FiFileText size={20} />,
     permission: "manageProblemStatements"
   },
 ];
 
-const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
+const Sidebar = ({ onTabChange = () => { }, activeTab = "Home" }) => {
   const [open, setOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
@@ -80,11 +80,10 @@ const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
       >
         {/* Header */}
         <div
-          className={`flex items-center gap-3 px-4 py-4 border-b mt-15 border-blue-800 w-full relative ${
-            open ? "" : "justify-center"
-          }`}
+          className={`flex items-center gap-3 px-4 py-4 border-b mt-15 border-blue-800 w-full relative ${open ? "" : "justify-center"
+            }`}
         >
-          {open && <span className="text-xl font-bold tracking-wide">Super Admin</span>}
+          {open && <span className="text-xl font-bold tracking-wide"> Admin</span>}
 
           {/* Toggle button (works on both desktop & mobile) */}
           <button
@@ -103,7 +102,7 @@ const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
               <div className="text-white text-sm">Loading permissions...</div>
             </div>
           )}
-          
+
           {error && (
             <div className={`text-center ${open ? "px-4" : "px-2"} py-4`}>
               <div className="text-red-300 text-sm">Error loading permissions</div>
