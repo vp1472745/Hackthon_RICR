@@ -96,9 +96,9 @@ const LeaderDetails = () => {
         // Handle specific errors
         if (error.response.status === 409) {
           // User already exists
-          toast.error(`Error: ${errorMessage}`);
+          toast.error(`User already exists. Please use a different email .`);
         } else {
-          toast.error(`Registration failed: ${errorMessage}`);
+          toast.error(`User already exists. Please use a different email .`);
         }
       } else {
         toast.error('Registration failed. Please check your internet connection and try again.');
@@ -158,7 +158,7 @@ const LeaderDetails = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number <span className="text-red-500">*</span>
+                Phone Number (WhatsApp)  <span className="text-red-500">*</span>
               </label>
               <div className="flex">
                 <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500">

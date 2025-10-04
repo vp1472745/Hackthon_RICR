@@ -253,7 +253,7 @@ const Verification = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Phone className="inline w-4 h-4 mr-2" />
-                Phone OTP sent to: +91 {registrationData.phone}
+              OTP sent via WhatsApp: +91 {registrationData.phone}
               </label>
               <div className="flex gap-2">
                 <input
