@@ -5,7 +5,7 @@ import '@leenguyen/react-flip-clock-countdown/dist/index.css';
 class HackathonTimer extends Component {
   render() {
     return (
-      <div className="flex justify-center items-center h-full min-w-[200px]">
+      <div className="flex justify-center items-center h-full min-w-[50vh]">
         <FlipClockCountdown
           to={new Date('2025-11-06T12:00:00+05:30').getTime()}
           className="flip-clock"

@@ -165,7 +165,7 @@ const ManageTeam = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6 ">
+    <div className="min-w-[55vh] bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6 ">
       {/* Header Section */}
       <div className="max-w-7xl mx-auto ">
         <div >

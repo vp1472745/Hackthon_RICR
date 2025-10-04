@@ -172,7 +172,7 @@ const HelpDesk = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/20 p-4 sm:p-6 overflow-hidden">
+    <div className="min-w-[55vh] bg-gradient-to-br from-slate-50 to-blue-50/20 p-4 sm:p-6 overflow-hidden">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="p-8 mb-8">

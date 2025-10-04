@@ -35,11 +35,14 @@ function App() {
         <AuthProvider>
           <Routes>
             {/* Routes with navbar */}
+     
             <Route
               path="/*"
               element={
                 <>
-                  <Navbar />
+
+                         <Navbar />
+
                   <main>
                     <Routes>
                       <Route path="/" element={<Home />} />
