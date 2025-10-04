@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './subSidebar';
-import Overview from './Tab/overViewTab';
-import TeamManageTab from './Tab/teamManageTab';
-import ThemeManageTab from './Tab/themeManageTab';
-import ResultManageTab from './Tab/resultManageTab';
-import PsManageTab from './Tab/psManageTab';
+import Overview from './Tab/subOverViewTab';
+import TeamManageTab from './Tab/subTeamManageTab';
+import ThemeManageTab from './Tab/subThemeManageTab';
+import ResultManageTab from './Tab/subResultManageTab';
+import PsManageTab from './Tab/subPSManageTab';
 import { usePermissions } from '../../hooks/usePermissions';
 
 const Home = ({ onTabChange }) => <div><Overview onTabChange={onTabChange} /></div>;

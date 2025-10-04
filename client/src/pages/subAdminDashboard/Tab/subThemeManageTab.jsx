@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FiEdit2, FiTrash2, FiPlus, FiSearch, FiUsers, FiX, FiAward, FiFilter, FiDownload, FiUpload } from 'react-icons/fi';
 import { subAdminAPI } from '../../../configs/api.js';
-import AddTheme from './addTheme.jsx';
-import EditTheme from './modals/editTheme.jsx';
-import DeleteTheme from './modals/deleteTheme.jsx';
+import AddTheme from './subAddTheme.jsx';
+import EditTheme from './modals/subEditTheme.jsx';
+import DeleteTheme from './modals/subDeleteTheme.jsx';
 import PermissionWrapper from '../../../components/PermissionWrapper';
 import usePermissions from '../../../hooks/usePermissions';
 

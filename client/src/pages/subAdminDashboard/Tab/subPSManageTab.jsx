@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FiEdit2, FiTrash2, FiPlus, FiSearch, FiFilter, FiEye, FiAward, FiUsers, FiX, FiDownload, FiUpload, FiClock, FiTag } from 'react-icons/fi';
 import { subAdminAPI } from '../../../configs/api.js';
-import DeletePS from './modals/deletePS.jsx';
-import EditPS from './modals/editPS.jsx';
-import AddPS from './modals/addPS.jsx';
+import DeletePS from './modals/subDeletePS.jsx';
+import EditPS from './modals/subEditPS.jsx';
+import AddPS from './modals/subAddPS.jsx';
 import PermissionWrapper from '../../../components/PermissionWrapper';
 import usePermissions from '../../../hooks/usePermissions';
 // Reusable Modal Component
