@@ -70,6 +70,9 @@ export const userAPI = {
 
     // General user operations
     getUserById: (userId) => api.get(`/user/${userId}`),
+    
+    // Leader profile and team data
+    getLeaderProfile: () => api.get('/user/leader/profile'),
    
     // Team member management by leader
     addMember: (memberData) => api.post('/user/leader/add-member', memberData),
