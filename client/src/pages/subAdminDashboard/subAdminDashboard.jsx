@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from './subSidebar';
-import Overview from './Tab/subOverViewTab';
-import TeamManageTab from './Tab/subTeamManageTab';
-import ThemeManageTab from './Tab/subThemeManageTab';
-import ResultManageTab from './Tab/subResultManageTab';
-import PsManageTab from './Tab/subPSManageTab';
-import { usePermissions } from '../../hooks/usePermissions';
+import Sidebar from './subSidebar.jsx';
+import Overview from './Tab/subOverViewTab.jsx';
+import TeamManageTab from './Tab/subTeamManageTab.jsx';
+import ThemeManageTab from './Tab/subThemeManageTab.jsx';
+import ResultManageTab from './Tab/subResultManageTab.jsx';
+import PsManageTab from './Tab/subPSManageTab.jsx';
+import { usePermissions } from '../../hooks/usePermissions.js';
 
 const Home = ({ onTabChange }) => <div><Overview onTabChange={onTabChange} /></div>;
 const Team = () => <div><TeamManageTab /></div>;
 const Theme = () => <div><ThemeManageTab /></div>;
 const Result = () => <div><ResultManageTab /></div>;
 const Ps = () => <div><PsManageTab /></div>;
-const AdminAccess = () => <div><AdminAcessTab /></div>;
+const AdminAccess = () => <div>Admin Access Tab</div>;
 const LoggedOut = () => <div className="p-8">You are logged out.</div>;
 
 export default function AdminDashboard() {
