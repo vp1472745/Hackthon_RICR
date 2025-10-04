@@ -25,15 +25,13 @@ const ProblemStatements = () => {
     const checkTheme = () => {
       console.log('🔍 checkTheme function called');
       if (!teamId) {
-        console.log('❌ No teamId in checkTheme');
+     
         setError('Team ID not found');
         setLoading(false);
         return;
       }
-      console.log('✅ TeamId found:', teamId);
 
-      console.log('🔍 Debug - Team data:', hackathonUser?.team);
-      console.log('🔍 Debug - hackathonUser:', hackathonUser);
+
       
       const teamTheme = hackathonUser?.theme?.themeName || 
                        hackathonUser?.team?.teamTheme?.themeName ||
@@ -330,19 +328,6 @@ const ProblemStatements = () => {
           )}
         </div>
 
-        {/* Debug Panel */}
-        <div className="bg-gray-100 rounded-lg p-4 mb-4 text-sm">
-          <h4 className="font-bold text-gray-800 mb-2">🐛 Debug Info:</h4>
-          <div className="space-y-1">
-            <div>TeamId: {teamId ? '✅ Found' : '❌ Missing'} ({teamId})</div>
-            <div>HasTheme: {hasTheme ? '✅ Yes' : '❌ No'}</div>
-            <div>ShowFetchOption: {showFetchOption ? '✅ Yes' : '❌ No'}</div>
-            <div>SelectedProblem: {selectedProblem ? '✅ Selected' : '❌ None'} ({selectedProblem?.PStitle})</div>
-            <div>Available Problems: {availableProblems.length}</div>
-            <div>Loading: {loading ? '🔄 Yes' : '✅ No'}</div>
-            <div>🔒 Deactivated Mode: {isDeactivatedMode ? '🚫 Yes' : '✅ No'}</div>
-          </div>
-        </div>
 
         {/* Fetch Problem Statements Option */}
         {console.log('🔍 Render check - showFetchOption:', showFetchOption, 'hasTheme:', hasTheme)}
