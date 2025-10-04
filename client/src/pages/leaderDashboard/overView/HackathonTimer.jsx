@@ -33,7 +33,7 @@ const HackathonTimer = () => {
   };
 
   return (
-    <div className="flex justify-center items-center py-4 px-3">
+    <div className="flex justify-center items-center py-4 px-5">
       <FlipClockCountdown
         to={new Date('2025-11-06T12:00:00+05:30').getTime()}
         className="flip-clock w-full max-w-lg"
