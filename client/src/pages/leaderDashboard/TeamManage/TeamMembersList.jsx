@@ -185,7 +185,7 @@ const TeamMembersList = ({
   const memberCount = Array.isArray(teamMembers) ? teamMembers.length : 0;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="grid grid-cols-1 gap-4">
       {error ? (
         <div className="p-8 text-center">
           <p className="text-red-600 mb-4 font-medium">{error}</p>

@@ -103,7 +103,23 @@ const ProblemStatements = () => {
           return;
         }
         
-
+        // Check if team has already selected a problem
+        // TEMPORARY: Comment out for testing selection functionality
+        /*
+        const teamData = hackathonUser?.team;
+        const selectedId = teamData?.selectedProblemStatement || teamData?.teamProblemStatement;
+        
+        if (selectedId) {
+          console.log('🔍 Looking for selected problem with ID:', selectedId);
+          const selected = problems.find(p => p._id === selectedId);
+          if (selected) {
+            console.log('✅ Found selected problem:', selected.PStitle);
+            setSelectedProblem(selected);
+          } else {
+            console.log('❌ Selected problem not found in available problems');
+          }
+        }
+        */
         
         setShowFetchOption(false); // Hide the fetch option after fetching
         setError(''); // Clear any previous errors
@@ -200,7 +216,7 @@ const ProblemStatements = () => {
 
   if (loading) {
     return (
-      <div className="overflow-hidden min-w-[55vh] bg-gradient-to-br from-gray-50 to-blue-50/30 flex items-center justify-center p-6">
+      <div className="overflow-hidden min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex items-center justify-center p-6">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center w-full">
           <Loader className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Problem Statement</h3>
@@ -214,7 +230,7 @@ const ProblemStatements = () => {
   if (error) {
     const isThemeError = error.includes('theme');
     return (
-      <div className="min-w-[55vh] bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
         <div className="max-w-4xl mx-auto">
           <div className="p-8 mb-6">
             <div className="flex items-center gap-4 mb-4">
@@ -250,7 +266,7 @@ const ProblemStatements = () => {
   // No Team Theme State
   if (!loading && availableProblems.length === 0 && !selectedProblem) {
     return (
-      <div className="min-w-[55vh] bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
             <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -272,7 +288,7 @@ const ProblemStatements = () => {
   }
 
   return (
-    <div className="min-w-[55vh] bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 p-4 sm:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header Section */}
         <div className="p-8 mb-6">

@@ -108,7 +108,7 @@ const ProjectTheme = () => {
   };
 
   return (
-    <div className="min-w-[55vh]  bg-gradient-to-br from-gray-50 to-blue-50/20 p-4 sm:p-6 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/20 p-4 sm:p-6 overflow-hidden">
       <div className="max-w-4xl mx-auto">
         {/* Header Section */}
         <div className=" ">
