@@ -63,15 +63,15 @@ const TeamMembersList = ({
             members = user.teamInfo?.members || [];
           } else {
             // Current user is member - need to find leader with same teamId
-            
+
             // Add current user to members list
             members = [user];
-            
+
             // Try to find leader from teamInfo if available
             if (user.teamInfo?.leader) {
               leader = user.teamInfo.leader;
             }
-            
+
             // Add other members from teamInfo
             if (user.teamInfo?.members && Array.isArray(user.teamInfo.members)) {
               user.teamInfo.members.forEach(member => {
@@ -80,7 +80,7 @@ const TeamMembersList = ({
                 }
               });
             }
-            
+
           }
 
           // If we found both leader and members, we're done
@@ -92,7 +92,7 @@ const TeamMembersList = ({
             sessionStorage.setItem('leaderProfile', JSON.stringify(leader));
             sessionStorage.setItem('apiTeamMembers', JSON.stringify(members));
 
-     
+
             toast.success(`Team loaded! Leader: ${leader.fullName}, Members: ${members.length}`);
             return;
           }
@@ -105,7 +105,7 @@ const TeamMembersList = ({
 
       const cachedLeader = sessionStorage.getItem('leaderProfile');
       const cachedMembers = sessionStorage.getItem('apiTeamMembers');
-      
+
       if (cachedLeader || cachedMembers) {
         if (cachedLeader) {
           const parsedLeader = JSON.parse(cachedLeader);
@@ -116,7 +116,7 @@ const TeamMembersList = ({
         if (cachedMembers) {
           setTeamMembers(JSON.parse(cachedMembers));
         }
-        
+
         if ((cachedLeader && JSON.parse(cachedLeader)._id !== 'fallback-leader') || cachedMembers) {
           toast.info('Using cached team data');
           setFetchError('Using cached data (offline mode)');
@@ -125,7 +125,7 @@ const TeamMembersList = ({
       }
 
 
-      
+
       if (currentUser.role === 'Leader') {
         // Current user is leader but API failed
         setLeaderProfile(currentUser);
@@ -143,7 +143,7 @@ const TeamMembersList = ({
           course: 'MCA',
           GitHubProfile: 'https://github.com'
         };
-        
+
         const fallbackMembers = [{
           _id: currentUser._id,
           fullName: currentUser.fullName || 'Rahul',
@@ -157,7 +157,7 @@ const TeamMembersList = ({
 
         setLeaderProfile(fallbackLeader);
         setTeamMembers(fallbackMembers);
-        
+
         toast.warning('Using fallback team data. Leader: Vineet Pancheshwar');
       }
       const fallbackMembers = [
@@ -184,10 +184,10 @@ const TeamMembersList = ({
   }, []);
 
   const handleRemoveWithConfirm = (member) => {
-    if (window.confirm(`Are you sure you want to remove ${member.fullName}?`)) {
-      handleRemoveMember(member);
-      toast.info(`${member.fullName} removed from team.`);
-    }
+
+    handleRemoveMember(member);
+    toast.info(`${member.fullName} removed from team.`);
+
   };
 
   const handleAddMember = async (memberData) => {

@@ -104,10 +104,10 @@ const TeamMembersList = ({
   }, []);
 
   const handleRemoveWithConfirm = (member) => {
-    if (window.confirm(`Are you sure you want to remove ${member.fullName}?`)) {
+   
       handleRemoveMember(member);
       toast.info(`${member.fullName} removed from team.`);
-    }
+
   };
 
   const handleAddMember = async (memberData) => {
