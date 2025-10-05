@@ -26,10 +26,10 @@ const DeleteMember = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-500 to-red-600 text-white">
+        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-500 to-red-600 text-white sticky top-0 rounded-t-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white bg-opacity-20">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white bg-opacity-20 text-red-500">
                 <UserMinus className="w-6 h-6" />
               </div>
               <div>
