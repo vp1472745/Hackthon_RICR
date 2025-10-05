@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [leaderName, setLeaderName] = useState("");
+  const [userRole, setUserRole] = useState(""); // 'Leader' or 'Member'
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminEmail, setAdminEmail] = useState("");
   const [adminType, setAdminType] = useState(""); // 'admin' or 'superadmin'
@@ -36,9 +37,11 @@ export const AuthProvider = ({ children }) => {
     if (userData?.user && sessionStorage.getItem("authToken")) {
       setIsAuthenticated(true);
       setLeaderName(userData.user.fullName || userData.user.name || "");
+      setUserRole(userData.user.role || "");
     } else {
       setIsAuthenticated(false);
       setLeaderName("");
+      setUserRole("");
     }
 
     // Check admin authentication
@@ -78,6 +81,7 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.removeItem("authToken");
     setIsAuthenticated(false);
     setLeaderName("");
+    setUserRole("");
     
     // Trigger auth change event
     window.dispatchEvent(new Event("authChange"));
@@ -122,6 +126,7 @@ export const AuthProvider = ({ children }) => {
         // Normal user auth
         isAuthenticated, 
         leaderName, 
+        userRole,
         logout,
         // Admin auth
         isAdminAuthenticated,

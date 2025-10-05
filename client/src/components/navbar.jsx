@@ -9,6 +9,7 @@ const Navbar = () => {
   const { 
     isAuthenticated, 
     leaderName, 
+    userRole,
     logout,
     isAdminAuthenticated,
     adminEmail,
@@ -32,6 +33,16 @@ const Navbar = () => {
     closeMobileMenu();
   };
 
+  // Get appropriate dashboard route based on user role
+  const getDashboardRoute = () => {
+    if (userRole === 'Leader') {
+      return '/leader-dashboard';
+    } else if (userRole === 'Member') {
+      return '/member-dashboard';
+    }
+    return '/leader-dashboard'; // Default fallback
+  };
+
   return (
     <nav
       className={`bg-white sticky top-0 z-50 transition-all duration-300  ${
@@ -50,10 +61,11 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex justify-center items-center gap-3">
+
           {/* Normal User Authentication */}
           {isAuthenticated && leaderName && (
             <button
-              onClick={() => navigate("/leader-dashboard")}
+              onClick={() => navigate(getDashboardRoute())}
               className="text-[#2A6EBB] cursor-pointer font-semibold mr-2 hover:underline transition-colors"
             >
               Welcome, {leaderName}
@@ -141,9 +153,11 @@ const Navbar = () => {
           {/* User/Admin Info */}
           {isAuthenticated && leaderName && (
             <div className="p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">Welcome back!</p>
+              <p className="text-sm text-gray-600 mb-2">
+                {userRole === 'Leader' ? 'Team Leader' : userRole === 'Member' ? 'Team Member' : 'Welcome back!'}
+              </p>
               <button
-                onClick={() => handleNavigation("/leader-dashboard")}
+                onClick={() => handleNavigation(getDashboardRoute())}
                 className="text-[#2A6EBB] font-semibold hover:underline transition-colors"
               >
                 {leaderName}
@@ -177,10 +191,17 @@ const Navbar = () => {
             
             {isAuthenticated && (
               <button
-                onClick={() => handleNavigation("/leader-dashboard")}
+                onClick={() => handleNavigation(getDashboardRoute())}
                 className="block w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 font-medium"
               >
-                Dashboard
+                <span className="flex items-center gap-2">
+                  Dashboard
+                  {userRole && (
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                      {userRole}
+                    </span>
+                  )}
+                </span>
               </button>
             )}
 
