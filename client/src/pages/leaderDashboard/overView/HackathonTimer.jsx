@@ -22,7 +22,7 @@ const HackathonTimer = () => {
       return { backgroundColor: '#f0f0f0', color: '#0B2A4A', width: '50px', height: '70px', fontSize: '26px' };
     } else {
       // Small screens (mobile)
-      return { backgroundColor: '#f0f0f0', color: '#0B2A4A', width: '20px', height: '55px', fontSize: '20px' };
+      return { backgroundColor: '#f0f0f0', color: '#0B2A4A', width: '22px', height: '40px', fontSize: '20px' };
     }
   };
 

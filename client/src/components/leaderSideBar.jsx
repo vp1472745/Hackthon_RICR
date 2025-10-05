@@ -96,7 +96,7 @@ const SideBar = ({ activeSection, setActiveSection, onSidebarToggle, menuItems: 
   ];
 
   return (
-    <div className={`bg-white border-r border-gray-200 fixed left-0 top-0 ${isCollapsed ? 'w-12 sm:w-16' : 'w-56 sm:w-64'} h-full flex flex-col overflow-hidden z-10 mt-12 sm:mt-14 transition-all duration-300`}>
+    <div className={`bg-white border-r border-gray-200 fixed left-0 top-0 ${isCollapsed ? 'w-12 sm:w-16' : 'w-56 sm:w-64'} h-full  flex flex-col overflow-hidden z-10 mt-16 sm:mt-14 transition-all duration-300`}>
       {/* Team Header Section */}
       <div className="p-2 sm:p-3 border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center justify-between">
