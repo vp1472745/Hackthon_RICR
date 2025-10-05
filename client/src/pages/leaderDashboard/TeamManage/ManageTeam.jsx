@@ -65,7 +65,7 @@ const ManageTeam = () => {
         // Store in sessionStorage for faster future loads
         sessionStorage.setItem('leaderProfile', JSON.stringify(leader));
         sessionStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
-        toast.success('Team data loaded successfully!');
+       
         return;
       }
 
@@ -74,7 +74,7 @@ const ManageTeam = () => {
     } catch (err) {
       console.error('Error fetching leader data:', err);
       setError('Failed to load team data');
-      toast.error('Failed to load team data');
+     
     } finally {
       setLoading(false);
     }
@@ -106,12 +106,11 @@ const ManageTeam = () => {
         await fetchLeaderData();
         setShowEditMember(false);
         setEditingMember(null);
-        toast.success('Team member updated successfully!');
+       
       }
     } catch (err) {
       console.error('Error updating member:', err);
-      const errorMessage = err?.response?.data?.message || 'Failed to update team member';
-      toast.error(errorMessage);
+    
     } finally {
       setLoading(false);
     }
@@ -153,12 +152,11 @@ const ManageTeam = () => {
         await fetchLeaderData();
         setShowDeleteMember(false);
         setDeletingMember(null);
-        toast.success(`${member.fullName} removed successfully!`);
+        
       }
     } catch (err) {
       console.error('Error removing member:', err);
-      const errorMessage = err?.response?.data?.message || 'Failed to remove team member';
-      toast.error(errorMessage);
+
     } finally {
       setLoading(false);
     }

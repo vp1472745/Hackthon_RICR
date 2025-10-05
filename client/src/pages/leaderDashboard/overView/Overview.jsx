@@ -47,7 +47,7 @@ const Overview = () => {
       setError('Using offline data');
       const storedProfile = sessionStorage.getItem('leaderProfile');
       const storedMembers = sessionStorage.getItem('apiTeamMembers');
-      
+
       if (storedProfile) {
         const profile = JSON.parse(storedProfile);
         setLeaderProfile(profile);
@@ -103,10 +103,10 @@ const Overview = () => {
     const registrationComplete = !!sessionStorage.getItem('registrationData');
 
     return {
-        totalMembers,
-        teamComplete,
-        themeSelected,
-        registrationComplete
+      totalMembers,
+      teamComplete,
+      themeSelected,
+      registrationComplete
     };
   };
 
@@ -122,7 +122,7 @@ const Overview = () => {
               You're viewing cached data. Some information might not be up to date.
             </p>
           </div>
-          <button 
+          <button
             onClick={handleRefresh}
             className="text-yellow-800 hover:text-yellow-900 text-xs sm:text-sm font-medium flex-shrink-0 ml-2"
           >
@@ -131,8 +131,8 @@ const Overview = () => {
         </div>
       )}
 
-      {/* Progress Bar Section */}
-      <div className="mb-6 sm:mb-8">
+      {/* Timer Section */}
+      <div className="mb-4 sm:mb-5 flex justify-center">
         <HackathonTimer />
       </div>
 

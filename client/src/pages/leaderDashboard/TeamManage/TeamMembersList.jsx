@@ -57,7 +57,7 @@ const TeamMembersList = ({
       if (storedProfile && Array.isArray(storedMembers)) {
         setLeaderProfile(storedProfile);
         setTeamMembers(storedMembers);
-        toast.info('Using cached team data');
+        
         return;
       }
 
@@ -75,7 +75,7 @@ const TeamMembersList = ({
             sessionStorage.setItem('leaderProfile', JSON.stringify(userResponse.data.user));
             sessionStorage.setItem('apiTeamMembers', JSON.stringify(userResponse.data.user.teamInfo?.members || []));
 
-            toast.success('Team data loaded successfully!');
+            
             return; // Exit early on success
           }
         } catch (fallbackError) {
@@ -89,10 +89,10 @@ const TeamMembersList = ({
         // Try to get team members from hackathonUser.team.members if available
         const teamMembersFromSession = hackathonUser.team?.members || [];
         setTeamMembers(teamMembersFromSession);
-        toast.info('Using login session data');
+        
       } else {
         setError('Unable to load team data. Please try refreshing the page.');
-        toast.error('Failed to load team data');
+        
       }
     } finally {
       setLoading(false);
