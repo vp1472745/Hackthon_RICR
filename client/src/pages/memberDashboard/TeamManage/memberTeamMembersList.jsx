@@ -98,7 +98,7 @@ const TeamMembersList = ({
           }
         }
       } catch (err) {
-        console.log('❌ getUserById failed:', err);
+        console.error('getUserById failed:', err);
       }
 
       // Method 2: Use cached data if available
@@ -180,11 +180,6 @@ const TeamMembersList = ({
   };
 
   useEffect(() => {
-    console.log('🚀 TeamMembersList mounted for user:', {
-      name: currentUser?.fullName || 'Unknown',
-      role: currentUser?.role || 'Unknown',
-      teamId: currentUser?.teamId || 'No Team'
-    });
     fetchTeamData();
   }, []);
 

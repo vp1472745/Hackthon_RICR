@@ -46,7 +46,7 @@ const RightSidePanel = () => {
              
             }
           } catch (availableErr) {
-            console.log('Could not fetch available problems:', availableErr);
+            console.error('Could not fetch available problems:', availableErr);
           }
           
           // Method 3: Fallback to legacy API
@@ -63,7 +63,7 @@ const RightSidePanel = () => {
               
               selectedProblem = problem;
             } catch (legacyErr) {
-              console.log('Legacy API also failed:', legacyErr);
+              console.error('Legacy API also failed:', legacyErr);
             }
           }
           

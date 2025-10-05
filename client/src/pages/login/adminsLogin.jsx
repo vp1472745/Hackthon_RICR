@@ -46,7 +46,7 @@ function AdminLogin() {
                 sessionStorage.setItem("authToken", token);
             
             } else {
-                console.error('❌ Client - No token received in response');
+                console.error('Client - No token received in response');
             }
             
             // Trigger auth state update

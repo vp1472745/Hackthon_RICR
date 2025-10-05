@@ -56,7 +56,7 @@ const ManageTeam = () => {
           toast.info('Using cached team data');
           return;
         } else {
-          console.log('🔄 Cached data is fallback/invalid, fetching fresh data...');
+          console.error('Cached data is fallback/invalid, fetching fresh data...');
         }
       }
 
@@ -107,20 +107,13 @@ const ManageTeam = () => {
             sessionStorage.setItem('leaderProfile', JSON.stringify(leader));
             sessionStorage.setItem('apiTeamMembers', JSON.stringify(members));
 
-            console.log('✅ Team data loaded successfully:', {
-              leaderName: leader.fullName || leader.name,
-              memberCount: members.length
-            });
             toast.success(`Team data loaded! Leader: ${leader.fullName || leader.name}, Members: ${members.length}`);
             return;
           }
         }
       } catch (apiError) {
-        console.log('getUserById failed:', apiError);
+        console.error('getUserById failed:', apiError);
       }
-
-      // Method 2: Create smart fallback with known team data
-      console.log('📝 Creating smart fallback data for member dashboard');
 
       if (currentUser.role === 'Leader') {
         // If current user is leader but no team data found

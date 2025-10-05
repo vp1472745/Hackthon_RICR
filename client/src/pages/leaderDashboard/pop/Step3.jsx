@@ -48,7 +48,7 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
         
         setLoading(false);
       } catch (err) {
-        console.error('❌ Failed to load themes:', err);
+        console.error('Failed to load themes:', err);
         setError('Failed to load themes');
         setLoading(false);
       }

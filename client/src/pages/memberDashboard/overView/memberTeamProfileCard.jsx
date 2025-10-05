@@ -83,7 +83,7 @@ const TeamProfileCard = ({
           return;
         }
       } catch (error) {
-        console.log('getUserById failed, trying alternative member fetching:', error);
+        console.error('getUserById failed, trying alternative member fetching:', error);
       }
 
       // Method 1.5: If we got leader but not enough members, try to find more team members
@@ -106,7 +106,7 @@ const TeamProfileCard = ({
             }
           }
         } catch (memberSearchError) {
-          console.log('Additional member search failed:', memberSearchError);
+          console.error('Additional member search failed:', memberSearchError);
         }
       }
 
@@ -124,7 +124,7 @@ const TeamProfileCard = ({
           return;
         }
       } catch (propError) {
-        console.log('Prop-based data failed:', propError);
+        console.error('Prop-based data failed:', propError);
       }
 
       // Method 3: Use cached data if available
@@ -188,12 +188,7 @@ const TeamProfileCard = ({
   // Fetch team data on mount
   useEffect(() => {
     if (currentUser?.role === 'Member' && currentUser?.teamId) {
-      console.log(' Member detected, fetching team data...');
       fetchTeamData();
-    } else if (currentUser?.role === 'Leader') {
-      console.log(' Leader detected, using prop data');
-    } else {
-      console.log(' Unknown user role or no teamId');
     }
   }, []);
 
@@ -219,13 +214,10 @@ const TeamProfileCard = ({
   // Combined refresh function
   const handleRefresh = () => {
     if (currentUser?.role === 'Member') {
-      console.log('🔄 Refreshing team data for member...');
       fetchTeamData();
     } else if (propFetchLeaderProfile) {
-      console.log('🔄 Calling parent refresh function...');
       propFetchLeaderProfile();
     } else {
-      console.log('ℹ️ No refresh method available');
       toast.info('Refresh not available for current user type');
     }
   };

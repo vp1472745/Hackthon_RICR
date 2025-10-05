@@ -206,7 +206,7 @@ const AdminRegister = () => {
                 <div className="grid grid-cols-1 gap-4 sm:gap-6">
                   {/* Username */}
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                       <FiUser className="text-blue-500" size={14} />
                       Username
                     </label>
@@ -227,7 +227,7 @@ const AdminRegister = () => {
 
                   {/* Email */}
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                       <FiMail className="text-blue-500" size={14} />
                       Email Address
                     </label>
@@ -248,7 +248,7 @@ const AdminRegister = () => {
 
                   {/* Phone */}
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                       <FiPhone className="text-blue-500" size={14} />
                       Phone Number
                     </label>
@@ -269,7 +269,7 @@ const AdminRegister = () => {
 
                   {/* Password */}
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                       <FiLock className="text-blue-500" size={14} />
                       Password
                     </label>

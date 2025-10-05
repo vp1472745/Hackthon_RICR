@@ -20,12 +20,6 @@ export const selectThemeForTeam = async (req, res) => {
     // कोई एक ProblemStatement उस theme का उठा लो
     const problemStatement = await ProblemStatement.findOne({ PSTheme: theme._id });
 
-    console.log('🎯 Theme Selection Debug:', {
-      teamId,
-      themeName,
-      themeId: theme._id,
-      problemStatementId: problemStatement?._id
-    });
 
     const updatedTeam = await Team.findByIdAndUpdate(
       teamId,
@@ -39,12 +33,6 @@ export const selectThemeForTeam = async (req, res) => {
     if (!updatedTeam) {
       return res.status(404).json({ message: 'Team not found' });
     }
-
-    console.log('✅ Team Updated Successfully:', {
-      teamId: updatedTeam._id,
-      teamTheme: updatedTeam.teamTheme,
-      teamProblemStatement: updatedTeam.teamProblemStatement
-    });
 
     res.status(200).json({ message: 'Theme selected successfully', team: updatedTeam });
   } catch (error) {

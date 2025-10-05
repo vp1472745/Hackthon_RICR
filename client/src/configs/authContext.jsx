@@ -97,7 +97,7 @@ export const AuthProvider = ({ children }) => {
         }
       });
     } catch (error) {
-      console.log("Logout API call failed, but clearing local session anyway");
+      console.error("Logout API call failed, but clearing local session anyway");
     }
 
     // Clear all admin session data

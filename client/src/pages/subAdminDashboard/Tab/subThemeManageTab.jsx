@@ -262,7 +262,6 @@ const ThemeManageTab = () => {
     });
 
   const handleDeleteTheme = (theme) => {
-    console.log('handleDeleteTheme called with:', theme);
     if (!theme || !theme._id) {
       console.error('handleDeleteTheme: theme object is missing or invalid:', theme);
     }

@@ -112,10 +112,6 @@ export const adminLogin = async (req, res) => {
     const token = jwt.sign({ id: admin._id, role: admin.role }, JWT_SECRET, {
       expiresIn: "1d",
     });
-    
-    console.log('🎫 Login - JWT_SECRET used:', JWT_SECRET);
-    console.log('🎫 Login - Generated token for admin:', admin.email, 'ID:', admin._id);
-    console.log('🎫 Login - Token payload:', { id: admin._id, role: admin.role });
 
     // Set the token in an HTTP-only cookie
     res.cookie("authToken", token, {

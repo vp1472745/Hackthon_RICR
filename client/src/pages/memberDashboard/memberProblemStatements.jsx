@@ -110,7 +110,7 @@ const ProblemStatements = () => {
         }
       }
     } catch (err) {
-      console.error('🚨 Fetch error:', err);
+      console.error('Fetch error:', err);
   
       // Check if it's a theme issue
       if (err.response?.status === 400) {
@@ -122,7 +122,6 @@ const ProblemStatements = () => {
         setError(err.response?.data?.message || 'Failed to load problem statements');
       }
     } finally {
-      console.log('🔄 Setting loading to false');
       setLoading(false);
     }
   };
@@ -433,7 +432,7 @@ const ProblemStatements = () => {
                       }));
                       setAvailableProblems(updatedProblems);
                       setSelectedProblem(null);
-                      console.log('👁️ Showing all problems again');
+        
                     }}
                     className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
                   >

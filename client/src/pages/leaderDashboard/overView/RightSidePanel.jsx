@@ -53,7 +53,7 @@ const RightSidePanel = () => {
               );
             }
           } catch (availableErr) {
-            console.error('❌ getActiveForTeam API error:', availableErr);
+            console.error('getActiveForTeam API error:', availableErr);
            
           }
           
@@ -93,12 +93,12 @@ const RightSidePanel = () => {
                      
                     }
                   } catch (err) {
-                    console.error('❌ Could not fetch problem details:', err);
+                    console.error('Could not fetch problem details:', err);
                   }
                 }
               }
             } catch (profileErr) {
-              console.error('❌ Leader profile API error:', profileErr);
+              console.error('Leader profile API error:', profileErr);
             }
           }
 
@@ -124,7 +124,7 @@ const RightSidePanel = () => {
               
               selectedProblem = problem;
             } catch (legacyErr) {
-              console.error('❌ Legacy API error:', legacyErr);
+              console.error('Legacy API error:', legacyErr);
              
             }
           }

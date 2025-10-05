@@ -36,9 +36,7 @@ const seedAdmins = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-
-    console.log("Connected to DB");
-
+    console.log("Connected to MongoDB");
     // Ensure indexes exist for the unique constraint
     await Admin.createIndexes().catch((err) => {
       // index creation might already be in progress or completed

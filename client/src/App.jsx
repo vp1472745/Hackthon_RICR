@@ -49,7 +49,7 @@ function App() {
                       <Route path="/register/*" element={<RegisterMain />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/leader-dashboard" element={<LeaderDashboard />} />
-                      <Route path="/dashboard/login" element={<AdminLogin />} />
+                      <Route path="/adminLogin" element={<AdminLogin />} />
                       <Route path="/dashboard/super-admin" element={<AdminDashboard />} />
                       <Route path="/dashboard/admin-register" element={<AdminRegister />} />
                       <Route path="/dashboard/sub-admin" element={<SubAdminDashboard />} />

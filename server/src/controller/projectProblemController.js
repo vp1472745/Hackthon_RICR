@@ -50,16 +50,9 @@ export const getProblemStatementsForTeam = async (req, res, next) => {
     const team = await Team.findById(teamId).lean();
     if (!team) return res.status(404).json({ success: false, message: "Team not found" });
 
-    console.log('🔍 Team Data Debug:', {
-      teamId,
-      teamTheme: team.teamTheme,
-      teamProblemStatement: team.teamProblemStatement,
-      fullTeam: team
-    });
 
     let rawTheme = team.selectedTheme ?? team.teamTheme ?? team.teamThemeId ?? null;
     if (!rawTheme) {
-      console.log('❌ No theme found for team:', teamId);
       return res.status(400).json({ success: false, message: "Please select a theme first before viewing problem statements" });
     }
 
@@ -84,17 +77,13 @@ export const getProblemStatementsForTeam = async (req, res, next) => {
       PSTheme: themeId
     });
 
-    console.log('🔍 Active problems count:', activeProblemsCount);
-
     // If problem statements are deactivated, only return selected one (if any)
     if (activeProblemsCount === 0) {
-      console.log('❌ Problem statements are deactivated');
-      
+    
       // Check if team has already selected a problem statement
       if (team.teamProblemStatement) {
         const selectedProblem = await ProblemStatement.findById(team.teamProblemStatement).populate("PSTheme");
         if (selectedProblem) {
-          console.log('✅ Returning only selected problem (deactivated mode)');
           return res.status(200).json({ 
             success: true, 
             problemStatements: [selectedProblem],
@@ -118,7 +107,6 @@ export const getProblemStatementsForTeam = async (req, res, next) => {
       PSTheme: themeId
     }).populate("PSTheme");
 
-    console.log('✅ Returning active problems for selection');
     return res.status(200).json({ 
       success: true, 
       problemStatements,

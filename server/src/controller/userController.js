@@ -12,9 +12,7 @@ export const getUserById = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Invalid userId format" });
     }
 
-    // Log the userId for debugging
-    console.log("Requested userId:", userId);
-
+   
     const user = await User.findById(userId)
       .populate({
         path: 'teamId',
@@ -77,9 +75,6 @@ export const addTeamMember = async (req, res, next) => {
     const leaderId = req.user._id;
     const { teamId, fullName, email, phone, collegeName, course, collegeBranch, collegeSemester, GitHubProfile } = req.body;
 
-    console.log('Received payload:', req.body);
-    console.log('Authenticated user:', req.user);
-
     const leader = await User.findById(leaderId);
     if (!leader || leader.role !== 'Leader') {
       const error = new Error('Unauthorized. Only team leader can add members.');
@@ -116,9 +111,6 @@ export const addTeamMember = async (req, res, next) => {
     }
 
     const currentMembers = await User.countDocuments({ teamId: finalTeamId });
-    console.log('Leader team ID:', leader.teamId);
-    console.log('Final team ID:', finalTeamId);
-    console.log('Current team members count:', currentMembers);
 
     if (currentMembers >= 5) {
       const error = new Error('Team is full. Maximum 5 members allowed (1 leader + 4 members).');

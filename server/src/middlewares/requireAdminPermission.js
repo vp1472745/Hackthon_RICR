@@ -11,7 +11,7 @@ export const requireAdminPermission = (permission) => async (req, res, next) => 
     if (!token) {
       return res.status(401).json({ message: 'Access token required' });
     }
-    console.log('🔒 Permission Check - JWT_SECRET:', JWT_SECRET);
+ 
     const decoded = jwt.verify(token, JWT_SECRET);
     const adminId = decoded.id || decoded.userId || decoded.user_id;
     const admin = await Admin.findById(adminId);
