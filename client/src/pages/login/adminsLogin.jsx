@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminAPI } from "../../configs/api";
-
+import Logo from "../../assets/logo.png";
 function AdminLogin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -68,7 +68,7 @@ function AdminLogin() {
                 {/* Logo and Header Section */}
                 <div className="flex flex-col items-center mb-6 sm:mb-8">
                     <img 
-                        src="/public/logo.png" 
+                        src={Logo}
                         alt="Admin Logo" 
                         className="w-12 h-12 sm:w-16 sm:h-16 mb-2 sm:mb-3" 
                     />
