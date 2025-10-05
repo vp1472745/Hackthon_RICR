@@ -115,7 +115,7 @@ const ProjectTheme = () => {
               const currentTeamTheme = userResponse.data.user.teamInfo?.team?.teamTheme?.themeName;
 
               if (currentTeamTheme !== selectedTheme) {
-                console.log('🎯 Team theme changed:', currentTeamTheme);
+              
                 setSelectedTheme(currentTeamTheme);
                 setLastUpdateTime(currentTime);
 
@@ -246,7 +246,7 @@ const ProjectTheme = () => {
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-sm border border-green-200">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
               <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">
-                🔄 <span className="text-green-600 font-semibold">Live Updates</span>
+                 <span className="text-green-600 font-semibold">Live Updates</span>
                 <span className="hidden sm:inline"> - Auto sync</span>
               </span>
             </div>
