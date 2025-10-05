@@ -14,10 +14,7 @@ const HackathonTimer = () => {
 
   // Adjust font size and digit block size based on screen width
   const getDigitBlockStyle = () => {
-    if (windowWidth >= 1500) {
-      // Extra large screens (xl+)
-      return { backgroundColor: '#f0f0f0', color: '#0B2A4A', width: '90px', height: '120px', fontSize: '60px' };
-    } else if (windowWidth >= 1024) {
+if (windowWidth >= 1024) {
       // Large screens (lg+)
       return { backgroundColor: '#f0f0f0', color: '#0B2A4A', width: '55px', height: '80px', fontSize: '32px' };
     } else if (windowWidth >= 640) {
