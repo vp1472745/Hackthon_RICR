@@ -36,7 +36,7 @@ const HackathonTimer = () => {
     <div className="flex justify-center items-center py-4 px-5 sm:px-8">
       <FlipClockCountdown
         to={new Date('2025-11-06T12:00:00+05:30').getTime()}
-        className="flip-clock w-full max-w-lg"
+        className="flip-clock w-full max-w-lg text-2xl sm:text-4xl font-semibold"
         labels={['Days', 'Hours', 'Minutes', 'Seconds']}
         labelStyle={getLabelStyle()}
         digitBlockStyle={getDigitBlockStyle()}
