@@ -196,11 +196,7 @@ const ManageTeam = () => {
               />
             </div>
 
-            <div className="hidden sm:flex items-center gap-2">
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                1 Leader + {teamMembers.length}/{maxMembersExcludingLeader} Members
-              </span>
-            </div>
+      
           </div>
         </div>
 
