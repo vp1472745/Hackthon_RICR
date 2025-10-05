@@ -22,7 +22,7 @@ const HackathonTimer = () => {
       return { backgroundColor: '#f0f0f0', color: '#0B2A4A', width: '50px', height: '70px', fontSize: '26px' };
     } else {
       // Small screens (mobile)
-      return { backgroundColor: '#f0f0f0', color: '#0B2A4A', width: '27px', height: '55px', fontSize: '20px' };
+      return { backgroundColor: '#f0f0f0', color: '#0B2A4A', width: '22px', height: '40px', fontSize: '20px' };
     }
   };
 
@@ -33,10 +33,10 @@ const HackathonTimer = () => {
   };
 
   return (
-    <div className="flex justify-center items-center py-4 px-6">
+    <div className="flex justify-center items-center py-4 px-5 sm:px-8">
       <FlipClockCountdown
         to={new Date('2025-11-06T12:00:00+05:30').getTime()}
-        className="flip-clock w-full max-w-lg"
+        className="flip-clock w-full max-w-lg text-2xl sm:text-4xl font-semibold"
         labels={['Days', 'Hours', 'Minutes', 'Seconds']}
         labelStyle={getLabelStyle()}
         digitBlockStyle={getDigitBlockStyle()}
