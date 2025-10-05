@@ -231,25 +231,24 @@ const TeamMembersList = ({
         <div className="divide-y divide-gray-100">
           {/* Team Summary */}
           <div className="p-4 bg-gray-50 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Users className="w-5 h-5 text-gray-600" />
-                <h3 className="font-semibold text-gray-800">Team Overview</h3>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Team Overview</h3>
               </div>
-              <div className="flex items-center gap-4 text-sm">
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
+              <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                <span className="px-2 py-1 sm:px-3 sm:py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
                   {leaderProfile ? '1 Leader' : '0 Leaders'}
                 </span>
-                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full font-medium">
+                <span className="px-2 py-1 sm:px-3 sm:py-1 bg-green-100 text-green-800 rounded-full font-medium">
                   {memberCount} Members
                 </span>
-                <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full font-medium">
+                <span className="px-2 py-1 sm:px-3 sm:py-1 bg-purple-100 text-purple-800 rounded-full font-medium">
                   Total: {(leaderProfile ? 1 : 0) + memberCount}
                 </span>
               </div>
             </div>
           </div>
-
           {/* Leader Section */}
           {leaderProfile && (
             <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-100">
