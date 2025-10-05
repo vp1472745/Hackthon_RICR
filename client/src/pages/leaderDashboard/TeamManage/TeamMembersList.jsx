@@ -48,7 +48,18 @@ const TeamMembersList = ({
         sessionStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
       }
     } catch (error) {
-   
+      console.error('Error fetching leader profile:', error);
+      
+      // Check sessionStorage for cached data first
+      const storedProfile = JSON.parse(sessionStorage.getItem('leaderProfile') || 'null');
+      const storedMembers = JSON.parse(sessionStorage.getItem('apiTeamMembers') || '[]');
+      
+      if (storedProfile && Array.isArray(storedMembers)) {
+        setLeaderProfile(storedProfile);
+        setTeamMembers(storedMembers);
+        toast.info('Using cached team data');
+        return;
+      }
 
       // Try alternative approach - get user by ID from sessionStorage
       const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
@@ -58,24 +69,30 @@ const TeamMembersList = ({
           const userResponse = await userAPI.getUserById(hackathonUser.user._id);
           if (userResponse.data && userResponse.data.user) {
             setLeaderProfile(userResponse.data.user);
-            setTeamMembers(userResponse.data.user.teamInfo?.members || []); // Fixed setter
+            setTeamMembers(userResponse.data.user.teamInfo?.members || []);
 
             // Save fallback to sessionStorage as well
             sessionStorage.setItem('leaderProfile', JSON.stringify(userResponse.data.user));
             sessionStorage.setItem('apiTeamMembers', JSON.stringify(userResponse.data.user.teamInfo?.members || []));
 
+            toast.success('Team data loaded successfully!');
             return; // Exit early on success
           }
         } catch (fallbackError) {
-          
+          console.error('Fallback API also failed:', fallbackError);
         }
       }
 
-
-      // If no stored data, use hackathonUser data from sessionStorage
-      if (!storedProfile && hackathonUser.user) {
+      // If no stored data, use hackathonUser data from sessionStorage as last resort
+      if (hackathonUser.user) {
         setLeaderProfile(hackathonUser.user);
+        // Try to get team members from hackathonUser.team.members if available
+        const teamMembersFromSession = hackathonUser.team?.members || [];
+        setTeamMembers(teamMembersFromSession);
         toast.info('Using login session data');
+      } else {
+        setError('Unable to load team data. Please try refreshing the page.');
+        toast.error('Failed to load team data');
       }
     } finally {
       setLoading(false);
@@ -184,6 +201,18 @@ const TeamMembersList = ({
 
   const memberCount = Array.isArray(teamMembers) ? teamMembers.length : 0;
 
+  // Loading state
+  if (loading && !leaderProfile && !error) {
+    return (
+      <div className="p-8 text-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader className="w-8 h-8 animate-spin text-blue-600" />
+          <p className="text-gray-600">Loading team data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 gap-4">
       {error ? (
@@ -191,13 +220,36 @@ const TeamMembersList = ({
           <p className="text-red-600 mb-4 font-medium">{error}</p>
           <button
             onClick={fetchLeaderProfile}
-            className="text-blue-600 hover:underline text-sm"
+            disabled={loading}
+            className="inline-flex items-center gap-2 text-blue-600 hover:underline text-sm disabled:opacity-50"
           >
-            Retry
+            {loading && <Loader className="w-4 h-4 animate-spin" />}
+            {loading ? 'Retrying...' : 'Retry'}
           </button>
         </div>
       ) : (
         <div className="divide-y divide-gray-100">
+          {/* Team Summary */}
+          <div className="p-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 text-gray-600" />
+                <h3 className="font-semibold text-gray-800">Team Overview</h3>
+              </div>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
+                  {leaderProfile ? '1 Leader' : '0 Leaders'}
+                </span>
+                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full font-medium">
+                  {memberCount} Members
+                </span>
+                <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full font-medium">
+                  Total: {(leaderProfile ? 1 : 0) + memberCount}
+                </span>
+              </div>
+            </div>
+          </div>
+
           {/* Leader Section */}
           {leaderProfile && (
             <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-100">
@@ -248,6 +300,17 @@ const TeamMembersList = ({
                     <Edit className="w-4 h-4" />
                   </button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* No Leader Message */}
+          {!leaderProfile && (
+            <div className="p-6 text-center bg-yellow-50 border-b border-yellow-200">
+              <div className="flex flex-col items-center gap-3">
+                <Crown className="w-8 h-8 text-yellow-600" />
+                <p className="text-yellow-800 font-medium">No team leader found</p>
+                <p className="text-yellow-600 text-sm">Please ensure you're logged in as a team leader</p>
               </div>
             </div>
           )}
