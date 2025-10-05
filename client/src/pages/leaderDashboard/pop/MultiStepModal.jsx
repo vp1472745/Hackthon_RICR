@@ -17,10 +17,9 @@ const MultiStepModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({});
   const [modalOpen, setModalOpen] = useState(isOpen);
   const [isStep1Saved, setIsStep1Saved] = useState(false);
-
-  const [isStep2Saved, setIsStep2Saved] = useState(false); // Track Step2 save status
-  const [isStep3Saved, setIsStep3Saved] = useState(false); // Track Step3 save status
-  const [isStep4Saved, setIsStep4Saved] = useState(false); // Track Step4 save status
+  const [isStep2Saved, setIsStep2Saved] = useState(false);
+  const [isStep3Saved, setIsStep3Saved] = useState(false);
+  const [isStep4Saved, setIsStep4Saved] = useState(false);
 
   const StepComponent = stepComponents[step];
 
@@ -48,7 +47,6 @@ const MultiStepModal = ({ isOpen, onClose }) => {
     const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
     const userRole = hackathonUser?.user?.role;
     
-    // MultiStepModal should ONLY appear for Leaders, never for Members
     if (userRole !== 'Leader') {
       console.log('MultiStepModal blocked for non-leader user:', userRole);
       setModalOpen(false);
@@ -57,7 +55,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
     }
     
     if (hackathonUser.termsAccepted) {
-      setModalOpen(false); // Close the modal if terms are already accepted
+      setModalOpen(false);
       if (onClose) onClose();
     }
   }, [onClose]);
@@ -72,7 +70,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (!modalOpen) {
       const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
-      hackathonUser.termsAccepted = true; // Update termsAccepted to true
+      hackathonUser.termsAccepted = true;
       sessionStorage.setItem('hackathonUser', JSON.stringify(hackathonUser));
     }
   }, [modalOpen]);
@@ -80,43 +78,83 @@ const MultiStepModal = ({ isOpen, onClose }) => {
   if (!modalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4 sm:p-6">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[85vh] overflow-y-auto mx-4 p-6 relative">
-        {/* Stepper */}
-        <div className="flex flex-wrap items-center justify-center mb-8 gap-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-2 sm:p-4 md:p-6">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto mx-2 sm:mx-4 p-4 sm:p-6 md:p-8 relative">
+        
+        {/* Close Button - Mobile & Desktop */}
+        <button
+          onClick={() => setModalOpen(false)}
+          className="absolute top-3 right-3  sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors duration-200 text-lg font-bold z-10"
+          aria-label="Close modal"
+        >
+          ×
+        </button>
+
+        {/* Stepper - Responsive Design */}
+        <div className="flex flex-wrap items-center mt-12 justify-center mb-6 sm:mb-8 gap-2 sm:gap-4 md:gap-5">
           {steps.map((s, idx) => (
             <React.Fragment key={s.label}>
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center flex-1 min-w-[60px] sm:min-w-0">
                 <div
-                  className={`w-10 h-10 flex items-center justify-center rounded-full border-2 text-lg font-bold transition-all duration-200
+                  className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border-2 text-sm sm:text-lg font-bold transition-all duration-200
                     ${idx < step ? 'bg-green-500 text-white border-green-500' : idx === step ? 'bg-white text-black border-black' : 'bg-gray-100 text-gray-400 border-gray-300'}`}
                 >
                   {s.label}
                 </div>
-                <span className={`mt-2 text-xs font-medium ${idx < step ? 'text-green-500' : idx === step ? 'text-black' : 'text-gray-400'}`}>{s.name}</span>
+                <span className={`mt-1 sm:mt-2 text-xs text-center font-medium ${idx < step ? 'text-green-500' : idx === step ? 'text-black' : 'text-gray-400'}`}>
+                  {/* Show full name on larger screens, abbreviated on mobile */}
+                  <span className="hidden sm:inline">{s.name}</span>
+                  <span className="sm:hidden text-[10px] leading-tight">
+                    {s.name.split(' ').map(word => word[0]).join('')}
+                  </span>
+                </span>
               </div>
+              
+              {/* Connector lines - hide on smallest screens */}
               {idx < steps.length - 1 && (
-                <div className="flex items-center">
-                  <div className={`h-1 w-16 sm:w-20 mx-2 rounded bg-gradient-to-r ${idx < step ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                <div className="hidden xs:flex items-center flex-1 max-w-[40px] sm:max-w-[60px] md:max-w-[80px]">
+                  <div className={`h-1 w-full mx-1 sm:mx-2 rounded bg-gradient-to-r ${idx < step ? 'from-green-500 to-green-400' : 'from-gray-300 to-gray-200'}`}></div>
                 </div>
               )}
             </React.Fragment>
           ))}
         </div>
-        {/* Step Content */}
-        <StepComponent
-          data={formData}
-          onChange={handleChange}
-          setIsStep1Saved={setIsStep1Saved}
-          setStep={setStep}
-          setIsStep2Saved={setIsStep2Saved}
-          setIsStep3Saved={setIsStep3Saved}
-          setIsStep4Saved={setIsStep4Saved}
-          handleNext={handleNext}
-          handleBack={handleBack}
-        />
 
-        {/* Removed Back and Next buttons */}
+        {/* Alternative Stepper for very small screens */}
+        <div className="xs:hidden flex justify-center mb-4">
+          <div className="bg-gray-100 rounded-full px-3 py-1">
+            <span className="text-xs font-medium text-gray-700">
+              Step {step + 1} of {steps.length}: {steps[step].name}
+            </span>
+          </div>
+        </div>
+
+        {/* Step Content */}
+        <div className="min-h-[300px] sm:min-h-[400px]">
+          <StepComponent
+            data={formData}
+            onChange={handleChange}
+            setIsStep1Saved={setIsStep1Saved}
+            setStep={setStep}
+            setIsStep2Saved={setIsStep2Saved}
+            setIsStep3Saved={setIsStep3Saved}
+            setIsStep4Saved={setIsStep4Saved}
+            handleNext={handleNext}
+            handleBack={handleBack}
+          />
+        </div>
+
+        {/* Navigation hints for mobile */}
+        <div className="xs:hidden mt-4 pt-4 border-t border-gray-200">
+          <div className="flex justify-between items-center text-sm text-gray-500">
+            <span>
+              {step > 0 && 'Swipe left for previous step'}
+            </span>
+            <span>
+              {step < steps.length - 1 && 'Swipe right for next step'}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
