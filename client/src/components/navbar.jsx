@@ -189,22 +189,7 @@ const Navbar = () => {
               Home
             </Link>
             
-            {isAuthenticated && (
-              <button
-                onClick={() => handleNavigation(getDashboardRoute())}
-                className="block w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 font-medium"
-              >
-                <span className="flex items-center gap-2">
-                  Dashboard
-                  {userRole && (
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                      {userRole}
-                    </span>
-                  )}
-                </span>
-              </button>
-            )}
-
+  
             {isAdminAuthenticated && (
               <button
                 onClick={() => handleNavigation(adminType === 'superadmin' ? "/superadmin-dashboard" : "/admin-dashboard")}

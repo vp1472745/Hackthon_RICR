@@ -16,10 +16,19 @@ const LeaderDashboard = () => {
 
   useEffect(() => {
     const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser'));
+    const userRole = hackathonUser?.user?.role;
+    
+    // Only show modal for Leaders, never for Members or other roles
+    if (userRole !== 'Leader') {
+      console.log('Leader dashboard modal blocked for non-leader:', userRole);
+      setShowModal(false);
+      return;
+    }
+    
     if (hackathonUser?.user?.termsAccepted) {
       setShowModal(false); // Skip modal if terms are accepted
     } else {
-      setShowModal(true); // Show modal if terms are not accepted
+      setShowModal(true); // Show modal if terms are not accepted (Leaders only)
     }
   }, []);
 

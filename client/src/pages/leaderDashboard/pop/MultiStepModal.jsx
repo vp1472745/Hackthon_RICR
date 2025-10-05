@@ -46,6 +46,16 @@ const MultiStepModal = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
+    const userRole = hackathonUser?.user?.role;
+    
+    // MultiStepModal should ONLY appear for Leaders, never for Members
+    if (userRole !== 'Leader') {
+      console.log('MultiStepModal blocked for non-leader user:', userRole);
+      setModalOpen(false);
+      if (onClose) onClose();
+      return;
+    }
+    
     if (hackathonUser.termsAccepted) {
       setModalOpen(false); // Close the modal if terms are already accepted
       if (onClose) onClose();

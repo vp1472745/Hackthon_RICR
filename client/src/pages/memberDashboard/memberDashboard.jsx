@@ -15,10 +15,19 @@ const LeaderDashboard = () => {
 
   useEffect(() => {
     const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser'));
-    if (hackathonUser?.user?.termsAccepted) {
+    const userRole = hackathonUser?.user?.role;
+    
+    console.log('Member Dashboard - User Role:', userRole); // Debug log
+    
+    // Members should never see profile setup modals - only leaders need profile setup
+    if (userRole === 'Member') {
+      setShowModal(false); // Members don't need profile setup
+      console.log('Member detected - no profile modal will be shown'); // Debug log
+    } else if (hackathonUser?.user?.termsAccepted) {
       setShowModal(false); // Skip modal if terms are accepted
     } else {
-      setShowModal(true); // Show modal if terms are not accepted
+      setShowModal(true); // Show modal if terms are not accepted (leaders only)
+      console.log('Leader detected - profile modal might be shown'); // Debug log
     }
   }, []);
 
@@ -57,6 +66,35 @@ const LeaderDashboard = () => {
     }
   };
 
+  // Get current user role for safety checks
+  const getCurrentUserRole = () => {
+    const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
+    return hackathonUser?.user?.role;
+  };
+
+  const userRole = getCurrentUserRole();
+
+  // Safety check - if somehow this component is being accessed by a non-member, redirect
+  useEffect(() => {
+    if (userRole && userRole !== 'Member') {
+      console.warn('Non-member trying to access member dashboard, redirecting...');
+      window.location.href = '/leader-dashboard';
+    }
+  }, [userRole]);
+
+  // Don't render anything if user role is not Member
+  if (userRole !== 'Member') {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-800">Access Restricted</h2>
+          <p className="text-gray-600 mt-2">This area is for team members only.</p>
+          <p className="text-gray-500 text-sm mt-1">Redirecting...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-gray-50 relative">
       {/* Sidebar */}
@@ -80,6 +118,13 @@ const LeaderDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Debug info for members - remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 left-4 bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm">
+          Member Dashboard - Role: {userRole}
+        </div>
+      )}
     </div>
   );
 };
