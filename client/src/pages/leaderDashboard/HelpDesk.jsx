@@ -175,14 +175,14 @@ const HelpDesk = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/20 p-4 sm:p-6 overflow-hidden">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="p-8 mb-8">
-          <div className="flex flex-row sm:flex-row items-start sm:items-center gap-4 mb-3">
+        <div className="">
+          <div className="flex flex-row sm:flex-row items-start sm:items-center gap-2 mb-3">
             <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
               <HelpCircle className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-2xl font-bold text-gray-900 ">Help & Support Center</h1>
-              <p className="text-sm  text-gray-600">
+              <h1 className="text-2xl sm:text-1xl font-bold text-gray-900 ">Help & Support Center</h1>
+              <p className="text-sm  text-gray-600 ">
                 Get instant help with our comprehensive knowledge base or connect with our support team.
               </p>
             </div>
