@@ -40,7 +40,7 @@ const Overview = () => {
             return;
           }
         } catch (fallbackError) {
-          console.error('Fallback fetch failed:', fallbackError);
+          console.error('Error fetching leader profile from API:', fallbackError);
         }
       }
 
