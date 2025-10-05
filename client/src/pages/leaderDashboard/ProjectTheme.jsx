@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, CheckCircle, Loader, Calendar, Info } from 'lucide-react';
 import { projectThemeAPI, userAPI, authAPI } from '../../configs/api';
+import { toast } from 'react-toastify';
 
 const ProjectTheme = () => {
   const [themes, setThemes] = useState([]);
@@ -11,6 +12,13 @@ const ProjectTheme = () => {
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', text: '' });
+
+  // Real-time update states
+  const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
+  const [isPolling, setIsPolling] = useState(false);
+  const [isDeactivatedMode, setIsDeactivatedMode] = useState(false);
+  const [themeCount, setThemeCount] = useState(0);
+  const [lastChangeType, setLastChangeType] = useState('');
 
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -26,16 +34,19 @@ const ProjectTheme = () => {
     }
   }, [teamId]);
 
+  // Initial theme fetch
   useEffect(() => {
     const fetchThemes = async () => {
       try {
         setLoading(true);
         // Use projectThemeAPI to get only active themes for users
         const res = await projectThemeAPI.getAllThemes();
- 
-        setThemes(res.data.themes || []);
+
+        const themes = res.data.themes || [];
+        setThemes(themes);
+        setThemeCount(themes.length);
+        setLastUpdateTime(Date.now());
       } catch (err) {
-       
         setError('Failed to load themes. Please try again later.');
       } finally {
         setLoading(false);
@@ -45,12 +56,110 @@ const ProjectTheme = () => {
     fetchThemes();
   }, []);
 
+  // Real-time polling for theme updates
+  useEffect(() => {
+    if (!teamId) return;
+
+    const pollForUpdates = async () => {
+      try {
+        setIsPolling(true);
+
+        // Always poll for theme updates
+        const res = await projectThemeAPI.getAllThemes();
+
+        if (res.data) {
+          const newThemes = res.data.themes || [];
+          const currentTime = Date.now();
+
+          // Check if themes list changed
+          const themesChanged = JSON.stringify(newThemes) !== JSON.stringify(themes);
+
+          if (themesChanged) {
+            const oldCount = themeCount;
+            const newCount = newThemes.length;
+
+            console.log('🔄 Themes updated:', newCount, 'themes available');
+            setThemes(newThemes);
+            setThemeCount(newCount);
+            setLastUpdateTime(currentTime);
+
+            // Determine change type
+            let changeType = '';
+            if (newCount > oldCount) {
+              changeType = 'added';
+              setLastChangeType(`+${newCount - oldCount} theme${newCount - oldCount > 1 ? 's' : ''} added`);
+            } else if (newCount < oldCount) {
+              changeType = 'removed';
+              setLastChangeType(`${oldCount - newCount} theme${oldCount - newCount > 1 ? 's' : ''} removed`);
+            } else {
+              changeType = 'updated';
+              setLastChangeType('themes updated');
+            }
+
+            // Show appropriate notification
+            const message = `${changeType === 'added' ? '✨' : changeType === 'removed' ? '🗑️' : '🔄'} Themes ${changeType} - ${newCount} available`;
+            toast.info(message, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: true,
+            });
+
+      
+          }
+
+          // Also check for team theme changes
+          const userId = JSON.parse(sessionStorage.getItem('hackathonUser'))?.user?._id;
+          if (userId) {
+            try {
+              const userResponse = await userAPI.getUserById(userId);
+              const currentTeamTheme = userResponse.data.user.teamInfo?.team?.teamTheme?.themeName;
+
+              if (currentTeamTheme !== selectedTheme) {
+                console.log('🎯 Team theme changed:', currentTeamTheme);
+                setSelectedTheme(currentTeamTheme);
+                setLastUpdateTime(currentTime);
+
+                if (currentTeamTheme) {
+                  toast.success(`Theme selection updated: ${currentTeamTheme}`, {
+                    position: "top-center",
+                    autoClose: 3000,
+                  });
+                }
+              }
+            } catch (userErr) {
+              console.warn('Failed to check team theme:', userErr);
+            }
+          }
+
+          // Always update last check time
+          setLastUpdateTime(currentTime);
+        }
+      } catch (err) {
+        // Silently handle polling errors to avoid spam
+        console.warn('Theme polling error:', err);
+      } finally {
+        setIsPolling(false);
+      }
+    };
+
+    // Initial poll after component mount
+    const initialTimeout = setTimeout(pollForUpdates, 2000);
+
+    // Poll every 8 seconds for more frequent updates
+    const pollInterval = setInterval(pollForUpdates, 8000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(pollInterval);
+    };
+  }, [teamId, themes, selectedTheme]);
+
   useEffect(() => {
     const fetchTeamThemeByUserId = async () => {
       try {
         const userId = JSON.parse(sessionStorage.getItem('hackathonUser'))?.user?._id;
         if (!userId) {
-        
+
           setError('User ID not found. Please log in again.');
           return;
         }
@@ -64,13 +173,14 @@ const ProjectTheme = () => {
           setSelectedTheme(null);
         }
       } catch (err) {
-      
+
         setError('Failed to fetch team theme. Please try again later.');
       }
     };
 
     fetchTeamThemeByUserId();
   }, []);
+
 
   const handleThemeSelect = (themeName) => {
     if (selectedTheme === themeName) return;
@@ -86,6 +196,8 @@ const ProjectTheme = () => {
       setSelectedTheme(pendingSelection);
       setShowConfirmation(false);
       setPendingSelection(null);
+      setLastUpdateTime(Date.now()); // Update time after selection
+
       const refresh_response = await authAPI.refreshData();
       sessionStorage.setItem('hackathonUser', JSON.stringify({
         email: refresh_response.data.user.email,
@@ -108,95 +220,111 @@ const ProjectTheme = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/20 p-3 sm:p-4 md:p-6 overflow-hidden">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/20 p-2 sm:p-3 md:p-4 lg:p-6 xl:p-8 overflow-x-hidden">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
 
-              
+
         {/* Header Section */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex flex-row sm:flex-row items-center gap-3 sm:gap-4 mb-4 ">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
-              <Lightbulb className="w-7 h-7 text-white" />
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <div className="flex flex-row xs:flex-row items-start xs:items-center gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
+            <div className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl shadow-lg flex-shrink-0">
+              <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" />
             </div>
-            <div className="  ">
-              <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-gray-900 mb-2">Project Themes</h1>
-              <p className="text-gray-600 text-sm sm:text-base md:text-lg max-w-1xl">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900  break-words">Project Themes</h1>
+              <p className="text-gray-600 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl max-w-4xl leading-relaxed break-words">
                 Choose a theme that inspires your hackathon project. Your selection guides your innovation journey.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Deadline Banner */}
-        <div className="text-center mb-6 sm:mb-8 md:mb-10">
-          <div className="inline-flex items-center gap-2 bg-white rounded-lg px-3 sm:px-4 py-2 sm:py-3 shadow-sm border border-gray-200">
-            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
-            <span className="text-xs sm:text-sm font-medium text-gray-700">
-              Theme selection deadline: <strong className="text-blue-600">November 6, 2025</strong>
-            </span>
+        {/* Status Banners */}
+        <div className="flex flex-row sm:flex-row items-center justify-center gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8">
+          {/* Live Update Banner */}
+          <div className="w-full sm:w-auto">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-sm border border-green-200">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
+              <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">
+                🔄 <span className="text-green-600 font-semibold">Live Updates</span>
+                <span className="hidden sm:inline"> - Auto sync</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Deadline Banner */}
+          <div className="w-full sm:w-auto">
+            <div className="inline-flex items-center gap-2 bg-white rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-sm border border-gray-200">
+
+              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-blue-600 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium text-gray-700">
+                <span className="hidden sm:inline">Theme deadline: </span>
+                <strong className="text-blue-600">Nov 6, 2025</strong>
+              </span>
+            </div>
           </div>
         </div>
 
+
         {/* Loading State */}
         {loading && themes.length === 0 && (
-          <div className="flex justify-center items-center py-12 sm:py-16 md:py-20">
-            <div className="text-center">
-              <Loader className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-blue-600 animate-spin mx-auto mb-3 sm:mb-4" />
-              <div className="text-gray-600 font-medium text-sm sm:text-base">Loading themes...</div>
-              <div className="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-2">Preparing your innovation journey</div>
+          <div className="flex justify-center items-center py-8 sm:py-12 lg:py-16 xl:py-20 mx-2 sm:mx-4 lg:mx-8">
+            <div className="text-center bg-white rounded-lg sm:rounded-xl lg:rounded-2xl p-6 sm:p-8 lg:p-10 shadow-sm border border-gray-100">
+              <Loader className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 text-blue-600 animate-spin mx-auto mb-3 sm:mb-4 lg:mb-6" />
+              <div className="text-gray-600 font-medium text-sm sm:text-base lg:text-lg xl:text-xl">Loading themes...</div>
+              <div className="text-gray-500 text-xs sm:text-sm lg:text-base mt-1 sm:mt-2 lg:mt-3">Preparing your innovation journey</div>
             </div>
           </div>
         )}
 
         {/* Theme Selection Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-10 md:mb-12">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-3 2xl:grid-cols-3 gap-3 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8 mb-6 sm:mb-8 lg:mb-10">
           {themes.map((theme) => {
             const isSelected = selectedTheme === theme.themeName;
             return (
               <div
                 key={theme._id}
-                className={`group relative bg-white rounded-xl sm:rounded-2xl shadow-sm border-2 transition-all duration-300 hover:shadow-md ${
-                  isSelected
-                    ? 'border-green-500 shadow-lg ring-2 ring-green-100'
-                    : 'border-gray-200 hover:border-blue-300'
-                }`}
+                className={`group relative bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-sm border-2 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${isSelected
+                  ? 'border-green-500 shadow-lg ring-2 ring-green-100 scale-[1.02]'
+                  : 'border-gray-200 hover:border-blue-300'
+                  }`}
               >
                 {/* Selected Badge */}
                 {isSelected && (
-                  <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 z-10">
-                    <div className="bg-green-500 text-white p-1 sm:p-2 rounded-full shadow-lg border-2 sm:border-4 border-white flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="text-xs font-semibold hidden xs:inline">SELECTED</span>
+                  <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 lg:-top-4 lg:-right-4 z-10">
+                    <div className="bg-green-500 text-white p-1 sm:p-1.5 lg:p-2 rounded-full shadow-lg border-2 sm:border-3 lg:border-4 border-white flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                      <span className="text-xs sm:text-sm font-semibold hidden sm:inline">SELECTED</span>
                     </div>
                   </div>
                 )}
 
-                <div className="p-4 sm:p-5 md:p-6">
+                <div className="p-3 sm:p-4 md:p-5 lg:p-6">
                   {/* Theme Header */}
-                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                  <div className="flex items-start justify-between mb-2 sm:mb-3 lg:mb-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-gray-900 text-base sm:text-lg md:text-xl leading-tight mb-1 sm:mb-2 break-words">
+                      <h3 className="font-bold text-gray-900 text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl leading-tight mb-1 sm:mb-2 break-words">
                         {theme.themeName}
                       </h3>
                     </div>
                   </div>
 
                   {/* Theme Content */}
-                  <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-5 md:mb-6">
+                  <div className="space-y-2 sm:space-y-3 lg:space-y-4 mb-3 sm:mb-4 lg:mb-6">
                     {/* Theme Short Description */}
-                    <div className="mb-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
+                    <div className="mb-1 flex flex-col gap-1 sm:gap-2">
                       <div className="flex-1 min-w-0">
-                        <span className="block text-xs font-bold text-black mb-1">Theme Short Description</span>
-                        <p className="text-gray-500 text-xs sm:text-sm break-words" title={theme.themeShortDescription}>
-                          {theme.themeShortDescription && theme.themeShortDescription.length > 30
-                            ? theme.themeShortDescription.slice(0, 30) + '...'
+                        <span className="block text-xs sm:text-sm lg:text-base font-bold text-black mb-1">Theme Short Description</span>
+                        <p className="text-gray-500 text-xs sm:text-sm lg:text-base break-words leading-relaxed" title={theme.themeShortDescription}>
+                          {theme.themeShortDescription && theme.themeShortDescription.length > 60
+                            ? theme.themeShortDescription.slice(0, 60) + '...'
                             : theme.themeShortDescription}
                         </p>
                       </div>
-                      {theme.themeShortDescription && theme.themeShortDescription.length > 30 && (
+                      {theme.themeShortDescription && theme.themeShortDescription.length > 60 && (
                         <button
                           type="button"
-                          className="text-blue-600 hover:underline text-xs font-semibold self-start sm:self-center mt-1 sm:mt-0"
+                          className="text-blue-600 hover:underline text-xs sm:text-sm font-semibold self-start transition-colors"
                           onClick={e => { e.stopPropagation(); setModalContent({ title: 'Theme Short Description', text: theme.themeShortDescription }); setModalOpen(true); }}
                         >
                           Read More
@@ -204,19 +332,19 @@ const ProjectTheme = () => {
                       )}
                     </div>
                     {/* Theme Description */}
-                    <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
+                    <div className="mb-2 sm:mb-3 flex flex-col gap-1 sm:gap-2">
                       <div className="flex-1 min-w-0">
-                        <span className="block text-xs font-bold text-black mb-1">Theme Description</span>
-                        <p className="text-gray-600 text-xs sm:text-sm break-words" title={theme.themeDescription}>
-                          {theme.themeDescription && theme.themeDescription.length > 30
-                            ? theme.themeDescription.slice(0, 30) + '...'
+                        <span className="block text-xs sm:text-sm lg:text-base font-bold text-black mb-1">Theme Description</span>
+                        <p className="text-gray-600 text-xs sm:text-sm lg:text-base break-words leading-relaxed" title={theme.themeDescription}>
+                          {theme.themeDescription && theme.themeDescription.length > 60
+                            ? theme.themeDescription.slice(0, 60) + '...'
                             : theme.themeDescription}
                         </p>
                       </div>
-                      {theme.themeDescription && theme.themeDescription.length > 30 && (
+                      {theme.themeDescription && theme.themeDescription.length > 60 && (
                         <button
                           type="button"
-                          className="text-blue-600 hover:underline text-xs font-semibold self-start sm:self-center mt-1 sm:mt-0"
+                          className="text-blue-600 hover:underline text-xs sm:text-sm font-semibold self-start transition-colors"
                           onClick={e => { e.stopPropagation(); setModalContent({ title: 'Theme Description', text: theme.themeDescription }); setModalOpen(true); }}
                         >
                           Read More
@@ -229,19 +357,22 @@ const ProjectTheme = () => {
                   <button
                     onClick={() => handleThemeSelect(theme.themeName)}
                     disabled={isSelected}
-                    className={`w-full py-2 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl font-semibold text-xs sm:text-sm transition-all duration-200 ${
-                      isSelected
-                        ? 'bg-green-100 text-green-700 border border-green-200 cursor-default'
-                        : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md'
-                    }`}
+                    className={`w-full py-2 sm:py-2.5 lg:py-3 xl:py-3.5 px-3 sm:px-4 lg:px-6 rounded-lg sm:rounded-xl lg:rounded-2xl font-semibold text-xs sm:text-sm lg:text-base transition-all duration-200 ${isSelected
+                      ? 'bg-green-100 text-green-700 border border-green-200 cursor-default'
+                      : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-lg transform hover:scale-[1.02]'
+                      }`}
                   >
                     {isSelected ? (
-                      <div className="flex items-center justify-center gap-1 sm:gap-2">
-                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Theme Selected
+                      <div className="flex items-center justify-center gap-1 sm:gap-2 lg:gap-3">
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                        <span className="hidden xs:inline">Theme Selected</span>
+                        <span className="xs:hidden">Selected</span>
                       </div>
                     ) : (
-                      'Select This Theme'
+                      <>
+                        <span className="hidden sm:inline">Select This Theme</span>
+                        <span className="sm:hidden">Select</span>
+                      </>
                     )}
                   </button>
                 </div>
@@ -252,12 +383,12 @@ const ProjectTheme = () => {
 
         {/* Empty State */}
         {!loading && themes.length === 0 && !error && (
-          <div className="text-center py-12 sm:py-16 md:py-20 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <Lightbulb className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-gray-400" />
+          <div className="text-center py-8 sm:py-12 lg:py-16 xl:py-20 bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-sm border border-gray-200 mx-2 sm:mx-4 lg:mx-8">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 lg:mb-6">
+              <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 xl:w-10 xl:h-10 text-gray-400" />
             </div>
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-700 mb-2 sm:mb-3">No Themes Available</h3>
-            <p className="text-gray-500 max-w-md mx-auto text-sm sm:text-base md:text-lg px-4">
+            <h3 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-semibold text-gray-700 mb-2 sm:mb-3 px-2">No Themes Available</h3>
+            <p className="text-gray-500 max-w-sm sm:max-w-md lg:max-w-lg mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-3 sm:px-4 leading-relaxed">
               We're curating exciting themes for your hackathon. Please check back soon.
             </p>
           </div>
@@ -267,38 +398,38 @@ const ProjectTheme = () => {
       {/* Confirmation Modal */}
       {showConfirmation && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-3 md:p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="theme-confirmation-title"
         >
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md mx-auto">
-            <div className="p-4 sm:p-6 md:p-8">
+          <div className="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-2xl w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto">
+            <div className="p-3 sm:p-4 md:p-6 lg:p-8">
               {/* Modal Header */}
-              <div className="text-center mb-4 sm:mb-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
+              <div className="text-center mb-3 sm:mb-4 md:mb-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4">
+                  <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-white" />
                 </div>
-                <h3 id="theme-confirmation-title" className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
+                <h3 id="theme-confirmation-title" className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
                   Confirm Theme Selection
                 </h3>
-                <p className="text-gray-600 text-sm sm:text-base">You're about to select the following theme:</p>
+                <p className="text-gray-600 text-xs sm:text-sm md:text-base">You're about to select the following theme:</p>
               </div>
 
               {/* Theme Preview */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 mb-4 sm:mb-6 border border-blue-200">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-5 lg:p-6 mb-3 sm:mb-4 md:mb-6 border border-blue-200">
                 <div className="text-center">
-                  <div className="font-bold text-gray-900 text-base sm:text-lg md:text-xl mb-1 sm:mb-2 break-words">{pendingSelection}</div>
-                  <div className="text-blue-600 font-medium text-sm sm:text-base">Ready to build amazing things!</div>
+                  <div className="font-bold text-gray-900 text-sm sm:text-base md:text-lg lg:text-xl mb-1 sm:mb-2 break-words line-clamp-2">{pendingSelection}</div>
+                  <div className="text-blue-600 font-medium text-xs sm:text-sm md:text-base">Ready to build amazing things!</div>
                 </div>
               </div>
 
               {/* Important Notice */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 sm:p-3 md:p-4 mb-3 sm:mb-4 md:mb-6">
                 <div className="flex items-start gap-2 sm:gap-3">
-                  <Info className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <Info className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm text-yellow-800 font-medium break-words">
+                    <p className="text-xs sm:text-sm md:text-base text-yellow-800 font-medium break-words">
                       You can change your theme until November 6, 2025
                     </p>
                   </div>
@@ -306,27 +437,30 @@ const ProjectTheme = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <div className="flex flex-col xs:flex-row gap-2 xs:gap-3">
                 <button
                   onClick={confirmSelection}
                   disabled={loading}
-                  className="flex-1 inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg sm:rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm disabled:opacity-50 font-semibold text-xs sm:text-sm"
+                  className="flex-1 inline-flex items-center justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg sm:rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm disabled:opacity-50 font-semibold text-xs sm:text-sm md:text-base"
                 >
                   {loading ? (
                     <div className="flex items-center gap-1 sm:gap-2">
                       <Loader className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
-                      <span className="hidden xs:inline">Selecting Theme...</span>
-                      <span className="xs:hidden">Selecting...</span>
+                      <span className="hidden xs:inline">Selecting...</span>
+                      <span className="xs:hidden">...</span>
                     </div>
                   ) : (
-                    'Confirm Selection'
+                    <>
+                      <span className="hidden xs:inline">Confirm Selection</span>
+                      <span className="xs:hidden">Confirm</span>
+                    </>
                   )}
                 </button>
 
                 <button
                   onClick={cancelSelection}
                   disabled={loading}
-                  className="flex-1 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg sm:rounded-xl hover:bg-gray-50 transition-colors font-semibold text-xs sm:text-sm"
+                  className="flex-1 px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 border border-gray-300 text-gray-700 rounded-lg sm:rounded-xl hover:bg-gray-50 transition-colors font-semibold text-xs sm:text-sm md:text-base disabled:opacity-50"
                 >
                   Cancel
                 </button>
