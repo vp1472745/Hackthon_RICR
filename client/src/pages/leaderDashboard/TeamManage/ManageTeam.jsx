@@ -185,14 +185,14 @@ const ManageTeam = () => {
           </div>
 
           {/* Search + Add info (responsive) */}
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="relative w-full sm:w-64">
+          <div className="flex items-center gap-3 w-full sm:w-auto mt-5">
+            <div className="relative w-full sm:w-64 md:w-80">
               <input
                 type="search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search members by name, email, college..."
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-300"
+                className="w-full border border-blue-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-300"
               />
             </div>
 
