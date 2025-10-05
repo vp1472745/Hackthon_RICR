@@ -184,9 +184,7 @@ const TeamMembersList = ({
   }, []);
 
   const handleRemoveWithConfirm = (member) => {
-
     handleRemoveMember(member);
-    toast.info(`${member.fullName} removed from team.`);
 
   };
 

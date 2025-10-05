@@ -49,15 +49,15 @@ const TeamMembersList = ({
       }
     } catch (error) {
       console.error('Error fetching leader profile:', error);
-      
+
       // Check sessionStorage for cached data first
       const storedProfile = JSON.parse(sessionStorage.getItem('leaderProfile') || 'null');
       const storedMembers = JSON.parse(sessionStorage.getItem('apiTeamMembers') || '[]');
-      
+
       if (storedProfile && Array.isArray(storedMembers)) {
         setLeaderProfile(storedProfile);
         setTeamMembers(storedMembers);
-        
+
         return;
       }
 
@@ -75,7 +75,7 @@ const TeamMembersList = ({
             sessionStorage.setItem('leaderProfile', JSON.stringify(userResponse.data.user));
             sessionStorage.setItem('apiTeamMembers', JSON.stringify(userResponse.data.user.teamInfo?.members || []));
 
-            
+
             return; // Exit early on success
           }
         } catch (fallbackError) {
@@ -89,10 +89,10 @@ const TeamMembersList = ({
         // Try to get team members from hackathonUser.team.members if available
         const teamMembersFromSession = hackathonUser.team?.members || [];
         setTeamMembers(teamMembersFromSession);
-        
+
       } else {
         setError('Unable to load team data. Please try refreshing the page.');
-        
+
       }
     } finally {
       setLoading(false);
@@ -104,9 +104,7 @@ const TeamMembersList = ({
   }, []);
 
   const handleRemoveWithConfirm = (member) => {
-   
-      handleRemoveMember(member);
-      toast.info(`${member.fullName} removed from team.`);
+    handleRemoveMember(member);
 
   };
 
