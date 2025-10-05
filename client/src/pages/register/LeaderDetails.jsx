@@ -70,7 +70,6 @@ const LeaderDetails = () => {
         phone: formData.leaderPhone
       });
 
-      console.log('OTP API Response:', response); // Debug log
 
       // Store form data for next step
       const registrationData = {

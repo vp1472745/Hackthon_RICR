@@ -11,8 +11,7 @@ const RightSidePanel = () => {
     const fetchData = async () => {
       setLoading(true);
       const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser'));
-      
-      console.log('🔍 Debug - hackathonUser from session:', hackathonUser);
+
       
       // Fetch theme data
       const themeFromSession = hackathonUser?.theme?.themeName || sessionStorage.getItem('selectedTheme');
@@ -21,11 +20,11 @@ const RightSidePanel = () => {
       setSelectedTheme(theme);
 
       const teamId = hackathonUser?.team?._id || hackathonUser?.teamId;
-      console.log('🔍 Debug - teamId found:', teamId);
+
       
       if (teamId) {
         try {
-          console.log('🔍 Fetching problem statement for team:', teamId);
+       
           
           // Try multiple API methods to get selected problem statement
           let selectedProblem = null;
@@ -33,72 +32,65 @@ const RightSidePanel = () => {
           // Method 1: Check if team has already selected a problem (from team data)
           const teamProblemId = hackathonUser?.team?.selectedProblemStatement || hackathonUser?.team?.teamProblemStatement;
           
-          if (teamProblemId) {
-            console.log('📋 Team has selected problem ID:', teamProblemId);
-          }
+      
           
           // Method 2: Get available problems and check selection
           try {
-            console.log('📋 Calling getActiveForTeam API with teamId:', teamId);
+       
             const availableRes = await problemStatementAPI.getActiveForTeam(teamId);
-            console.log('📋 Available problems response status:', availableRes.status);
-            console.log('📋 Available problems response data:', availableRes.data);
+        
             
             if (availableRes.data && availableRes.data.success && availableRes.data.problemStatements) {
               // Check if any problem is already selected by this team
               selectedProblem = availableRes.data.problemStatements.find(p => 
                 p._id === teamProblemId
               );
-              
-              console.log('📋 Found selected problem:', selectedProblem?.PStitle || selectedProblem?.title);
+            
             } else if (availableRes.data && availableRes.data.problemStatements) {
               // Fallback if success flag missing but data exists
               selectedProblem = availableRes.data.problemStatements.find(p => 
                 p._id === teamProblemId
               );
-              console.log('📋 Found problem without success flag:', selectedProblem?.PStitle || selectedProblem?.title);
             }
           } catch (availableErr) {
             console.error('❌ getActiveForTeam API error:', availableErr);
-            console.error('❌ Error response:', availableErr.response?.data);
-            console.error('❌ Error status:', availableErr.response?.status);
+           
           }
           
           // Method 3: Try to get all problem statements and find the selected one
           if (!selectedProblem && teamProblemId) {
             try {
-              console.log('📋 Trying to get all problems and find selected one');
+           
               const allProblemsRes = await problemStatementAPI.getAll();
-              console.log('📋 All problems response:', allProblemsRes.data);
-              
+            
               if (allProblemsRes.data && allProblemsRes.data.problemStatements) {
                 selectedProblem = allProblemsRes.data.problemStatements.find(p => p._id === teamProblemId);
-                console.log('📋 Found problem by ID in all problems:', selectedProblem?.PStitle || selectedProblem?.title);
+               
               }
             } catch (allErr) {
-              console.error('❌ Get all problems error:', allErr);
+             
             }
           }
 
           // Method 4: Try to get fresh team data from leader profile
           if (!selectedProblem) {
             try {
-              console.log('📋 Trying to get fresh team data from leader profile');
+             
               const profileRes = await userAPI.getLeaderProfile();
-              console.log('📋 Leader profile response:', profileRes.data);
+             
               
               if (profileRes.data && profileRes.data.team) {
                 const freshTeam = profileRes.data.team;
                 const freshProblemId = freshTeam.selectedProblemStatement || freshTeam.teamProblemStatement;
                 
                 if (freshProblemId) {
-                  console.log('📋 Found fresh problem ID from team:', freshProblemId);
+                 
                   // Try to get this problem's details
                   try {
                     const allProblemsRes = await problemStatementAPI.getAll();
                     if (allProblemsRes.data && allProblemsRes.data.problemStatements) {
                       selectedProblem = allProblemsRes.data.problemStatements.find(p => p._id === freshProblemId);
-                      console.log('📋 Found problem from fresh team data:', selectedProblem?.PStitle || selectedProblem?.title);
+                     
                     }
                   } catch (err) {
                     console.error('❌ Could not fetch problem details:', err);
@@ -113,28 +105,27 @@ const RightSidePanel = () => {
           // Method 5: Fallback to legacy API
           if (!selectedProblem) {
             try {
-              console.log('📋 Trying legacy getByTeam API with teamId:', teamId);
+             
               const legacyRes = await problemStatementAPI.getByTeam(teamId);
-              console.log('📋 Legacy API response:', legacyRes.data);
+             
               let problem = null;
               
               if (legacyRes.data.problemStatements && Array.isArray(legacyRes.data.problemStatements) && legacyRes.data.problemStatements.length > 0) {
                 problem = legacyRes.data.problemStatements[0];
-                console.log('📋 Found problem from array:', problem.PStitle || problem.title);
+               
               } else if (legacyRes.data.problemStatement) {
                 problem = legacyRes.data.problemStatement;
-                console.log('📋 Found single problem:', problem.PStitle || problem.title);
+               
               } else if (legacyRes.data && legacyRes.data.PStitle) {
                 // Direct problem statement in response
                 problem = legacyRes.data;
-                console.log('📋 Found direct problem:', problem.PStitle || problem.title);
+               
               }
               
               selectedProblem = problem;
             } catch (legacyErr) {
               console.error('❌ Legacy API error:', legacyErr);
-              console.error('❌ Legacy error response:', legacyErr.response?.data);
-              console.error('❌ Legacy error status:', legacyErr.response?.status);
+             
             }
           }
           
@@ -142,7 +133,7 @@ const RightSidePanel = () => {
           if (selectedProblem) {
             const problemTitle = selectedProblem.PStitle || selectedProblem.title || selectedProblem.problemTitle || 'Problem statement selected';
             setSelectedProblemStatement(problemTitle);
-            console.log('✅ Problem statement found:', problemTitle);
+            
           } else {
             // Check if team has any problem statement data at all
             const hasAnyProblemData = hackathonUser?.team?.problemStatement || 
@@ -151,19 +142,19 @@ const RightSidePanel = () => {
             
             if (hasAnyProblemData) {
               setSelectedProblemStatement('Problem statement selected (details unavailable)');
-              console.log('⚠️ Team has problem statement reference but details not found');
+             
             } else {
               setSelectedProblemStatement('No problem statement selected');
-              console.log('❌ No problem statement found for team');
+              
             }
           }
           
         } catch (err) {
-          console.error('❌ Error fetching problem statement:', err);
+        
           setSelectedProblemStatement('Error loading problem statement');
         }
       } else {
-        console.log('❌ No team ID found');
+       
         setSelectedProblemStatement('Team not found');
       }
       

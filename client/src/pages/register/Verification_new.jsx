@@ -124,14 +124,7 @@ const Verification = () => {
 
     setLoading(true);
 
-    // Debug: Log the data being sent
-    console.log('Registration data being sent:', {
-      fullName: registrationData.fullName,
-      email: registrationData.email,
-      phone: registrationData.phone,
-      emailOTP: formData.emailOTP,
-      phoneOTP: formData.phoneOTP
-    });
+
 
     try {
       // Call backend API to verify OTPs and complete registration
@@ -143,8 +136,6 @@ const Verification = () => {
         phoneOTP: formData.phoneOTP
       });
       
-      // Debug: Log the response
-      console.log('Registration response:', response);
 
       if (response.data && (response.status === 200 || response.status === 201)) {
         // Store team information

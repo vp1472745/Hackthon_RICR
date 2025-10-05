@@ -10,7 +10,6 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://contact_db_user:QL7z0t
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || "10", 10);
 
 if (!MONGO_URI) {
-  console.error("MONGO_URI not set. Set it in your environment.");
   process.exit(1);
 }
 
@@ -49,7 +48,6 @@ const seedAdmins = async () => {
     for (const admin of adminData) {
       const existing = await Admin.findOne({ email: admin.email }).lean();
       if (existing) {
-        console.log(`${admin.email} already exists — skipping.`);
         continue;
       }
 
@@ -64,10 +62,10 @@ const seedAdmins = async () => {
       });
 
       await doc.save();
-      console.log(`Seeded ${admin.role}: ${admin.email}`);
+
     }
 
-    console.log("Seeding complete.");
+
     await mongoose.disconnect();
     process.exit(0);
   } catch (err) {

@@ -128,7 +128,7 @@ const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
     let allSaved = true;
     try {
       for (const member of members) {
-        console.log('Sending individual member payload:', member);
+
         try {
           await userAPI.addMember(member); // Send each member individually
         } catch (error) {

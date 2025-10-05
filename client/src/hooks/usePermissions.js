@@ -21,7 +21,7 @@ export const usePermissions = () => {
       const response = await subAdminAPI.getAdminPermissions(adminUser.email);
       setPermissions(response.data.permissions || []);
     } catch (err) {
-      console.error('Error fetching permissions:', err);
+  
       setError(err.response?.data?.message || 'Failed to fetch permissions');
       setPermissions([]);
     } finally {

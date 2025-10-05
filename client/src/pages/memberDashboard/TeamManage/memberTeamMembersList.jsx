@@ -46,7 +46,6 @@ const TeamMembersList = ({
       setLoading(true);
       setFetchError(null);
 
-      console.log('🔍 Fetching team data for user:', currentUser.fullName, 'TeamId:', currentUser.teamId);
 
       let leader = null;
       let members = [];
@@ -56,22 +55,14 @@ const TeamMembersList = ({
         const response = await userAPI.getUserById(currentUser._id);
         if (response.data?.user) {
           const user = response.data.user;
-          
-          console.log('👤 Current user data:', {
-            name: user.fullName,
-            role: user.role,
-            teamId: user.teamId,
-            hasTeamInfo: !!user.teamInfo
-          });
+
 
           if (user.role === 'Leader') {
             // Current user is leader
             leader = user;
             members = user.teamInfo?.members || [];
-            console.log('👑 Current user is leader, found', members.length, 'members');
           } else {
             // Current user is member - need to find leader with same teamId
-            console.log('👤 Current user is member, searching for leader with teamId:', user.teamId);
             
             // Add current user to members list
             members = [user];
@@ -79,7 +70,6 @@ const TeamMembersList = ({
             // Try to find leader from teamInfo if available
             if (user.teamInfo?.leader) {
               leader = user.teamInfo.leader;
-              console.log('✅ Found leader in teamInfo:', leader.fullName);
             }
             
             // Add other members from teamInfo
@@ -91,7 +81,6 @@ const TeamMembersList = ({
               });
             }
             
-            console.log('👥 Found', members.length, 'total members including current user');
           }
 
           // If we found both leader and members, we're done
@@ -103,10 +92,7 @@ const TeamMembersList = ({
             sessionStorage.setItem('leaderProfile', JSON.stringify(leader));
             sessionStorage.setItem('apiTeamMembers', JSON.stringify(members));
 
-            console.log('✅ Team data loaded successfully:', {
-              leaderName: leader.fullName || leader.name,
-              memberCount: members.length
-            });
+     
             toast.success(`Team loaded! Leader: ${leader.fullName}, Members: ${members.length}`);
             return;
           }
@@ -116,7 +102,7 @@ const TeamMembersList = ({
       }
 
       // Method 2: Use cached data if available
-      console.log('🔍 Checking cached data...');
+
       const cachedLeader = sessionStorage.getItem('leaderProfile');
       const cachedMembers = sessionStorage.getItem('apiTeamMembers');
       
@@ -125,12 +111,10 @@ const TeamMembersList = ({
           const parsedLeader = JSON.parse(cachedLeader);
           if (parsedLeader._id !== 'fallback-leader') {
             setLeaderProfile(parsedLeader);
-            console.log('📦 Using cached leader:', parsedLeader.fullName);
           }
         }
         if (cachedMembers) {
           setTeamMembers(JSON.parse(cachedMembers));
-          console.log('📦 Using cached members');
         }
         
         if ((cachedLeader && JSON.parse(cachedLeader)._id !== 'fallback-leader') || cachedMembers) {
@@ -140,8 +124,7 @@ const TeamMembersList = ({
         }
       }
 
-      // Method 3: Create smart fallback based on current user context
-      console.log('📝 Creating contextual fallback data...');
+
       
       if (currentUser.role === 'Leader') {
         // Current user is leader but API failed

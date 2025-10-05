@@ -44,7 +44,7 @@ function AdminLogin() {
             sessionStorage.setItem("adminUser", JSON.stringify(admin));
             if (token) {
                 sessionStorage.setItem("authToken", token);
-                console.log('🎫 Client - Token stored:', token.substring(0, 50) + '...');
+            
             } else {
                 console.error('❌ Client - No token received in response');
             }

@@ -38,7 +38,6 @@ const ManageTeam = () => {
         throw new Error('No team information found');
       }
 
-      console.log('🔍 Fetching team data for teamId:', currentUser.teamId, 'User role:', currentUser.role);
 
       // Check sessionStorage for cached team data first
       const storedLeader = sessionStorage.getItem('leaderProfile');
@@ -47,19 +46,13 @@ const ManageTeam = () => {
       if (storedLeader && storedMembers) {
         const parsedLeader = JSON.parse(storedLeader);
         const parsedMembers = JSON.parse(storedMembers);
-        
-        console.log('📦 Checking cached data:', {
-          leaderName: parsedLeader?.fullName || 'No name',
-          leaderId: parsedLeader?._id || 'No ID',
-          memberCount: parsedMembers?.length || 0,
-          isFallback: parsedLeader?._id?.includes('fallback')
-        });
+
+
 
         // Only use cached data if it's real data (not fallback)
         if (parsedLeader && !parsedLeader._id?.includes('fallback') && parsedLeader.role === 'Leader') {
           setLeaderProfile(parsedLeader);
           setTeamMembers(parsedMembers);
-          console.log('✅ Using valid cached team data - Leader:', parsedLeader.fullName);
           toast.info('Using cached team data');
           return;
         } else {
@@ -81,24 +74,17 @@ const ManageTeam = () => {
             // Current user is the leader
             leader = user;
             members = teamInfo.members || [];
-            console.log('👑 Current user is leader, found', members.length, 'members');
           } else {
             // Current user is a member, find the actual leader and collect all members
             leader = teamInfo.leader;
-            
-            console.log('👤 Current user is member. TeamInfo structure:', {
-              hasLeader: !!teamInfo.leader,
-              leaderName: teamInfo.leader?.fullName || 'Not found',
-              hasMembers: !!teamInfo.members,
-              membersCount: teamInfo.members?.length || 0
-            });
-            
+
+
             // Collect all team members including current user
             const allMembers = [];
-            
+
             // Add current user to members list
             allMembers.push(user);
-            
+
             // Add other members from teamInfo
             if (teamInfo.members && Array.isArray(teamInfo.members)) {
               teamInfo.members.forEach(member => {
@@ -108,13 +94,9 @@ const ManageTeam = () => {
                 }
               });
             }
-            
+
             members = allMembers;
-            console.log('� Processed team data:', {
-              leader: leader?.fullName || 'No leader found',
-              memberCount: members.length,
-              memberNames: members.map(m => m.fullName || m.name)
-            });
+
           }
 
           if (leader) {
@@ -139,60 +121,21 @@ const ManageTeam = () => {
 
       // Method 2: Create smart fallback with known team data
       console.log('📝 Creating smart fallback data for member dashboard');
-      
+
       if (currentUser.role === 'Leader') {
         // If current user is leader but no team data found
         setLeaderProfile(currentUser);
         setTeamMembers([]);
         toast.warning('Team data loaded from session. Some information may be limited.');
       } else {
-        // Current user is Rahul (member), create fallback with known leader Vineet
-        console.log('👤 Creating fallback for member Rahul with leader Vineet');
-        
-        const vineetLeader = {
-          _id: '68e1933929b3e99b1cd2c96b', // Vineet's actual ID from your DB
-          fullName: 'Vineet Pancheshwar',
-          name: 'Vineet Pancheshwar',
-          email: 'vineetpancheshwar1611@gmail.com',
-          phone: '6268923703',
-          collegeName: 'VIST',
-          course: 'MCA',
-          collegeBranch: 'Electronics and Communication',
-          collegeSemester: 4,
-          role: 'Leader',
-          teamId: '68e1933929b3e99b1cd2c969',
-          GitHubProfile: 'https://github.com',
-          termsAccepted: true
-        };
-        
-        const rahulMember = {
-          _id: currentUser._id || '68e195bf29b3e99b1cd2c98a',
-          fullName: currentUser.fullName || 'Rahul',
-          name: currentUser.name || 'Rahul',
-          email: currentUser.email || 'rahul16@gmail.com',
-          phone: currentUser.phone || '6268923703',
-          collegeName: currentUser.collegeName || 'VIST',
-          course: currentUser.course || 'MCA',
-          collegeBranch: 'Computer Science Engineering',
-          collegeSemester: 5,
-          role: 'Member',
-          teamId: currentUser.teamId,
-          GitHubProfile: currentUser.GitHubProfile || '',
-          termsAccepted: false
-        };
-        
-        setLeaderProfile(vineetLeader);
-        setTeamMembers([rahulMember]);
-        
-        // Cache this fallback data
-        sessionStorage.setItem('leaderProfile', JSON.stringify(vineetLeader));
-        sessionStorage.setItem('apiTeamMembers', JSON.stringify([rahulMember]));
-        
-        console.log('✅ Fallback data created:', {
-          leader: vineetLeader.fullName,
-          member: rahulMember.fullName
-        });
-        
+
+
+
+
+
+
+
+
         toast.success(`Team data loaded! Leader: ${vineetLeader.fullName}, Member: ${rahulMember.fullName}`);
       }
 
@@ -208,7 +151,6 @@ const ManageTeam = () => {
   // Load team data on component mount
   useEffect(() => {
     const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
-    console.log('🚀 ManageTeam mounted for user:', hackathonUser.user?.role, hackathonUser.user?.fullName);
     fetchLeaderData();
   }, []);
 

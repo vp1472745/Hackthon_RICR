@@ -70,7 +70,6 @@ const TeamProfileCard = ({
             }
             
             members = allMembers;
-            console.log('👥 Found members for member dashboard:', members.length);
           }
           
           setTeamLeader(leader);
@@ -79,11 +78,7 @@ const TeamProfileCard = ({
           // Cache the data
           sessionStorage.setItem('cachedTeamLeader', JSON.stringify(leader));
           sessionStorage.setItem('cachedTeamMembers', JSON.stringify(members));
-          
-          console.log('✅ Team data loaded:', { 
-            leaderName: leader?.fullName || leader?.name || 'Unknown',
-            memberCount: members.length 
-          });
+  
           toast.success(`Team data loaded! Found ${members.length} members`);
           return;
         }
@@ -94,9 +89,7 @@ const TeamProfileCard = ({
       // Method 1.5: If we got leader but not enough members, try to find more team members
       if (teamLeader && teamMembers.length <= 1) {
         try {
-          console.log('🔍 Searching for more team members...');
-          // This is a fallback - in real scenario, you might have an API to get all users by teamId
-          // For now, we'll try to reconstruct from available data
+
           
           const storedRegistrationData = sessionStorage.getItem('registrationData');
           if (storedRegistrationData) {
@@ -107,7 +100,6 @@ const TeamProfileCard = ({
               );
               
               if (additionalMembers.length > 0) {
-                console.log('📋 Found additional members in registration data:', additionalMembers.length);
                 setTeamMembers(prev => [...prev, ...additionalMembers]);
                 toast.info(`Found ${additionalMembers.length} additional team members`);
               }
@@ -128,7 +120,6 @@ const TeamProfileCard = ({
           return;
         } else if (propFetchLeaderProfile) {
           // Call the parent's fetch function
-          console.log('🔄 Calling parent fetchLeaderProfile function');
           propFetchLeaderProfile();
           return;
         }
@@ -149,7 +140,6 @@ const TeamProfileCard = ({
       }
 
       // Method 4: Create basic fallback data to prevent complete failure
-      console.log('📝 No data available, creating basic fallback');
       setTeamLeader({
         _id: 'fallback-leader-id',
         fullName: 'Team Leader',
@@ -197,14 +187,13 @@ const TeamProfileCard = ({
 
   // Fetch team data on mount
   useEffect(() => {
-    console.log('🚀 TeamProfileCard mounted with user:', currentUser?.role, currentUser?.teamId);
     if (currentUser?.role === 'Member' && currentUser?.teamId) {
-      console.log('👤 Member detected, fetching team data...');
+      console.log(' Member detected, fetching team data...');
       fetchTeamData();
     } else if (currentUser?.role === 'Leader') {
-      console.log('👑 Leader detected, using prop data');
+      console.log(' Leader detected, using prop data');
     } else {
-      console.log('❓ Unknown user role or no teamId');
+      console.log(' Unknown user role or no teamId');
     }
   }, []);
 
@@ -224,15 +213,7 @@ const TeamProfileCard = ({
     loading = propLoading;
   }
 
-  console.log('📊 Final data state:', {
-    userRole: currentUser?.role,
-    leader: leader ? leader.fullName || leader.name : 'No leader',
-    membersCount: members?.length || 0,
-    membersDetails: members?.map(m => ({ name: m.fullName || m.name, email: m.email, role: m.role })) || [],
-    loading,
-    fetchError,
-    teamId: currentUser?.teamId
-  });
+
   const error = fetchError || propError;
 
   // Combined refresh function

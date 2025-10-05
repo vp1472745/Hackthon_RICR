@@ -24,7 +24,7 @@ const ProblemStatements = () => {
   // Check if team has selected a theme
   useEffect(() => {
     const checkTheme = () => {
-      console.log('🔍 checkTheme function called');
+ 
       if (!teamId) {
         setError('Team ID not found');
         setLoading(false);
@@ -35,27 +35,21 @@ const ProblemStatements = () => {
         hackathonUser?.team?.teamTheme?.themeName ||
         sessionStorage.getItem('selectedTheme');
 
-      console.log('🔍 Checking theme sources:');
-      console.log('  - hackathonUser.theme.themeName:', hackathonUser?.theme?.themeName);
-      console.log('  - hackathonUser.team.teamTheme.themeName:', hackathonUser?.team?.teamTheme?.themeName);
-      console.log('  - sessionStorage selectedTheme:', sessionStorage.getItem('selectedTheme'));
-      console.log('  - Final teamTheme:', teamTheme);
+
 
       if (teamTheme) {
         setHasTheme(true);
         setShowFetchOption(true);
-        console.log('✅ Team has theme:', teamTheme);
-        console.log('✅ Setting showFetchOption to true');
+ 
 
-        // Auto-fetch problems immediately when theme is found
-        console.log('🚀 Auto-fetching problems...');
+
         setTimeout(() => {
           fetchProblemStatements();
         }, 500);
       } else {
         setError('Please select a theme first before viewing problem statements');
         setHasTheme(false);
-        console.log('❌ No theme found, showing error');
+
       }
       setLoading(false);
     };
@@ -72,7 +66,7 @@ const ProblemStatements = () => {
         // Only poll if we already have problems loaded (to avoid initial load conflicts)
         if (availableProblems.length > 0 || selectedProblem) {
           setIsPolling(true);
-          console.log('🔄 Polling for problem statement updates...');
+       
           const res = await problemStatementAPI.getActiveForTeam(teamId);
           
           if (res.data) {
@@ -81,7 +75,7 @@ const ProblemStatements = () => {
             
             // Check if activation/deactivation status changed
             if (newIsDeactivated !== isDeactivatedMode) {
-              console.log('🔄 Activation status changed:', !newIsDeactivated ? 'ACTIVATED' : 'DEACTIVATED');
+         
               setIsDeactivatedMode(newIsDeactivated);
               setLastUpdateTime(currentTime);
               
@@ -102,7 +96,7 @@ const ProblemStatements = () => {
         }
       } catch (err) {
         // Silently handle polling errors to avoid spam
-        console.log('Polling error (silent):', err.message);
+
       } finally {
         setIsPolling(false);
       }
@@ -116,37 +110,34 @@ const ProblemStatements = () => {
 
   // Function to fetch problem statements manually
   const fetchProblemStatements = async (isRefresh = false) => {
-    console.log('🚀 fetchProblemStatements called', isRefresh ? '(REFRESH)' : '');
+  
     if (!teamId) {
-      console.log('❌ No teamId found');
+ 
       setError('Team ID not found');
       return;
     }
 
-    console.log('🔍 Fetching problems for teamId:', teamId);
-    console.log('🔗 API URL will be:', `/problem/team/${teamId}/problemstatements`);
+
     if (!isRefresh) {
       setLoading(true);
     }
     try {
       // Fetch available problem statements for team
       const res = await problemStatementAPI.getActiveForTeam(teamId);
-      console.log('🎯 Available problems response:', res.data);
-      console.log('🎯 Full response:', res);
+
 
       if (res.data.success) {
         const problems = res.data.problemStatements || [];
         const isDeactivated = res.data.isDeactivated || false;
 
-        console.log('📋 Found problems:', problems.length);
-        console.log('🔒 Is deactivated mode:', isDeactivated);
+
 
         setAvailableProblems(problems);
         setIsDeactivatedMode(isDeactivated);
 
         // If deactivated, automatically set the selected problem (should be only one)
         if (isDeactivated && problems.length > 0) {
-          console.log('🔒 Deactivated mode - showing selected problem only');
+    
           setSelectedProblem(problems[0]);
           setError(''); // Clear any errors
           setShowFetchOption(false);
@@ -159,17 +150,17 @@ const ProblemStatements = () => {
         const selectedId = teamData?.selectedProblemStatement || teamData?.teamProblemStatement;
 
         if (selectedId) {
-          console.log('🔍 Looking for selected problem with ID:', selectedId);
+      
           const selected = problems.find(p => p._id === selectedId);
           if (selected) {
-            console.log('✅ Found previously selected problem:', selected.PStitle);
+        
             setSelectedProblem(selected);
           } else {
-            console.log('❌ Selected problem not found in available problems');
+        
             // If deactivated mode and team has selection but problem not in list,
             // try to fetch the specific problem details
             if (isDeactivated) {
-              console.log('🔒 Deactivated mode: Team has selection but details not found');
+      
               setSelectedProblem({
                 _id: selectedId,
                 PStitle: 'Previously Selected Problem Statement',
@@ -182,9 +173,9 @@ const ProblemStatements = () => {
 
         setShowFetchOption(false); // Hide the fetch option after fetching
         setError(''); // Clear any previous errors
-        console.log('✅ Problems loaded successfully');
+       
       } else {
-        console.log('❌ API returned error:', res.data.message);
+    
         const isDeactivated = res.data.isDeactivated || false;
 
         if (isDeactivated) {
@@ -197,22 +188,19 @@ const ProblemStatements = () => {
         }
       }
     } catch (err) {
-      console.error('🚨 Fetch error:', err);
-      console.error('🚨 Error response:', err.response?.data);
-      console.error('🚨 Error status:', err.response?.status);
-
+  
       // Check if it's a theme issue
       if (err.response?.status === 400) {
         const errorMsg = err.response?.data?.message || 'Bad request';
         setError(errorMsg);
-        console.log('❌ Backend validation error:', errorMsg);
+       
       } else if (err.message?.includes('theme')) {
         setError('Please select a theme first before viewing problem statements');
       } else {
         setError(err.response?.data?.message || 'Failed to load problem statements');
       }
     } finally {
-      console.log('🔄 Setting loading to false');
+
       if (!isRefresh) {
         setLoading(false);
       }
@@ -222,7 +210,7 @@ const ProblemStatements = () => {
 
   // Manual refresh function
   const handleRefresh = () => {
-    console.log('🔄 Manual refresh triggered');
+  
     toast.info('Refreshing problem statements...');
     fetchProblemStatements(false); // Full refresh with loading
   };
@@ -236,7 +224,7 @@ const ProblemStatements = () => {
     }
 
     // In activated mode, allow multiple selections (user can change their selection)
-    console.log('🎯 Problem selection initiated for:', problemStatement.PStitle);
+
     setPendingProblem(problemStatement);
     setShowConfirmModal(true);
   };
@@ -254,10 +242,10 @@ const ProblemStatements = () => {
       if (res.data.success) {
         setSelectedProblem(pendingProblem);
         toast.success('Problem statement selected successfully!');
-        console.log('✅ Problem selected:', pendingProblem.PStitle);
+       
 
         // Keep all problems visible for potential selection changes
-        console.log('✅ All problems remain visible for potential changes');
+       
 
         // Update session storage
         const updatedUser = { ...hackathonUser };
@@ -270,7 +258,7 @@ const ProblemStatements = () => {
         toast.error(res.data.message || 'Failed to select problem statement');
       }
     } catch (err) {
-      console.error('Selection error:', err);
+
       toast.error(err.response?.data?.message || 'Failed to select problem statement');
     } finally {
       setSelecting(false);

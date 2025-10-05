@@ -23,7 +23,7 @@ const ProblemStatements = () => {
   // Check if team has selected a theme
   useEffect(() => {
     const checkTheme = () => {
-      console.log('🔍 checkTheme function called');
+ 
       if (!teamId) {
      
         setError('Team ID not found');
@@ -37,27 +37,21 @@ const ProblemStatements = () => {
                        hackathonUser?.team?.teamTheme?.themeName ||
                        sessionStorage.getItem('selectedTheme');
       
-      console.log('🔍 Checking theme sources:');
-      console.log('  - hackathonUser.theme.themeName:', hackathonUser?.theme?.themeName);
-      console.log('  - hackathonUser.team.teamTheme.themeName:', hackathonUser?.team?.teamTheme?.themeName);
-      console.log('  - sessionStorage selectedTheme:', sessionStorage.getItem('selectedTheme'));
-      console.log('  - Final teamTheme:', teamTheme);
+
       
       if (teamTheme) {
         setHasTheme(true);
         setShowFetchOption(true);
-        console.log('✅ Team has theme:', teamTheme);
-        console.log('✅ Setting showFetchOption to true');
+  
         
-        // Auto-fetch problems immediately when theme is found
-        console.log('🚀 Auto-fetching problems...');
+ 
         setTimeout(() => {
           fetchProblemStatements();
         }, 500);
       } else {
         setError('Please select a theme first before viewing problem statements');
         setHasTheme(false);
-        console.log('❌ No theme found, showing error');
+     ;
       }
       setLoading(false);
     };
@@ -67,35 +61,29 @@ const ProblemStatements = () => {
 
   // Function to fetch problem statements manually
   const fetchProblemStatements = async () => {
-    console.log('🚀 fetchProblemStatements called');
+   
     if (!teamId) {
-      console.log('❌ No teamId found');
+   
       setError('Team ID not found');
       return;
     }
 
-    console.log('🔍 Fetching problems for teamId:', teamId);
-    console.log('🔗 API URL will be:', `/problem/team/${teamId}/problemstatements`);
     setLoading(true);
     try {
       // Fetch available problem statements for team
       const res = await problemStatementAPI.getActiveForTeam(teamId);
-      console.log('🎯 Available problems response:', res.data);
-      console.log('🎯 Full response:', res);
-      
+
       if (res.data.success) {
         const problems = res.data.problemStatements || [];
         const isDeactivated = res.data.isDeactivated || false;
         
-        console.log('📋 Found problems:', problems.length);
-        console.log('🔒 Is deactivated mode:', isDeactivated);
         
         setAvailableProblems(problems);
         setIsDeactivatedMode(isDeactivated);
         
         // If deactivated, automatically set the selected problem (should be only one)
         if (isDeactivated && problems.length > 0) {
-          console.log('🔒 Deactivated mode - showing selected problem only');
+        
           setSelectedProblem(problems[0]);
           setError(''); // Clear any errors
           setShowFetchOption(false);
@@ -103,29 +91,13 @@ const ProblemStatements = () => {
           return;
         }
         
-        // Check if team has already selected a problem
-        // TEMPORARY: Comment out for testing selection functionality
-        /*
-        const teamData = hackathonUser?.team;
-        const selectedId = teamData?.selectedProblemStatement || teamData?.teamProblemStatement;
-        
-        if (selectedId) {
-          console.log('🔍 Looking for selected problem with ID:', selectedId);
-          const selected = problems.find(p => p._id === selectedId);
-          if (selected) {
-            console.log('✅ Found selected problem:', selected.PStitle);
-            setSelectedProblem(selected);
-          } else {
-            console.log('❌ Selected problem not found in available problems');
-          }
-        }
-        */
+
         
         setShowFetchOption(false); // Hide the fetch option after fetching
         setError(''); // Clear any previous errors
-        console.log('✅ Problems loaded successfully');
+        
       } else {
-        console.log('❌ API returned error:', res.data.message);
+      
         const isDeactivated = res.data.isDeactivated || false;
         
         if (isDeactivated) {
@@ -139,14 +111,11 @@ const ProblemStatements = () => {
       }
     } catch (err) {
       console.error('🚨 Fetch error:', err);
-      console.error('🚨 Error response:', err.response?.data);
-      console.error('🚨 Error status:', err.response?.status);
-      
+  
       // Check if it's a theme issue
       if (err.response?.status === 400) {
         const errorMsg = err.response?.data?.message || 'Bad request';
         setError(errorMsg);
-        console.log('❌ Backend validation error:', errorMsg);
       } else if (err.message?.includes('theme')) {
         setError('Please select a theme first before viewing problem statements');
       } else {
@@ -158,12 +127,6 @@ const ProblemStatements = () => {
     }
   };
 
-  // Disabled for members - only team leaders can select problem statements
-  const handleSelectProblem = (problemStatement) => {
-    // Members cannot select problem statements
-    toast.info('Only team leaders can select problem statements');
-    return;
-  };
 
   // Actual selection after confirmation
   const confirmSelection = async () => {
@@ -178,7 +141,7 @@ const ProblemStatements = () => {
       if (res.data.success) {
         setSelectedProblem(pendingProblem);
         toast.success('Problem statement selected successfully!');
-        console.log('✅ Problem selected:', pendingProblem.PStitle);
+ 
         
         // Hide other problem statements - keep only selected one
         const updatedProblems = availableProblems.map(p => ({
@@ -186,7 +149,7 @@ const ProblemStatements = () => {
           isHidden: p._id !== pendingProblem._id
         }));
         setAvailableProblems(updatedProblems);
-        console.log('🙈 Other problems hidden, showing only selected one');
+ 
         
         // Update session storage
         const updatedUser = { ...hackathonUser };
@@ -353,7 +316,7 @@ const ProblemStatements = () => {
 
 
         {/* Fetch Problem Statements Option */}
-        {console.log('🔍 Render check - showFetchOption:', showFetchOption, 'hasTheme:', hasTheme)}
+      
         {showFetchOption && hasTheme && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center mb-6">
             <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">

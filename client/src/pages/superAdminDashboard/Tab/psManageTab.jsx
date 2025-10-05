@@ -259,7 +259,6 @@ const PsManageTab = ({ teamId }) => {
     });
 
   const handleDeletePS = (ps) => {
-    console.log('handleDeletePS called with:', ps);
     setSelectedPS(ps);
     setDeleteModalOpen(true);
   };

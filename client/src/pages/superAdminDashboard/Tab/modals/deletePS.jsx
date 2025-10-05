@@ -8,7 +8,6 @@ const DeletePS = ({ problem, onClose, onPSDeleted }) => {
   const handleDelete = async () => {
     if (!problem || !problem._id) {
       setError('Problem statement ID is missing. Cannot delete.');
-      console.error('DeletePS: problem object is', problem);
       return;
     }
     setLoading(true);

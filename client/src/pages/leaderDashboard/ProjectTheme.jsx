@@ -32,10 +32,10 @@ const ProjectTheme = () => {
         setLoading(true);
         // Use projectThemeAPI to get only active themes for users
         const res = await projectThemeAPI.getAllThemes();
-        console.log('🎯 Active themes fetched:', res.data.themes);
+ 
         setThemes(res.data.themes || []);
       } catch (err) {
-        console.error('Error fetching themes:', err);
+       
         setError('Failed to load themes. Please try again later.');
       } finally {
         setLoading(false);
@@ -50,7 +50,7 @@ const ProjectTheme = () => {
       try {
         const userId = JSON.parse(sessionStorage.getItem('hackathonUser'))?.user?._id;
         if (!userId) {
-          console.error('User ID not found in sessionStorage.');
+        
           setError('User ID not found. Please log in again.');
           return;
         }
@@ -64,7 +64,7 @@ const ProjectTheme = () => {
           setSelectedTheme(null);
         }
       } catch (err) {
-        console.error('Error fetching team theme by user ID:', err);
+      
         setError('Failed to fetch team theme. Please try again later.');
       }
     };

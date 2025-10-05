@@ -22,7 +22,7 @@ const RightSidePanel = () => {
       
       if (teamId) {
         try {
-          console.log('🔍 Fetching problem statement for team:', teamId);
+
           
           // Try multiple API methods to get selected problem statement
           let selectedProblem = null;
@@ -30,14 +30,12 @@ const RightSidePanel = () => {
           // Method 1: Check if team has already selected a problem (from team data)
           const teamProblemId = hackathonUser?.team?.selectedProblemStatement || hackathonUser?.team?.teamProblemStatement;
           
-          if (teamProblemId) {
-            console.log('📋 Team has selected problem ID:', teamProblemId);
-          }
+    
           
           // Method 2: Get available problems and check selection
           try {
             const availableRes = await problemStatementAPI.getActiveForTeam(teamId);
-            console.log('📋 Available problems response:', availableRes.data);
+         
             
             if (availableRes.data.success && availableRes.data.problemStatements) {
               // Check if any problem is already selected by this team
@@ -45,7 +43,7 @@ const RightSidePanel = () => {
                 p._id === teamProblemId
               );
               
-              console.log('📋 Found selected problem:', selectedProblem?.PStitle || selectedProblem?.title);
+             
             }
           } catch (availableErr) {
             console.log('Could not fetch available problems:', availableErr);
@@ -72,18 +70,14 @@ const RightSidePanel = () => {
           // Update state
           if (selectedProblem) {
             setSelectedProblemStatement(selectedProblem.PStitle || selectedProblem.title || 'Problem statement selected');
-            console.log('✅ Problem statement found:', selectedProblem.PStitle || selectedProblem.title);
           } else {
             setSelectedProblemStatement('No problem statement selected');
-            console.log('❌ No problem statement found for team');
           }
           
         } catch (err) {
-          console.error('❌ Error fetching problem statement:', err);
           setSelectedProblemStatement('Error loading problem statement');
         }
       } else {
-        console.log('❌ No team ID found');
         setSelectedProblemStatement('Team not found');
       }
       

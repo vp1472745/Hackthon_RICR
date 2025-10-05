@@ -22,7 +22,7 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
     const fetchThemes = async () => {
       try {
         setLoading(true);
-        console.log('🎯 Fetching themes for Step3, teamId:', teamId);
+   
         
         if (!teamId) {
           setError('Team ID not found. Please log in again.');
@@ -32,7 +32,7 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
         
         const res = await projectThemeAPI.getAllThemes();
         setThemes(res.data.themes || []);
-        console.log('✅ Themes loaded:', res.data.themes?.length || 0);
+       
         
         // Check if team already has a selected theme
         const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
@@ -43,7 +43,7 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
         if (existingTheme) {
           setSelectedTheme(existingTheme);
           setIsStep3Saved(true);
-          console.log('✅ Found existing selected theme:', existingTheme);
+        
         }
         
         setLoading(false);
@@ -63,8 +63,7 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
       sessionStorage.setItem('selectedTheme', themeName);
       
       const res = await projectThemeAPI.selectThemeForTeam(teamId, themeName);
-      console.log('Theme selected and stored:', themeName);
-      
+    
       // Update hackathonUser sessionStorage with selected theme
       const hackathonUser = JSON.parse(sessionStorage.getItem('hackathonUser') || '{}');
       const selectedThemeObj = themes.find(theme => theme.themeName === themeName);
@@ -80,7 +79,7 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
         
         // Save updated hackathonUser back to sessionStorage
         sessionStorage.setItem('hackathonUser', JSON.stringify(hackathonUser));
-        console.log('✅ hackathonUser updated with theme:', selectedThemeObj.themeName);
+      
       }
       
       // Mark step as completed

@@ -15,7 +15,7 @@ const Step4 = ({ setIsStep4Saved }) => {
     if (isAccepted) {
       try {
         const response = await userAPI.updateTermsAccepted({ termsAccepted: true });
-        console.log('Terms accepted updated:', response.data);
+ 
 
         const refresh_response = await authAPI.refreshData();
         sessionStorage.setItem('hackathonUser', JSON.stringify({

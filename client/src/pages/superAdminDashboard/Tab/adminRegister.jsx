@@ -33,10 +33,8 @@ const AdminRegister = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log('🔄 Input change:', { name, value, step });
     setForm(prev => {
       const newForm = { ...prev, [name]: value };
-      console.log('📝 Form updated:', newForm);
       return newForm;
     });
     setError('');
