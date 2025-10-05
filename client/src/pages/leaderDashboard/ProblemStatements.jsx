@@ -24,7 +24,7 @@ const ProblemStatements = () => {
   // Check if team has selected a theme
   useEffect(() => {
     const checkTheme = () => {
- 
+
       if (!teamId) {
         setError('Team ID not found');
         setLoading(false);
@@ -40,7 +40,7 @@ const ProblemStatements = () => {
       if (teamTheme) {
         setHasTheme(true);
         setShowFetchOption(true);
- 
+
 
 
         setTimeout(() => {
@@ -66,26 +66,26 @@ const ProblemStatements = () => {
         // Only poll if we already have problems loaded (to avoid initial load conflicts)
         if (availableProblems.length > 0 || selectedProblem) {
           setIsPolling(true);
-       
+
           const res = await problemStatementAPI.getActiveForTeam(teamId);
-          
+
           if (res.data) {
             const newIsDeactivated = res.data.isDeactivated || false;
             const currentTime = Date.now();
-            
+
             // Check if activation/deactivation status changed
             if (newIsDeactivated !== isDeactivatedMode) {
-         
+
               setIsDeactivatedMode(newIsDeactivated);
               setLastUpdateTime(currentTime);
-              
+
               // Show toast notification about the change
               if (newIsDeactivated) {
                 toast.warning('🔒 Problem statement selection has been deactivated by admin');
               } else {
                 toast.success('✅ Problem statement selection is now active!');
               }
-              
+
               // Refresh the problems list
               await fetchProblemStatements(true); // Silent refresh
             } else {
@@ -104,15 +104,15 @@ const ProblemStatements = () => {
 
     // Poll every 5 seconds
     const pollInterval = setInterval(pollForUpdates, 5000);
-    
+
     return () => clearInterval(pollInterval);
   }, [hasTheme, teamId, isDeactivatedMode, availableProblems.length, selectedProblem]);
 
   // Function to fetch problem statements manually
   const fetchProblemStatements = async (isRefresh = false) => {
-  
+
     if (!teamId) {
- 
+
       setError('Team ID not found');
       return;
     }
@@ -137,7 +137,7 @@ const ProblemStatements = () => {
 
         // If deactivated, automatically set the selected problem (should be only one)
         if (isDeactivated && problems.length > 0) {
-    
+
           setSelectedProblem(problems[0]);
           setError(''); // Clear any errors
           setShowFetchOption(false);
@@ -150,17 +150,17 @@ const ProblemStatements = () => {
         const selectedId = teamData?.selectedProblemStatement || teamData?.teamProblemStatement;
 
         if (selectedId) {
-      
+
           const selected = problems.find(p => p._id === selectedId);
           if (selected) {
-        
+
             setSelectedProblem(selected);
           } else {
-        
+
             // If deactivated mode and team has selection but problem not in list,
             // try to fetch the specific problem details
             if (isDeactivated) {
-      
+
               setSelectedProblem({
                 _id: selectedId,
                 PStitle: 'Previously Selected Problem Statement',
@@ -173,9 +173,9 @@ const ProblemStatements = () => {
 
         setShowFetchOption(false); // Hide the fetch option after fetching
         setError(''); // Clear any previous errors
-       
+
       } else {
-    
+
         const isDeactivated = res.data.isDeactivated || false;
 
         if (isDeactivated) {
@@ -188,12 +188,12 @@ const ProblemStatements = () => {
         }
       }
     } catch (err) {
-  
+
       // Check if it's a theme issue
       if (err.response?.status === 400) {
         const errorMsg = err.response?.data?.message || 'Bad request';
         setError(errorMsg);
-       
+
       } else if (err.message?.includes('theme')) {
         setError('Please select a theme first before viewing problem statements');
       } else {
@@ -210,7 +210,7 @@ const ProblemStatements = () => {
 
   // Manual refresh function
   const handleRefresh = () => {
-  
+
     toast.info('Refreshing problem statements...');
     fetchProblemStatements(false); // Full refresh with loading
   };
@@ -242,10 +242,10 @@ const ProblemStatements = () => {
       if (res.data.success) {
         setSelectedProblem(pendingProblem);
         toast.success('Problem statement selected successfully!');
-       
+
 
         // Keep all problems visible for potential selection changes
-       
+
 
         // Update session storage
         const updatedUser = { ...hackathonUser };
@@ -367,29 +367,29 @@ const ProblemStatements = () => {
                 </p>
               </div>
             </div>
-            
-  
+
+
           </div>
           {/* Refresh Button and Status */}
-            <div className="flex flex-col items-center sm:items-end gap-2 w-full sm:w-auto">
-              <button
-                onClick={handleRefresh}
-                disabled={loading}
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors disabled:opacity-50 text-sm w-full sm:w-auto justify-center"
-                title="Refresh problem statements"
-              >
-                <Loader className={`w-3 h-3 sm:w-4 sm:h-4 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
-              </button>
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <div className={`w-2 h-2 rounded-full ${isPolling ? 'bg-blue-500 animate-pulse' : isDeactivatedMode ? 'bg-orange-500' : 'bg-green-500'}`}></div>
-                <span className="hidden xs:inline">
-                  {isPolling ? 'Checking...' : isDeactivatedMode ? 'Deactivated' : 'Active'}
-                </span>
-                <span className="hidden sm:inline">•</span>
-                <span className="text-xs">Updated: {new Date(lastUpdateTime).toLocaleTimeString()}</span>
-              </div>
+          <div className="flex flex-col items-center sm:items-end gap-2 w-full sm:w-auto">
+            <button
+              onClick={handleRefresh}
+              disabled={loading}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors disabled:opacity-50 text-sm w-full sm:w-auto justify-center"
+              title="Refresh problem statements"
+            >
+              <Loader className={`w-3 h-3 sm:w-4 sm:h-4 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className={`w-2 h-2 rounded-full ${isPolling ? 'bg-blue-500 animate-pulse' : isDeactivatedMode ? 'bg-orange-500' : 'bg-green-500'}`}></div>
+              <span className="hidden xs:inline">
+                {isPolling ? 'Checking...' : isDeactivatedMode ? 'Deactivated' : 'Active'}
+              </span>
+              <span className="hidden sm:inline">•</span>
+              <span className="text-xs">Updated: {new Date(lastUpdateTime).toLocaleTimeString()}</span>
             </div>
+          </div>
           {/* Deactivated Mode Notice */}
           {isDeactivatedMode && !selectedProblem && (
             <div className="bg-orange-50 border border-orange-200 rounded-lg sm:rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 flex items-start gap-2 sm:gap-3">
@@ -472,8 +472,8 @@ const ProblemStatements = () => {
                             onClick={() => handleSelectProblem(problemStatement)}
                             disabled={selecting}
                             className={`py-2 px-4 sm:px-6 rounded-lg font-medium transition-colors disabled:opacity-50 text-xs sm:text-sm ${selectedProblem && selectedProblem._id === problemStatement._id
-                                ? 'bg-green-600 hover:bg-green-700 text-white'
-                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                              ? 'bg-green-600 hover:bg-green-700 text-white'
+                              : 'bg-blue-600 hover:bg-blue-700 text-white'
                               }`}
                           >
                             {selecting ? (
@@ -651,10 +651,11 @@ const ProblemStatements = () => {
                   </p>
                   <p className={selectedProblem ? 'text-blue-700' : 'text-yellow-700'}>
                     {selectedProblem
-                      ? 'आप अपना problem statement बदल सकते हैं। यह selection आपके पुराने selection को replace कर देगा।'
-                      : 'आप problem statement select कर रहे हैं। आप बाद में इसे बदल भी सकते हैं।'
+                      ? 'You can change your problem statement. This selection will replace your previous one.'
+                      : 'You are selecting a problem statement. You can change it later if you wish.'
                     }
                   </p>
+
                 </div>
               </div>
             </div>
