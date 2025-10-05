@@ -22,7 +22,7 @@ const NAV_ITEMS = [
 ];
 
 const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false); // Start closed initially
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
 
@@ -30,6 +30,13 @@ const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
+      
+      // Set initial sidebar state based on screen size
+      if (mobile) {
+        setOpen(false); // Always closed on mobile
+      } else {
+        setOpen(true); // Open on desktop
+      }
     };
     checkMobile();
     window.addEventListener("resize", checkMobile);
