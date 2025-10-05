@@ -132,7 +132,7 @@ const Overview = () => {
       )}
 
       {/* Progress Bar Section */}
-      <div className="mb-6 sm:mb-8 sm:text-center sm:justify-center">
+      <div className="mb-6 sm:mb-8 flex justify-center">
         <HackathonTimer />
       </div>
 
