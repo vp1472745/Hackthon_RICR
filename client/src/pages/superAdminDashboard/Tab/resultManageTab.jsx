@@ -1,26 +1,22 @@
-import React, { useState, useEffect, act } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FiDownload,
   FiUpload,
   FiRefreshCw,
   FiEdit3,
   FiTrash2,
-  FiPlus,
   FiFileText,
   FiAward,
-  FiUsers,
   FiGithub,
-  FiEye,
   FiFilter,
   FiSearch,
-  FiX,
   FiCheckCircle
 } from 'react-icons/fi';
 import { resultAPI, AdminAPI } from '../../../configs/api';
 import { toast } from 'react-hot-toast';
 import EditResultModal from '../Tab/modals/EditResultModal.jsx';
 import ReconfirmModal from './modals/ReconfirmModal.jsx';
-import { set } from 'mongoose';
+
 
 const ResultManageTab = () => {
   // State management
@@ -294,7 +290,7 @@ const ResultManageTab = () => {
 
   // delete result
   const handleDeleteAllResults = async () => {
-  toast(
+    toast(
       (t) => (
         <div>
           <div className="font-semibold mb-2">Are you sure you want to delete all results?</div>
@@ -326,7 +322,7 @@ const ResultManageTab = () => {
         </div>
       ),
       { duration: 8000 }
-    );  
+    );
   };
 
   const handleDeclareAllResults = async () => {
@@ -945,7 +941,7 @@ const ResultManageTab = () => {
       />
 
 
-      {/* Reconfirm Modal */}      
+      {/* Reconfirm Modal */}
       <ReconfirmModal
         showModal={reconfirmModal}
         setShowModal={setReconfirmModal}
@@ -973,7 +969,7 @@ const ResultManageTab = () => {
 
     </div>
 
-    
+
   );
 };
 
