@@ -22,6 +22,7 @@ const ManageTeam = () => {
   const [showDeleteMember, setShowDeleteMember] = useState(false);
 
   const [editingMember, setEditingMember] = useState(null);
+  const [editingMemberId, setEditingMemberId] = useState(null);
   const [viewingMember, setViewingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
 
@@ -90,29 +91,57 @@ const ManageTeam = () => {
   }, []);
 
   const handleEditMember = (member) => {
+
+    
+    // Store the member ID separately to preserve it
+    const memberId = member?._id || member?.id;
+
+    
+    if (!memberId) {
+      console.error('ERROR: No member ID found in member object!');
+      console.error('Member object:', member);
+      alert('Error: Cannot edit member - no ID found. Please refresh the page and try again.');
+      return;
+    }
+    
     setEditingMember(member);
+    setEditingMemberId(memberId);
     setShowEditMember(true);
   };
 
   const handleSaveEditedMember = async (updatedMemberData) => {
     try {
       setLoading(true);
+      
+    
 
       const updateData = {
         ...updatedMemberData,
         leaderId: leaderProfile?._id
       };
 
-      const response = await userAPI.editMember(editingMember._id, updateData);
+      // Use the stored member ID
+      if (!editingMemberId) {
+        throw new Error('Member ID is required for editing');
+      }
+
+      
+      
+      const response = await userAPI.editMember(editingMemberId, updateData);
 
       if (response?.data) {
         await fetchLeaderData();
         setShowEditMember(false);
         setEditingMember(null);
+        setEditingMemberId(null);
 
       }
     } catch (err) {
       console.error('Error updating member:', err);
+      
+      // Show user-friendly error message
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to update member';
+      alert(`Error: ${errorMessage}`);
 
     } finally {
       setLoading(false);
@@ -122,6 +151,7 @@ const ManageTeam = () => {
   const handleCancelEdit = () => {
     setShowEditMember(false);
     setEditingMember(null);
+    setEditingMemberId(null);
   };
 
   const handleViewMember = (member) => {

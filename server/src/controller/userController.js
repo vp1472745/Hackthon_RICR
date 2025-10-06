@@ -1,5 +1,6 @@
 import User from '../models/UserModel.js';
 import Result from '../models/resultModel.js';
+import Team from '../models/TeamModel.js';
 import mongoose from 'mongoose';
 
 
@@ -248,13 +249,28 @@ export const getResult = async (req, res, next) => {
   try {
     console.log("Fetching results for user:", req.user);
     
-    const userId = req.user._id; // Assuming the user is authenticated and their ID is available in req.user  
+    const userId = req.user._id; // Authenticated user ID
     const user = await User.findById(userId).populate('teamId');
 
     if (!user) {
       const error = new Error('User not found');
       error.statusCode = 404;
       return next(error);
+    }
+
+    // Check if user is either a Leader or Member
+    if (user.role !== 'Leader' && user.role !== 'Member') {
+      const error = new Error('Unauthorized. Only team leaders and members can access results.');
+      error.statusCode = 403;
+      return next(error);
+    }
+
+    // Check if user has a team
+    if (!user.teamId) {
+      return res.status(200).json({
+        message: 'You are not part of any team yet',
+        results: []
+      });
     }
 
     // Fetch results for the user's team
@@ -276,9 +292,53 @@ export const getResult = async (req, res, next) => {
 
     res.status(200).json({
       message: 'Results fetched successfully',
-      results
+      results,
+      userRole: user.role,
+      teamInfo: user.teamId
     });
   } catch (error) {
     next(error);
+  }
+};
+
+// Get leader profile with team members
+export const getLeaderProfile = async (req, res, next) => {
+  try {
+    const leaderId = req.user._id;
+    
+    // Get leader information
+    const leader = await User.findById(leaderId).select('-password');
+    if (!leader || leader.role !== 'Leader') {
+      const error = new Error('Unauthorized. Only leaders can access this endpoint.');
+      error.statusCode = 403;
+      return next(error);
+    }
+
+    // Get team information with all members
+    const team = await Team.findById(leader.teamId);
+    let teamMembers = [];
+    
+    if (team) {
+      // Get all team members (excluding the leader)
+      teamMembers = await User.find({ 
+        teamId: team._id, 
+        role: 'Member' 
+      }).select('-password');
+    }
+
+    res.status(200).json({
+      message: 'Leader profile retrieved successfully',
+      leader,
+      team: {
+        ...team?.toObject(),
+        members: teamMembers
+      }
+    });
+
+  } catch (error) {
+    console.error("Error in getLeaderProfile:", error);
+    const err = new Error("Failed to retrieve leader profile");
+    err.statusCode = 500;
+    next(err);
   }
 };

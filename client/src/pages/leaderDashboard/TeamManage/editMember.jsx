@@ -142,34 +142,38 @@ const EditMember = ({
 
   const handleCancel = () => {
     if (isModified) {
-      toast.warn(
-        <div className="flex flex-col gap-3">
-          <p className="font-medium">Unsaved Changes</p>
-          <p className="text-sm text-gray-600">You have unsaved changes. Are you sure you want to cancel?</p>
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                toast.dismiss();
-                onCancel();
-              }}
-              className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
-            >
-              Yes, Cancel
-            </button>
-            <button
-              onClick={() => toast.dismiss()}
-              className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 transition-colors"
-            >
-              Continue Editing
-            </button>
+      toast(
+        (t) => (
+          <div className="flex flex-col gap-3">
+            <p className="font-medium">Unsaved Changes</p>
+            <p className="text-sm text-gray-600">You have unsaved changes. Are you sure you want to cancel?</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  onCancel();
+                }}
+                className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
+              >
+                Yes, Cancel
+              </button>
+              <button
+                onClick={() => toast.dismiss(t.id)}
+                className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 transition-colors"
+              >
+                Continue Editing
+              </button>
+            </div>
           </div>
-        </div>,
+        ),
         {
+          duration: Infinity,
           position: "top-center",
-          autoClose: false,
-          closeOnClick: false,
-          draggable: false,
-          hideProgressBar: true
+          style: {
+            background: '#fef3c7',
+            border: '1px solid #f59e0b',
+            color: '#92400e'
+          }
         }
       );
     } else {

@@ -53,7 +53,13 @@ const ManageTeam = () => {
         if (parsedLeader && !parsedLeader._id?.includes('fallback') && parsedLeader.role === 'Leader') {
           setLeaderProfile(parsedLeader);
           setTeamMembers(parsedMembers);
-          toast.info('Using cached team data');
+          toast('Using cached team data', {
+            style: {
+              background: '#dbeafe',
+              border: '1px solid #3b82f6',
+              color: '#1e40af'
+            }
+          });
           return;
         } else {
           console.error('Cached data is fallback/invalid, fetching fresh data...');
@@ -119,7 +125,13 @@ const ManageTeam = () => {
         // If current user is leader but no team data found
         setLeaderProfile(currentUser);
         setTeamMembers([]);
-        toast.warning('Team data loaded from session. Some information may be limited.');
+        toast('Team data loaded from session. Some information may be limited.', {
+          style: {
+            background: '#fef3c7',
+            border: '1px solid #f59e0b',
+            color: '#92400e'
+          }
+        });
       } else {
 
 

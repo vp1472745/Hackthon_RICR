@@ -37,7 +37,11 @@ const TeamMembersList = ({
       // Check sessionStorage for team data first
       const storedLeader = JSON.parse(sessionStorage.getItem('leaderProfile'));
       const storedMembers = JSON.parse(sessionStorage.getItem('apiTeamMembers')) || [];
+ 
       
+      // TEMPORARILY DISABLED - Force fresh API call to get proper _id fields
+      // TODO: Re-enable after confirming API returns proper data
+      /*
       //add a condition where only leader is there
       if (storedLeader && storedMembers.length === 0) {
       setLeaderProfile(storedLeader.member);
@@ -48,15 +52,30 @@ const TeamMembersList = ({
         setTeamMembers(storedMembers);
         return;
       }
+      */
+   
+      
+      // Clear old cached data that might not have _id fields
+      sessionStorage.removeItem('leaderProfile');
+      sessionStorage.removeItem('apiTeamMembers');
+      
       const response = await userAPI.getLeaderProfile();
 
       if (response.data && response.data.leader) {
         const { leader, team } = response.data;
+
+        
+        // Check if members have _id fields
+        if (team?.members && team.members.length > 0) {
+          const membersWithIds = team.members.every(member => member._id);
+          
+        }
+        
         setLeaderProfile(leader);
         setTeamMembers(team?.members || []); // Fixed setter
 
         // Store in sessionStorage for session use
-        sessionStorage.setItem('leaderProfile', JSON.stringify(leader));
+        sessionStorage.setItem('leaderProfile', JSON.stringify({ member: leader }));
         sessionStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
       }
     } catch (error) {

@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
@@ -67,10 +66,10 @@ export const userAPI = {
 
     // General user operations
     getUserById: (userId) => api.get(`/user/${userId}`),
-    
+
     // Leader profile and team data
     getLeaderProfile: () => api.get('/user/leader/profile'),
-   
+
     // Team member management by leader
     addMember: (memberData) => api.post('/user/leader/add-member', memberData),
     removeMember: (memberData) => api.delete('/user/leader/remove-member', { data: memberData }),
@@ -144,44 +143,44 @@ export const AdminAPI = {
     verifyAdminOTP: (data) => api.post('admin/verifyAdminOTP', data),
 
 
-// router.post("/register", registerAdmin);
-registerAdmin: (adminData) => api.post('/admin/register', adminData),
+    // router.post("/register", registerAdmin);
+    registerAdmin: (adminData) => api.post('/admin/register', adminData),
 
 
-// router.post("/login", adminLogin);
-login: (loginData) => api.post('/admin/login', loginData),
-// router.post("/logout", authenticateAdmin, adminLogout);
-logout: () => api.post('/admin/logout'),
+    // router.post("/login", adminLogin);
+    login: (loginData) => api.post('/admin/login', loginData),
+    // router.post("/logout", authenticateAdmin, adminLogout);
+    logout: () => api.post('/admin/logout'),
 
-teamsWithMembers: () => api.get('/admin/teamsWithMembers'),
+    teamsWithMembers: () => api.get('/admin/teamsWithMembers'),
 
-createTheme: (themeData) => api.post('/admin/createTheme', themeData),
-
-
-getAllThemes: () => api.get('/admin/themes'),
-createProblemStatement: (data) => api.post('/admin/createProblemStatement', data),
+    createTheme: (themeData) => api.post('/admin/createTheme', themeData),
 
 
-getAllProblemStatementsAdmin: () => api.get('/admin/problemStatements'),
-
-getAllUsers: () => api.get('/admin/users'),
-getAllTeams: () => api.get('/admin/teamsWithMembers'),
-editTheme: (id, data) => api.put(`/admin/editTheme/${id}`, data),
-// router.delete("/deleteTheme/:id", deleteTheme);
-deleteTheme: (id) => api.delete(`/admin/deleteTheme/${id}`),
-
-editProblemStatement: (id, data) => api.put(`/admin/editProblemStatement/${id}`, data),
-deleteProblemStatement: (id) => api.delete(`/admin/deleteProblemStatement/${id}`),
+    getAllThemes: () => api.get('/admin/themes'),
+    createProblemStatement: (data) => api.post('/admin/createProblemStatement', data),
 
 
-// router.post('/createProblemStatement', createProblemStatement);
-createProblemStatement: (data) => api.post('/admin/createProblemStatement', data),
+    getAllProblemStatementsAdmin: () => api.get('/admin/problemStatements'),
+
+    getAllUsers: () => api.get('/admin/users'),
+    getAllTeams: () => api.get('/admin/teamsWithMembers'),
+    editTheme: (id, data) => api.put(`/admin/editTheme/${id}`, data),
+    // router.delete("/deleteTheme/:id", deleteTheme);
+    deleteTheme: (id) => api.delete(`/admin/deleteTheme/${id}`),
+
+    editProblemStatement: (id, data) => api.put(`/admin/editProblemStatement/${id}`, data),
+    deleteProblemStatement: (id) => api.delete(`/admin/deleteProblemStatement/${id}`),
 
 
-// Deactivate all problem statements (SuperAdmin)
-deactivateAllProblemStatements: () => api.patch('/problem/deactivate-all'),
-// Activate all problem statements (SuperAdmin) 
-activateAllProblemStatements: () => api.patch('/problem/activate-all'),
+    // router.post('/createProblemStatement', createProblemStatement);
+    createProblemStatement: (data) => api.post('/admin/createProblemStatement', data),
+
+
+    // Deactivate all problem statements (SuperAdmin)
+    deactivateAllProblemStatements: () => api.patch('/problem/deactivate-all'),
+    // Activate all problem statements (SuperAdmin) 
+    activateAllProblemStatements: () => api.patch('/problem/activate-all'),
 };
 
 
@@ -189,26 +188,47 @@ export const subAdminAPI = {
     // Admin permissions
     setAdminPermissions: (email, permissions) => api.put(`/s/admin/set-permissions/${email}`, { permissions }),
     getAdminPermissions: (email) => api.get(`/s/admin/admin-permissions/${email}`),
-    
+
     // Theme routes
     createTheme: (data) => api.post('/s/admin/createTheme', data),
     getAllThemes: () => api.get('/s/admin/themes'),
     editTheme: (id, data) => api.put(`/s/admin/editTheme/${id}`, data),
     deleteTheme: (id) => api.delete(`/s/admin/deleteTheme/${id}`),
-    
+
     // Problem Statement routes
     createProblemStatement: (data) => api.post('/s/admin/createProblemStatement', data),
     getAllProblemStatementsAdmin: () => api.get('/s/admin/problemStatements'),
     editProblemStatement: (id, data) => api.put(`/s/admin/editProblemStatement/${id}`, data),
     deleteProblemStatement: (id) => api.delete(`/s/admin/deleteProblemStatement/${id}`),
-    
+
     // Teams and Users
     getAllTeams: () => api.get('/s/admin/teamsWithMembers'),
     getAllUsers: () => api.get('/s/admin/users'),
-    
+
     // Admins
-    getAllAdmins: () => api.get('/s/admin/admins')
-};  
+    getAllAdmins: () => api.get('/s/admin/admins'),
+
+
+    // Result routes
+    getResultsWithTeamAndLeader: () => api.get('/s/admin/all-with-team-leader'),
+    exportResultsExcel: () => api.get('/s/admin/export-excel', { responseType: 'blob' }),
+    createResult: (data) => api.post('/s/admin/result', data),
+    updateResult: (id, data) => api.put(`/s/admin/result/${id}`, data),
+    deleteResult: (id) => api.delete(`/s/admin/result/${id}`),
+    deleteAllResults: () => api.delete('/s/admin/result/all/delete-all'),
+    importResultsExcel: (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return api.post('/s/admin/import-excel', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+    },
+    declareAllResults: () => api.patch('/s/admin/declare-results'),
+
+
+
+
+};
 
 
 export const resultAPI = {

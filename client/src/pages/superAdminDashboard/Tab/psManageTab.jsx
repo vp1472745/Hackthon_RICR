@@ -4,6 +4,7 @@ import { AdminAPI } from '../../../configs/api.js';
 import DeletePS from './modals/deletePS.jsx';
 import EditPS from './modals/editPS.jsx';
 import AddPS from './modals/addPS.jsx';
+import { toast } from 'react-hot-toast';
 // Reusable Modal Component
 const Modal = ({ open, onClose, title, children, size = 'md' }) => {
   if (!open) return null;
@@ -203,32 +204,32 @@ const PsManageTab = ({ teamId }) => {
 
   // Activate all problem statements
   const handleActivateAll = async () => {
-    if (!window.confirm('Are you sure you want to activate ALL problem statements?')) return;
+   
     
     setActionLoading(true);
     try {
       const response = await AdminAPI.activateAllProblemStatements();
-      alert(`Success! ${response.data.modifiedCount} problem statements activated.`);
+      toast.success(`Success! ${response.data.modifiedCount} problem statements activated.`);
       fetchProblemStatements(); // Refresh the list
     } catch (err) {
       console.error('Error activating problem statements:', err);
-      alert('Failed to activate problem statements. Please try again.');
+      toast.error('Failed to activate problem statements. Please try again.');
     }
     setActionLoading(false);
   };
 
   // Deactivate all problem statements
   const handleDeactivateAll = async () => {
-    if (!window.confirm('Are you sure you want to deactivate ALL problem statements? This will affect ongoing hackathons!')) return;
+  
     
     setActionLoading(true);
     try {
       const response = await AdminAPI.deactivateAllProblemStatements();
-      alert(`Success! ${response.data.modifiedCount} problem statements deactivated.`);
+      toast.success(`Success! ${response.data.modifiedCount} problem statements deactivated.`);
       fetchProblemStatements(); // Refresh the list
     } catch (err) {
       console.error('Error deactivating problem statements:', err);
-      alert('Failed to deactivate problem statements. Please try again.');
+      toast.error('Failed to deactivate problem statements. Please try again.');
     }
     setActionLoading(false);
   };

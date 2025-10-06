@@ -4,6 +4,7 @@ import { AdminAPI, projectThemeAPI } from '../../../configs/api.js';
 import AddTheme from './addTheme.jsx';
 import EditTheme from './modals/editTheme.jsx';
 import DeleteTheme from './modals/deleteTheme.jsx';
+import { toast } from 'react-hot-toast';
 
 // Reusable Modal Component
 const Modal = ({ open, onClose, title, children, size = 'md' }) => {
@@ -242,31 +243,31 @@ const ThemeManageTab = () => {
   };
 
   const handleActivateAll = async () => {
-    if (!window.confirm('Are you sure you want to activate ALL themes?')) return;
+   
     
     setActionLoading(true);
     try {
       const response = await projectThemeAPI.activateAllThemes();
-      alert(`Success! ${response.data.modifiedCount} themes activated.`);
+      toast.success(`Success! ${response.data.modifiedCount} themes activated.`);
       fetchThemes();
     } catch (err) {
       console.error('Error activating themes:', err);
-      alert('Failed to activate themes. Please try again.');
+      toast.error('Failed to activate themes. Please try again.');
     }
     setActionLoading(false);
   };
 
   const handleDeactivateAll = async () => {
-    if (!window.confirm('Are you sure you want to deactivate ALL themes? This will affect users\' theme selections!')) return;
+   
     
     setActionLoading(true);
     try {
       const response = await projectThemeAPI.deactivateAllThemes();
-      alert(`Success! ${response.data.modifiedCount} themes deactivated.`);
+      toast.success(`Success! ${response.data.modifiedCount} themes deactivated.`);
       fetchThemes();
     } catch (err) {
       console.error('Error deactivating themes:', err);
-      alert('Failed to deactivate themes. Please try again.');
+      toast.error('Failed to deactivate themes. Please try again.');
     }
     setActionLoading(false);
   };

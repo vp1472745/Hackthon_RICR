@@ -12,12 +12,24 @@ import {
 	deleteProblemStatement,
 	getAllTeams,
 	getAllUsers,
-	getAllAdmins
+	getAllAdmins,
+	  getResultsWithTeamAndLeader,
+	    exportResultsExcel,
+			createResult,
+			updateResult,
+			deleteResult,
+			deleteAllResults,
+			importResultsExcel,
+			declareResults
+
 } from '../controller/adminController.js';
+import multer from 'multer';
 import { requireAdminPermission } from '../middlewares/requireAdminPermission.js';
 import { authenticateAdmin } from '../middlewares/auth.js';
+const upload = multer({ storage: multer.memoryStorage() }); // use memory for Excel parsing
 
 const router = express.Router();
+
 
 // Admin permissions
 router.put('/set-permissions/:email', setAdminPermissions);
@@ -41,5 +53,19 @@ router.get('/users', authenticateAdmin, getAllUsers);
 
 // Admins
 router.get('/admins', getAllAdmins);
+
+
+
+
+
+//Result routes
+router.get('/all-with-team-leader',authenticateAdmin, getResultsWithTeamAndLeader);
+router.get('/export-excel', authenticateAdmin, exportResultsExcel);
+router.post('/', authenticateAdmin, createResult);
+router.put('/:id', authenticateAdmin, updateResult);
+router.delete('/:id', authenticateAdmin, deleteResult);
+router.delete('/all/delete-all', authenticateAdmin, deleteAllResults);
+router.post('/import-excel', authenticateAdmin, upload.single('file'), importResultsExcel);
+router.patch('/declare-results', authenticateAdmin,	 declareResults);
 
 export default router;
