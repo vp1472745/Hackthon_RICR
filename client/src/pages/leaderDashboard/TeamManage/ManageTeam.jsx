@@ -45,15 +45,18 @@ const ManageTeam = () => {
 
       // Check sessionStorage for team data first
       const storedLeader = JSON.parse(sessionStorage.getItem('leaderProfile'));
-      const storedMembers = JSON.parse(sessionStorage.getItem('apiTeamMembers'));
-
-      if (storedLeader && Array.isArray(storedMembers)) {
-        setLeaderProfile(storedLeader);
+      const storedMembers = JSON.parse(sessionStorage.getItem('apiTeamMembers')) || [];
+      
+      //add a condition where only leader is there
+      if (storedLeader && storedMembers.length === 0) {
+        setLeaderProfile(storedLeader.member);
+        setTeamMembers([]);
+        return;
+      } else if (storedLeader && Array.isArray(storedMembers)) {
+        setLeaderProfile(storedLeader.member);
         setTeamMembers(storedMembers);
-    
         return;
       }
-
       // Fetch from API if not in sessionStorage
       const response = await userAPI.getLeaderProfile();
 
@@ -65,7 +68,7 @@ const ManageTeam = () => {
         // Store in sessionStorage for faster future loads
         sessionStorage.setItem('leaderProfile', JSON.stringify(leader));
         sessionStorage.setItem('apiTeamMembers', JSON.stringify(team?.members || []));
-       
+
         return;
       }
 
@@ -74,7 +77,7 @@ const ManageTeam = () => {
     } catch (err) {
       console.error('Error fetching leader data:', err);
       setError('Failed to load team data');
-     
+
     } finally {
       setLoading(false);
     }
@@ -106,11 +109,11 @@ const ManageTeam = () => {
         await fetchLeaderData();
         setShowEditMember(false);
         setEditingMember(null);
-       
+
       }
     } catch (err) {
       console.error('Error updating member:', err);
-    
+
     } finally {
       setLoading(false);
     }
@@ -152,7 +155,7 @@ const ManageTeam = () => {
         await fetchLeaderData();
         setShowDeleteMember(false);
         setDeletingMember(null);
-        
+
       }
     } catch (err) {
       console.error('Error removing member:', err);
@@ -196,7 +199,7 @@ const ManageTeam = () => {
               />
             </div>
 
-      
+
           </div>
         </div>
 
@@ -218,8 +221,8 @@ const ManageTeam = () => {
 
         </div>
 
-   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-               {/* TeamMembersList should handle its own responsive rendering (cards on mobile). */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* TeamMembersList should handle its own responsive rendering (cards on mobile). */}
           <TeamMembersList
             teamMembers={filteredMembers}
             loading={loading}
@@ -229,8 +232,8 @@ const ManageTeam = () => {
             handleViewMember={handleViewMember}
             searchTerm={searchTerm}
           />
-   </div>
- 
+        </div>
+
 
         {/* Guidelines & Deadlines */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

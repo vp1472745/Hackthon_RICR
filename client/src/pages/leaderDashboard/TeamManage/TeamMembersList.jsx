@@ -20,14 +20,12 @@ const TeamMembersList = ({
   handleEditMember,
   handleRemoveMember,
   handleViewMember,
-  showAddMember, // Added prop
   setShowAddMember // Added prop
 }) => {
   const [leaderProfile, setLeaderProfile] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]); // Fixed: Consistent naming
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newMember, setNewMember] = useState({}); // State for new member data
   const [errors, setErrors] = useState({}); // State for form errors
   const [addMemberForms, setAddMemberForms] = useState([]); // State for multiple add member forms
 
@@ -36,6 +34,20 @@ const TeamMembersList = ({
       setLoading(true);
       setError(null);
 
+      // Check sessionStorage for team data first
+      const storedLeader = JSON.parse(sessionStorage.getItem('leaderProfile'));
+      const storedMembers = JSON.parse(sessionStorage.getItem('apiTeamMembers')) || [];
+      
+      //add a condition where only leader is there
+      if (storedLeader && storedMembers.length === 0) {
+      setLeaderProfile(storedLeader.member);
+        setTeamMembers([]);
+        return;
+      } else if (storedLeader && Array.isArray(storedMembers)) {
+        setLeaderProfile(storedLeader.member );
+        setTeamMembers(storedMembers);
+        return;
+      }
       const response = await userAPI.getLeaderProfile();
 
       if (response.data && response.data.leader) {
@@ -386,7 +398,7 @@ const TeamMembersList = ({
 
           {/* Add Member Button - Shown only if less than 3 members */}
           {teamMembers.length < 3 && (
-            <div className="px-8 text-center text-gray-500 bg-gray-50">
+            <div className="px-8 text-gray-500 bg-gray-50">
 
               {addMemberForms.map((form, index) => (
                 <div key={index} className="pt-5">

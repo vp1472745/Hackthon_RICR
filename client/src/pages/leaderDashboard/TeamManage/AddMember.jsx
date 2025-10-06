@@ -7,7 +7,6 @@ const AddMember = ({
   setNewMember, 
   errors, 
   loading, 
-  handleAddMember, 
   cancelEdit 
 }) => {
   if (!showAddMember) return null;
@@ -23,7 +22,7 @@ const AddMember = ({
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+          <label className="text-sm font-medium text-gray-700 mb-2">Full Name *</label>
           <input
             type="text"
             value={newMember.fullName}
@@ -38,7 +37,7 @@ const AddMember = ({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+          <label className=" text-sm font-medium text-gray-700 mb-2">Email Address *</label>
           <input
             type="email"
             value={newMember.email}
@@ -53,7 +52,7 @@ const AddMember = ({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+          <label className=" text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
           <input
             type="tel"
             value={newMember.phone}
@@ -68,7 +67,7 @@ const AddMember = ({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">College Name</label>
+          <label className=" text-sm font-medium text-gray-700 mb-2">College Name</label>
           <input
             type="text"
             value={newMember.collegeName}
@@ -80,7 +79,7 @@ const AddMember = ({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Course</label>
+          <label className=" text-sm font-medium text-gray-700 mb-2">Course</label>
           <select
             value={newMember.course}
             onChange={(e) => setNewMember({...newMember, course: e.target.value})}
@@ -106,7 +105,7 @@ const AddMember = ({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">College Branch</label>
+          <label className=" text-sm font-medium text-gray-700 mb-2">College Branch</label>
           <select
             value={newMember.collegeBranch}
             onChange={(e) => setNewMember({...newMember, collegeBranch: e.target.value})}
@@ -140,7 +139,7 @@ const AddMember = ({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+          <label className=" text-sm font-medium text-gray-700 mb-2">Semester</label>
           <select
             value={newMember.collegeSemester}
             onChange={(e) => setNewMember({...newMember, collegeSemester: e.target.value})}
@@ -160,7 +159,7 @@ const AddMember = ({
         </div>
         
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">GitHub Profile (Optional)</label>
+          <label className=" text-sm font-medium text-gray-700 mb-2">GitHub Profile (Optional)</label>
           <input
             type="url"
             value={newMember.GitHubProfile}

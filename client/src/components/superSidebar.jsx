@@ -16,12 +16,12 @@ const NAV_ITEMS = [
   { key: "Home", label: "Overview", icon: <FiHome size={20} /> },
   { key: "Team", label: "Team Manage", icon: <FiUsers size={20} /> },
   { key: "Theme", label: "Theme Manage", icon: <FiLayers size={20} /> },
-  { key: "Result", label: "Result Manage", icon: <FiAward size={20} /> },
   { key: "Ps", label: "PS Manage", icon: <FiFileText size={20} /> },
-  {key:"Admin Access", label:"Admin Access", icon:<FiUsers size={20}/>},
+  { key: "Result", label: "Result Manage", icon: <FiAward size={20} /> },
+  { key: "Admin Access", label: "Admin Access", icon: <FiUsers size={20} /> },
 ];
 
-const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
+const Sidebar = ({ onTabChange = () => { }, activeTab = "Home" }) => {
   const [open, setOpen] = useState(false); // Start closed initially
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      
+
       // Set initial sidebar state based on screen size
       if (mobile) {
         setOpen(false); // Always closed on mobile
@@ -59,9 +59,8 @@ const Sidebar = ({ onTabChange = () => {}, activeTab = "Home" }) => {
       >
         {/* Header */}
         <div
-          className={`flex items-center gap-3 px-4 py-4 border-b mt-15 border-blue-800 w-full relative ${
-            open ? "" : "justify-center"
-          }`}
+          className={`flex items-center gap-3 px-4 py-4 border-b mt-15 border-blue-800 w-full relative ${open ? "" : "justify-center"
+            }`}
         >
           {open && <span className="text-xl font-bold tracking-wide">Super Admin</span>}
 
