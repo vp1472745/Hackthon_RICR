@@ -121,9 +121,9 @@ const MultiStepModal = ({ isOpen, onClose }) => {
         </div> */}
 
         {/* Alternative Stepper for very small screens */}
-        <div className="xs:hidden flex justify-center mb-4">
+        <div className="flex justify-center mb-4">
           <div className="bg-gray-100 rounded-full px-3 py-1">
-            <span className="text-xs font-medium text-gray-700">
+            <span className="text-xs md:text-md font-medium text-gray-700">
               Step {step + 1} of {steps.length}: {steps[step].name}
             </span>
           </div>
