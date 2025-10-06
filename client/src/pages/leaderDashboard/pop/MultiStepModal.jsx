@@ -145,7 +145,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Navigation hints for mobile */}
-        <div className="xs:hidden mt-4 pt-4 border-t border-gray-200">
+        <div className="md:hidden mt-4 pt-4 border-t border-gray-200">
           <div className="flex justify-between items-center text-sm text-gray-500">
             <span>
               {step > 0 && 'Swipe left for previous step'}
