@@ -91,7 +91,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
         </button>
 
         {/* Stepper - Responsive Design */}
-        <div className="flex flex-wrap items-center mt-12 justify-center mb-6 sm:mb-8 gap-2 sm:gap-4 md:gap-5">
+        {/* <div className="flex flex-wrap items-center mt-12 justify-center mb-6 sm:mb-8 gap-2 sm:gap-4 md:gap-5">
           {steps.map((s, idx) => (
             <React.Fragment key={s.label}>
               <div className="flex flex-col items-center flex-1 min-w-[60px] sm:min-w-0">
@@ -102,7 +102,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
                   {s.label}
                 </div>
                 <span className={`mt-1 sm:mt-2 text-xs text-center font-medium ${idx < step ? 'text-green-500' : idx === step ? 'text-black' : 'text-gray-400'}`}>
-                  {/* Show full name on larger screens, abbreviated on mobile */}
+                  
                   <span className="hidden sm:inline">{s.name}</span>
                   <span className="sm:hidden text-[10px] leading-tight">
                     {s.name.split(' ').map(word => word[0]).join('')}
@@ -110,7 +110,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
                 </span>
               </div>
               
-              {/* Connector lines - hide on smallest screens */}
+             
               {idx < steps.length - 1 && (
                 <div className="hidden xs:flex items-center flex-1 max-w-[40px] sm:max-w-[60px] md:max-w-[80px]">
                   <div className={`h-1 w-full mx-1 sm:mx-2 rounded bg-gradient-to-r ${idx < step ? 'from-green-500 to-green-400' : 'from-gray-300 to-gray-200'}`}></div>
@@ -118,7 +118,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
               )}
             </React.Fragment>
           ))}
-        </div>
+        </div> */}
 
         {/* Alternative Stepper for very small screens */}
         <div className="xs:hidden flex justify-center mb-4">
