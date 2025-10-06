@@ -13,7 +13,7 @@ import {
   UserPlus
 } from 'lucide-react';
 import { userAPI } from '../../../configs/api';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import AddMember from './AddMember'; // Adjust the import path as necessary
 
 const TeamMembersList = ({

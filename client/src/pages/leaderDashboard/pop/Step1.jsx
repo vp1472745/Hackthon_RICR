@@ -10,7 +10,7 @@ import {
   Loader as LucideLoader
 } from 'lucide-react';
 import { userAPI } from '../../../configs/api.js';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 const Step1 = ({ setIsStep1Saved, setStep }) => {
   const [leader, setLeader] = useState(null);

@@ -12,26 +12,15 @@ import AdminRegister from "./pages/superAdminDashboard/Tab/adminRegister.jsx"; /
 import SubAdminDashboard from "./pages/subAdminDashboard/subAdminDashboard.jsx";
 import MemberDashboard from "./pages/memberDashboard/memberDashboard.jsx";
 
-import "react-toastify/dist/ReactToastify.css";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import {  Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <>
       <Router>
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
+        <Toaster/>
         <AuthProvider>
           <Routes>
             {/* Routes with navbar */}

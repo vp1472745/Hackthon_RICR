@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { problemStatementAPI } from '../../configs/api.js';
 import { FileText, AlertCircle, Loader, Lightbulb, Calendar, Target, Users, CheckCircle } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 const ProblemStatements = () => {
   const [availableProblems, setAvailableProblems] = useState([]);

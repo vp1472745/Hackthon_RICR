@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, CheckCircle, Loader, Calendar, Info } from 'lucide-react';
 import { projectThemeAPI, userAPI, authAPI } from '../../configs/api';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 const ProjectTheme = () => {
   const [themes, setThemes] = useState([]);

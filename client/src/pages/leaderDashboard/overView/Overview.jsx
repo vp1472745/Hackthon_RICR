@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import RightSidePanel from './RightSidePanel';
 import { userAPI } from '../../../configs/api';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import TeamProfileCard from './TeamProfileCard';
 import HackathonTimer from './HackathonTimer';
 import { Users, Target, Award, RefreshCw, AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';

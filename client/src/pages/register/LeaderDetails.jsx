@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import ProgressBar from './ProgressBar.jsx';
 import { authAPI } from '../../configs/api.js';
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, ArrowLeft, Shield, Mail, Phone, RefreshCw, CheckCircle, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { toast} from 'react-toastify';
+import { toast} from 'react-hot-toast';
 
 import ProgressBar from './ProgressBar.jsx';
 import { authAPI } from '../../configs/api.js';

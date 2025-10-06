@@ -191,14 +191,7 @@ const AdminRegister = () => {
               </div>
             )}
 
-            {/* Debug Info */}
-            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-xs mb-4">
-              <strong>Debug Info:</strong><br/>
-              Loading: {loading ? 'true' : 'false'}<br/>
-              Step: {step}<br/>
-              Form Values: {JSON.stringify(form, null, 1)}<br/>
-              Inputs Disabled: {loading ? 'YES' : 'NO'}
-            </div>
+
 
             {/* Step 1: Basic Information */}
             {step === 1 && (

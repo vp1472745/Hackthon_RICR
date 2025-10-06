@@ -5,6 +5,7 @@ import {
   removeTeamMember,
   editTeamMemberByLeader,
   updateTermsAccepted,
+  getResult
 
 } from '../controller/userController.js';
 
@@ -13,6 +14,8 @@ import { authenticateLeader } from '../middlewares/auth.js';
 
 const router = express.Router();
 
+// Get results for user's team (must be before /:userId route)
+router.get('/result', authenticateLeader, getResult);
 
 // Get user by ID (public route for now)
 router.get('/:userId', getUserById);

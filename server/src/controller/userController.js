@@ -1,4 +1,5 @@
 import User from '../models/UserModel.js';
+import Result from '../models/resultModel.js';
 import mongoose from 'mongoose';
 
 
@@ -6,13 +7,13 @@ import mongoose from 'mongoose';
 export const getUserById = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    
+
     // Validate userId format
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ success: false, message: "Invalid userId format" });
     }
 
-   
+
     const user = await User.findById(userId)
       .populate({
         path: 'teamId',
@@ -22,23 +23,23 @@ export const getUserById = async (req, res, next) => {
           { path: 'teamProblemStatement', select: 'PStitle PSdescription' }
         ]
       });
-    
+
     if (!user) {
       const error = new Error(`User with ID ${userId} not found`);
       error.statusCode = 404;
       return next(error);
     }
-    
+
     // Get team members if user has a team
     let teamInfo = null;
     if (user.teamId) {
       const teamMembers = await User.find({ teamId: user.teamId })
         .select('_id fullName email phone role collegeName course collegeBranch collegeSemester GitHubProfile termsAccepted createdAt updatedAt')
         .sort({ role: 1, createdAt: 1 });
-      
+
       const leader = teamMembers.find(member => member.role === 'Leader');
       const members = teamMembers.filter(member => member.role === 'Member');
-      
+
       teamInfo = {
         team: user.teamId,
         leader: leader || null,
@@ -48,7 +49,7 @@ export const getUserById = async (req, res, next) => {
         availableSlots: Math.max(0, 4 - teamMembers.length)
       };
     }
-    
+
     res.status(200).json({
       message: 'User retrieved successfully',
       user: {
@@ -56,7 +57,7 @@ export const getUserById = async (req, res, next) => {
         teamInfo: teamInfo
       }
     });
-    
+
   } catch (error) {
     next(error);
   }
@@ -231,10 +232,51 @@ export const updateTermsAccepted = async (req, res, next) => {
       return next(error);
     }
     console.log("Terms accepted updated for user");
-    
+
     res.status(200).json({
       message: 'Terms and conditions updated successfully',
       user: updatedUser
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+
+export const getResult = async (req, res, next) => {
+  try {
+    console.log("Fetching results for user:", req.user);
+    
+    const userId = req.user._id; // Assuming the user is authenticated and their ID is available in req.user  
+    const user = await User.findById(userId).populate('teamId');
+
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    // Fetch results for the user's team
+    const results = await Result.find({ teamId: user.teamId });
+
+    if (results.length === 0) {
+      return res.status(200).json({
+        message: 'No results found for your team',
+        results: []
+      });
+    }
+
+    if (results[0].status !== 'Reviewed') {
+      return res.status(200).json({
+        message: 'Results are not yet published. Please check back later.',
+        results: []
+      });
+    }
+
+    res.status(200).json({
+      message: 'Results fetched successfully',
+      results
     });
   } catch (error) {
     next(error);

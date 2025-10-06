@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader } from 'lucide-react';
 import { userAPI } from '../../../configs/api';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 const Step2 = ({ setIsStep2Saved, handleBack, handleNext }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false);

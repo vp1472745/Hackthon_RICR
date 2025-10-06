@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, AlertTriangle, Mail, Phone, User, Eye } from 'lucide-react';
 import { userAPI } from '../../../configs/api';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import ViewMember from './memberviewMember';
 
 const ManageTeam = () => {

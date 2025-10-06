@@ -13,7 +13,7 @@ import {
   ArrowLeft,
   AlertCircle
 } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 const EditMember = ({ 
   isOpen, 

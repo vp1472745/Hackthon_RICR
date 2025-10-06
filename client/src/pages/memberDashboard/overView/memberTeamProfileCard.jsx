@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { User, Users, Mail, Phone, Trophy, Timer, Play, Crown, RefreshCw, Loader } from 'lucide-react';
 import { userAPI } from '../../../configs/api';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 const TeamProfileCard = ({
   leaderProfile: propLeaderProfile,

@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { act } from 'react';
-import { activateAllProblemStatements } from '../../../server/src/controller/projectProblemController';
-
 
 
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -93,6 +90,9 @@ export const userAPI = {
 
     // Get all themes for admin (active + inactive)
     getAllThemesAdmin: () => api.get('/theme/admin/all'),
+
+    // Get results for user's team
+    getResult: () => api.get('/user/result'),
 
 };
 
@@ -209,6 +209,25 @@ export const subAdminAPI = {
     // Admins
     getAllAdmins: () => api.get('/s/admin/admins')
 };  
+
+
+export const resultAPI = {
+    getResultsWithTeamAndLeader: () => api.get('/result/all-with-team-leader'),
+    createResult: (data) => api.post('/result', data),
+    updateResult: (id, data) => api.put(`/result/${id}`, data),
+    deleteResult: (id) => api.delete(`/result/${id}`),
+    deleteAllResults: () => api.delete('/result/all/delete-all'),
+    exportExcel: () => api.get('/result/export-excel', { responseType: 'blob' }),
+    importExcel: (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return api.post('/result/import-excel', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+    },
+    declareAllResults: () => api.patch('/result/declare-results'),
+};
+
 
 
 
