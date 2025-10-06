@@ -134,7 +134,7 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
                   </div>
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-2">{theme.themeName}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{theme.themeDescription}</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{theme.themeShortDescription}</p>
               </div>
             </div>
           );

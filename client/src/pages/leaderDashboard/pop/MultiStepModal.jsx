@@ -78,18 +78,8 @@ const MultiStepModal = ({ isOpen, onClose }) => {
   if (!modalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-2 sm:p-4 md:p-6">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto mx-2 sm:mx-4 p-4 sm:p-6 md:p-8 relative">
-        
-        {/* Close Button - Mobile & Desktop */}
-        <button
-          onClick={() => setModalOpen(false)}
-          className="absolute top-3 right-3  sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors duration-200 text-lg font-bold z-10"
-          aria-label="Close modal"
-        >
-          ×
-        </button>
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black p-2 sm:p-4 md:p-6">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[85vh] overflow-y-auto mx-2 sm:mx-4 p-4 sm:p-6 md:p-8 relative">
         {/* Stepper - Responsive Design */}
         {/* <div className="flex flex-wrap items-center mt-12 justify-center mb-6 sm:mb-8 gap-2 sm:gap-4 md:gap-5">
           {steps.map((s, idx) => (
@@ -130,7 +120,7 @@ const MultiStepModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Step Content */}
-        <div className="min-h-[300px] sm:min-h-[400px]">
+        <div className="">
           <StepComponent
             data={formData}
             onChange={handleChange}
