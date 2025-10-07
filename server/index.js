@@ -11,6 +11,7 @@ import SuperAdminRoute from './src/routes/SuperadminRoute.js';
 import AdminRegister from './src/routes/adminRoutes.js';  
 import Result from "../server/src/routes/resultRoutes.js"
 import ProblemStatementRoute from './src/routes/problemStatementRoute.js';
+import HomeRoute from './src/routes/homeRoutes.js';
 import morgan from 'morgan';
 
 
@@ -35,6 +36,7 @@ app.use('/problem', ProblemStatementRoute);
 app.use('/admin', SuperAdminRoute);
 app.use('/s/admin', AdminRegister);
 app.use('/result', Result);
+app.use('/home', HomeRoute);
 
 app.get('/', (req, res) => {
     res.send('API is running...');

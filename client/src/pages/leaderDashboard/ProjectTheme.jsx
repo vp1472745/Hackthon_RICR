@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Lightbulb, CheckCircle, Loader, Calendar, Info } from 'lucide-react';
-import { projectThemeAPI, userAPI, authAPI } from '../../configs/api';
+import { Lightbulb, CheckCircle, Loader, Calendar, Info, AlertCircle } from 'lucide-react';
+import { projectThemeAPI, userAPI, authAPI, homeAPI } from '../../configs/api';
 import { toast } from 'react-hot-toast';
 
 const ProjectTheme = () => {
@@ -12,6 +12,8 @@ const ProjectTheme = () => {
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', text: '' });
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [limitedTheme, setLimitedTheme] = useState(null);
 
   // Real-time update states
   const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
@@ -39,8 +41,8 @@ const ProjectTheme = () => {
     const fetchThemes = async () => {
       try {
         setLoading(true);
-        // Use projectThemeAPI to get only active themes for users
-        const res = await projectThemeAPI.getAllThemes();
+        // Use homeAPI to get themes with team count
+        const res = await homeAPI.getAllThemes();
 
         const themes = res.data.themes || [];
         setThemes(themes);
@@ -64,8 +66,8 @@ const ProjectTheme = () => {
       try {
         setIsPolling(true);
 
-        // Always poll for theme updates
-        const res = await projectThemeAPI.getAllThemes();
+        // Always poll for theme updates with team count
+        const res = await homeAPI.getAllThemes();
 
         if (res.data) {
           const newThemes = res.data.themes || [];
@@ -184,6 +186,22 @@ const ProjectTheme = () => {
 
   const handleThemeSelect = (themeName) => {
     if (selectedTheme === themeName) return;
+    
+    // Find the theme and check status and team count
+    const theme = themes.find(t => t.themeName === themeName);
+    
+    // Check if theme is inactive
+    if (theme && theme.status !== 'active') {
+      toast.error('This theme is currently inactive and cannot be selected.');
+      return;
+    }
+    
+    if (theme && theme.teamCount >= 10) {
+      setLimitedTheme(theme);
+      setShowLimitModal(true);
+      return;
+    }
+    
     setPendingSelection(themeName);
     setShowConfirmation(true);
   };
@@ -284,9 +302,15 @@ const ProjectTheme = () => {
             return (
               <div
                 key={theme._id}
-                className={`group relative bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-sm border-2 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${isSelected
+                className={`group relative bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-sm border-2 transition-all duration-300 ${
+                  (theme.teamCount >= 10 || theme.status !== 'active') && !isSelected
+                    ? 'opacity-60 cursor-not-allowed border-red-200'
+                    : 'hover:shadow-lg hover:scale-[1.02]'
+                } ${isSelected
                   ? 'border-green-500 shadow-lg ring-2 ring-green-100 scale-[1.02]'
-                  : 'border-gray-200 hover:border-blue-300'
+                  : theme.teamCount >= 10 || theme.status !== 'active'
+                    ? 'border-red-200'
+                    : 'border-gray-200 hover:border-blue-300'
                   }`}
               >
                 {/* Selected Badge */}
@@ -303,9 +327,33 @@ const ProjectTheme = () => {
                   {/* Theme Header */}
                   <div className="flex items-start justify-between mb-2 sm:mb-3 lg:mb-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-gray-900 text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl leading-tight mb-1 sm:mb-2 break-words">
-                        {theme.themeName}
-                      </h3>
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="font-bold text-gray-900 text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl leading-tight break-words flex-1">
+                          {theme.themeName}
+                        </h3>
+                        {/* Theme Status Badge */}
+                        <div className={`px-2 py-1 rounded-full text-xs font-semibold ml-2 ${
+                          theme.status === 'active'
+                            ? 'bg-green-100 text-green-800 border border-green-200'
+                            : 'bg-red-100 text-red-800 border border-red-200'
+                        }`}>
+                          <div className="flex items-center gap-1">
+                            <div className={`w-1.5 h-1.5 rounded-full ${theme.status === 'active' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                            {theme.status === 'active' ? 'Active' : 'Inactive'}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Team Count Display */}
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <span>{theme.teamCount || 0}/10 teams selected</span>
+                        {theme.teamCount >= 10 && (
+                          <span className="text-red-500 font-medium flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            Full
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -356,10 +404,12 @@ const ProjectTheme = () => {
                   {/* Action Button */}
                   <button
                     onClick={() => handleThemeSelect(theme.themeName)}
-                    disabled={isSelected}
+                    disabled={isSelected || (theme.teamCount >= 10 && !isSelected) || (theme.status !== 'active' && !isSelected)}
                     className={`w-full py-2 sm:py-2.5 lg:py-3 xl:py-3.5 px-3 sm:px-4 lg:px-6 rounded-lg sm:rounded-xl lg:rounded-2xl font-semibold text-xs sm:text-sm lg:text-base transition-all duration-200 ${isSelected
                       ? 'bg-green-100 text-green-700 border border-green-200 cursor-default'
-                      : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-lg transform hover:scale-[1.02]'
+                      : theme.teamCount >= 10 || theme.status !== 'active'
+                        ? 'bg-red-100 text-red-600 border border-red-200 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-lg transform hover:scale-[1.02]'
                       }`}
                   >
                     {isSelected ? (
@@ -367,6 +417,18 @@ const ProjectTheme = () => {
                         <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
                         <span className="hidden xs:inline">Theme Selected</span>
                         <span className="xs:hidden">Selected</span>
+                      </div>
+                    ) : theme.teamCount >= 10 ? (
+                      <div className="flex items-center justify-center gap-1 sm:gap-2 lg:gap-3">
+                        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                        <span className="hidden xs:inline">Theme Full (10/10)</span>
+                        <span className="xs:hidden">Full</span>
+                      </div>
+                    ) : theme.status !== 'active' ? (
+                      <div className="flex items-center justify-center gap-1 sm:gap-2 lg:gap-3">
+                        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                        <span className="hidden xs:inline">Theme Inactive</span>
+                        <span className="xs:hidden">Inactive</span>
                       </div>
                     ) : (
                       <>
@@ -383,14 +445,37 @@ const ProjectTheme = () => {
 
         {/* Empty State */}
         {!loading && themes.length === 0 && !error && (
-          <div className="text-center py-8 sm:py-12 lg:py-16 xl:py-20 bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-sm border border-gray-200 mx-2 sm:mx-4 lg:mx-8">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 lg:mb-6">
-              <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 xl:w-10 xl:h-10 text-gray-400" />
+          <div className="text-center py-12 sm:py-16 lg:py-20 xl:py-24 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-sm border border-blue-100 mx-2 sm:mx-4 lg:mx-8">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 lg:mb-8 shadow-lg">
+              <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 text-white" />
             </div>
-            <h3 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-semibold text-gray-700 mb-2 sm:mb-3 px-2">No Themes Available</h3>
-            <p className="text-gray-500 max-w-sm sm:max-w-md lg:max-w-lg mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-3 sm:px-4 leading-relaxed">
-              We're curating exciting themes for your hackathon. Please check back soon.
-            </p>
+            <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-gray-800 mb-3 sm:mb-4 px-2">
+              Theme Selection Temporarily Unavailable
+            </h3>
+            <div className="max-w-md sm:max-w-lg lg:max-w-xl mx-auto px-4 sm:px-6">
+              <p className="text-gray-600 text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 leading-relaxed">
+                The Super Admin has not yet enabled theme selection for participants. 
+              </p>
+              <div className="bg-white rounded-lg border border-blue-200 p-4 sm:p-6 shadow-sm">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Info className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                  </div>
+                  <div className="text-left">
+                    <h4 className="font-semibold text-gray-800 text-sm sm:text-base mb-1 sm:mb-2">
+                      What does this mean?
+                    </h4>
+                    <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                      Hackathon themes are currently being configured by the administration team. 
+                      You will be notified once theme selection becomes available.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-500 text-xs sm:text-sm mt-4 sm:mt-6">
+                Please contact the hackathon organizers if you have any questions.
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -499,6 +584,46 @@ const ProjectTheme = () => {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Theme Limit Modal */}
+      {showLimitModal && limitedTheme && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+                <AlertCircle className="w-8 h-8 text-red-500" />
+              </div>
+              
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                Theme Selection Limit Reached
+              </h3>
+              
+              <p className="text-gray-600 mb-4">
+                <strong>"{limitedTheme.themeName}"</strong> has reached its maximum capacity of 10 teams. 
+                Please select a different theme.
+              </p>
+              
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-6">
+                <p className="text-sm text-gray-700">
+                  <span className="font-medium">{limitedTheme.teamCount}/10</span> teams have already selected this theme.
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowLimitModal(false);
+                    setLimitedTheme(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  Choose Another Theme
+                </button>
+              </div>
             </div>
           </div>
         </div>

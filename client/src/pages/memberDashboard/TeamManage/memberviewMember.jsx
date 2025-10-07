@@ -3,6 +3,8 @@ import {
   X, 
   Mail, 
   Phone, 
+  MapPin,
+  Globe,
   User, 
   GraduationCap, 
   BookOpen, 
@@ -41,7 +43,7 @@ const ViewMember = ({
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              className="p-2 hover:bg-white hover:text-black hover:bg-opacity-20 rounded-lg transition-colors"
               title="Close"
             >
               <X className="w-6 h-6" />
@@ -79,6 +81,30 @@ const ViewMember = ({
                     <p className="font-medium text-gray-800">{member.phone}</p>
                   </div>
                 </div>
+
+                {member.city && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-yellow-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">City</p>
+                      <p className="font-medium text-gray-800">{member.city}</p>
+                    </div>
+                  </div>
+                )}
+
+                {member.state && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                      <Globe className="w-5 h-5 text-red-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">State</p>
+                      <p className="font-medium text-gray-800">{member.state}</p>
+                    </div>
+                  </div>
+                )}
 
                 {member.GitHubProfile && (
                   <div className="flex items-center gap-3">

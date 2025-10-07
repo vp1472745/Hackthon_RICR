@@ -75,7 +75,7 @@ export const addTeamMember = async (req, res, next) => {
     }
 
     const leaderId = req.user._id;
-    const { teamId, fullName, email, phone, collegeName, course, collegeBranch, collegeSemester, GitHubProfile } = req.body;
+    const { teamId, fullName, email, phone, collegeName, course, collegeBranch, collegeSemester, GitHubProfile, city, state } = req.body;
 
     const leader = await User.findById(leaderId);
     if (!leader || leader.role !== 'Leader') {
@@ -130,7 +130,9 @@ export const addTeamMember = async (req, res, next) => {
       teamId: finalTeamId,
       collegeBranch: collegeBranch || "Sample Branch",
       collegeSemester: collegeSemester || 0,
-      GitHubProfile: GitHubProfile || ""
+      GitHubProfile: GitHubProfile || "",
+      city: city || "N/A",
+      state: state || "N/A",
     });
 
     res.status(201).json({

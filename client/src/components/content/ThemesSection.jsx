@@ -1,66 +1,148 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  FaRobot, FaLeaf, FaBitcoin, FaHospital, FaGlobe, FaBook
+  FaRobot, FaLeaf, FaBitcoin, FaHospital, FaGlobe, FaBook, FaCode, FaGamepad, FaShieldAlt
 } from 'react-icons/fa';
+import { AiOutlineClose } from "react-icons/ai";
 import { SectionHeader } from "./SharedComponents";
 import { containerVariants, itemVariants, iconHoverVariants, THEME } from "./constants";
 import HackathonThemeModal from "./HackathonThemeModal";
+import { homeAPI } from "../../configs/api.js";
 
-const THEMES = [
-  {
-    icon: <FaRobot />,
-    title: "AI & Machine Learning",
-    shortDescription:
-      "Create intelligent systems using AI, machine learning, and deep learning to solve complex, real-world problems efficiently.",
-    description:
-      "Explore the vast world of artificial intelligence and machine learning by creating intelligent systems capable of learning, reasoning, and decision-making. Implement deep learning models, neural networks, natural language processing, and computer vision to solve complex real-world challenges. Focus on predictive analytics, automation, and adaptive algorithms to improve efficiency across industries such as healthcare, finance, education, and robotics. Emphasize ethical AI, bias reduction, and data privacy while innovating in areas like autonomous vehicles, smart assistants, recommendation engines, and AI-driven business insights.",
-  },
-  {
-    icon: <FaLeaf />,
-    title: "Sustainable Technology",
-    shortDescription:
-      "Design eco-friendly solutions using renewable energy, IoT, and smart systems to promote sustainability and environmental conservation.",
-    description:
-      "Design innovative solutions that promote environmental sustainability and reduce the human ecological footprint. Focus on renewable energy technologies like solar, wind, and bioenergy, as well as energy-efficient systems for homes, industries, and transportation. Develop smart agriculture systems, waste management solutions, and eco-friendly products to conserve natural resources. Leverage IoT, AI, and data analytics to monitor environmental impact, reduce carbon emissions, and optimize resource consumption. Aim to create scalable, practical solutions that encourage sustainable living, climate action, and conservation of biodiversity while improving the quality of life for communities worldwide.",
-  },
-  {
-    icon: <FaBitcoin />,
-    title: "FinTech Innovation",
-    shortDescription:
-      "Revolutionize financial services with blockchain, digital payments, and AI-powered solutions for secure, transparent, and efficient transactions.",
-    description:
-      "Revolutionize the financial sector by designing cutting-edge fintech solutions that enhance banking, payments, investments, and insurance services. Explore blockchain technology, cryptocurrencies, and decentralized finance to provide secure, transparent, and efficient financial transactions. Develop mobile banking apps, digital wallets, peer-to-peer payment platforms, robo-advisors, and AI-driven fraud detection systems. Focus on improving financial accessibility, customer experience, and data-driven decision-making. Combine technology with regulatory compliance, risk management, and cybersecurity best practices to deliver innovative solutions that transform the way individuals, businesses, and institutions manage money in the digital age.",
-  },
-  {
-    icon: <FaHospital />,
-    title: "HealthTech Solutions",
-    shortDescription:
-      "Develop healthcare innovations using AI, telemedicine, and wearable devices to improve patient care and medical accessibility.",
-    description:
-      "Develop transformative healthcare solutions that improve patient care, streamline medical operations, and enhance diagnostic accuracy. Utilize telemedicine platforms, AI-driven diagnostics, wearable health monitoring devices, and electronic health records to optimize medical workflows. Focus on personalized medicine, remote patient monitoring, and predictive analytics for early disease detection. Explore the integration of robotics, virtual reality, and data-driven decision-making to enhance surgeries, rehabilitation, and treatment plans. Emphasize accessibility, affordability, and privacy in healthcare delivery while creating solutions that improve outcomes, patient engagement, and the overall efficiency of global healthcare systems.",
-  },
-  {
-    icon: <FaBook />,
-    title: "EdTech & Education Innovation",
-    shortDescription:
-      "Transform education with interactive e-learning platforms, AI tutoring, and virtual classrooms to enhance learning and accessibility worldwide.",
-    description:
-      "Transform education through technology by creating innovative platforms, tools, and solutions that enhance teaching and learning experiences. Develop interactive e-learning platforms, AI-driven tutoring systems, adaptive learning apps, and virtual classrooms to personalize education for students of all ages. Leverage gamification, augmented reality, and data analytics to make learning more engaging, accessible, and effective. Focus on bridging educational gaps, improving accessibility for underserved communities, and empowering educators with smart tools for assessment and curriculum planning. Aim to create scalable solutions that foster lifelong learning, skill development, and knowledge-sharing in a rapidly evolving digital world.",
-  },
-  {
-    icon: <FaGlobe />,
-    title: "Global Connectivity & IoT",
-    shortDescription:
-      "Build smart, connected systems using IoT and networking technologies to improve efficiency, communication, and global resource management.",
-    description:
-      "Create intelligent systems that connect people, devices, and infrastructure across the globe using Internet of Things (IoT) and networking technologies. Develop smart cities, connected transportation systems, automated homes, and industrial IoT solutions to improve efficiency and quality of life. Utilize cloud computing, edge computing, and big data analytics to process real-time information from connected devices. Focus on secure, scalable, and sustainable networking solutions that enhance global communication, monitoring, and resource management. Aim to build integrated platforms that foster collaboration, optimize processes, and bridge gaps between technology, society, and the environment worldwide.",
-  },
-];
+// Function to map theme names to icons
+const getThemeIcon = (themeName) => {
+  const iconMap = {
+    'AI & Machine Learning': <FaRobot />,
+    'Artificial Intelligence': <FaRobot />,
+    'Machine Learning': <FaRobot />,
+    'Sustainable Technology': <FaLeaf />,
+    'Green Technology': <FaLeaf />,
+    'Environment': <FaLeaf />,
+    'FinTech Innovation': <FaBitcoin />,
+    'FinTech': <FaBitcoin />,
+    'Blockchain': <FaBitcoin />,
+    'HealthTech Solutions': <FaHospital />,
+    'HealthTech': <FaHospital />,
+    'Healthcare': <FaHospital />,
+    'EdTech & Education Innovation': <FaBook />,
+    'EdTech': <FaBook />,
+    'Education': <FaBook />,
+    'Global Connectivity & IoT': <FaGlobe />,
+    'IoT': <FaGlobe />,
+    'Connectivity': <FaGlobe />,
+    'Web Development': <FaCode />,
+    'Software Development': <FaCode />,
+    'App Development': <FaCode />,
+    'Gaming': <FaGamepad />,
+    'Game Development': <FaGamepad />,
+    'Security': <FaShieldAlt />,
+    'Cybersecurity': <FaShieldAlt />,
+    'Data Security': <FaShieldAlt />,
+  };
+
+  // Try to find exact match first
+  if (iconMap[themeName]) {
+    return iconMap[themeName];
+  }
+
+  // Try to find partial match
+  for (const [key, icon] of Object.entries(iconMap)) {
+    if (themeName.toLowerCase().includes(key.toLowerCase()) ||
+      key.toLowerCase().includes(themeName.toLowerCase())) {
+      return icon;
+    }
+  }
+
+  // Default icon if no match found
+  return <FaCode />;
+};
 
 export default function ThemesSection() {
-  const [isThemeModalOpen, setThemeModalOpen] = React.useState(false);
-  const [selectedTheme, setSelectedTheme] = React.useState(null);
+  const [isThemeModalOpen, setThemeModalOpen] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState(null);
+  const [isTeamsModalOpen, setTeamsModalOpen] = useState(false);
+  const [selectedTeams, setSelectedTeams] = useState(null);
+  const [themes, setThemes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchThemes();
+  }, []);
+
+  const fetchThemes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await homeAPI.getAllThemes();
+      console.log('API Response:', response.data);
+
+      // Extract themes from response
+      const themesData = response.data?.themes || [];
+      setThemes(themesData);
+    } catch (err) {
+      console.error('Error fetching themes:', err);
+      setError(err.message || 'Failed to fetch themes');
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Loading state
+  if (loading) {
+    return (
+      <section className="w-full py-8 md:py-10">
+        <SectionHeader
+          title="Hackathon Themes"
+          subtitle="Wide Range of Exciting themes to build innovative solutions that can make a real impact"
+        />
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0B2A4A]"></div>
+          <span className="ml-3 text-gray-600">Loading themes...</span>
+        </div>
+      </section>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <section className="w-full py-8 md:py-10">
+        <SectionHeader
+          title="Hackathon Themes"
+          subtitle="Wide Range of Exciting themes to build innovative solutions that can make a real impact"
+        />
+        <div className="text-center py-12">
+          <div className="text-red-600 mb-4">
+            <p className="text-lg font-semibold">Unable to load themes</p>
+            <p className="text-sm">{error}</p>
+          </div>
+          <button
+            onClick={fetchThemes}
+            className="px-6 py-3 bg-[#0B2A4A] text-white rounded-lg hover:bg-[#16406b] transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  // Empty state
+  if (themes.length === 0) {
+    return (
+      <section className="w-full py-8 md:py-10">
+        <SectionHeader
+          title="Hackathon Themes"
+          subtitle="Wide Range of Exciting themes to build innovative solutions that can make a real impact"
+        />
+        <div className="text-center py-12">
+          <p className="text-gray-600 text-lg">No themes available at the moment.</p>
+          <p className="text-gray-500 text-sm mt-2">Please check back later.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <>
       <section className="w-full py-8 md:py-10">
@@ -76,9 +158,9 @@ export default function ThemesSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {THEMES.map((t, idx) => (
+          {themes.map((theme, idx) => (
             <motion.article
-              key={idx}
+              key={theme._id || idx}
               className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100 group "
               variants={itemVariants}
               whileHover="hover"
@@ -86,20 +168,59 @@ export default function ThemesSection() {
             >
               <div className="flex items-center gap-4 mb-5">
                 <motion.div className="text-3xl md:text-4xl text-[#0B2A4A]" variants={iconHoverVariants}>
-                  {t.icon}
+                  {getThemeIcon(theme.themeName)}
                 </motion.div>
-                <h3 className="text-xl md:text-2xl font-bold cursor-default" style={{ color: THEME.primary }}>
-                  {t.title}
-                </h3>
+                <div className="flex-1">
+                  <h3 className="text-xl md:text-2xl font-bold cursor-default" style={{ color: THEME.primary }}>
+                    {theme.themeName}
+                  </h3>
+                  <p className="text-xs text-orange-500 mt-1 font-bold">
+                    Max 10 teams can select this theme
+                  </p>
+                </div>
               </div>
-              <p className="text-gray-600 leading-relaxed cursor-default">{t.shortDescription}</p>
-              <div className="flex justify-end">
+              <p className="text-gray-600 leading-relaxed cursor-default line-clamp-2">
+                {theme.themeShortDescription || theme.themeDescription?.substring(0, 150) + '...' || 'No description available'}
+              </p>
+              <div className="flex justify-between items-center mt-4">
+                <div className="flex items-center gap-2 ">
+                  {theme.teamCount !== undefined && (
+                    <button
+                      onClick={() => {
+                        setSelectedTeams({
+                          themeName: theme.themeName,
+                          teamCount: theme.teamCount,
+                          enrolledTeams: theme.enrolledTeams || []
+                        });
+                        setTeamsModalOpen(true);
+                      }}
+                      className="text-sm bg-[#0B2A4A] mt-3  text-white py-2 px-3 rounded-lg   cursor-pointer  transition-colors"
+                    >
+                      {theme.teamCount} team{theme.teamCount !== 1 ? 's' : ''} enrolled
+                    </button>
+                  )}
+                </div>
                 <button
-                  className="px-4 py-2 rounded  text-[#0B2A4A] font-semibold transition-colors hover:text-[#16406b] hover:underline focus:outline-none cursor-pointer"
+                  className="text-sm bg-[#0B2A4A]  text-white mt-3   py-2 px-3 rounded-lg   cursor-pointer  transition-colors"
                   type="button"
-                  onClick={() => { setThemeModalOpen(true), setSelectedTheme(t) }}
+                  onClick={() => {
+                    setThemeModalOpen(true);
+                    setSelectedTheme({
+                      title: theme.themeName,
+                      description: theme.themeDescription,
+                      shortDescription: theme.themeShortDescription,
+                      themeShortDescription: theme.themeShortDescription, // API field name
+                      themeDescription: theme.themeDescription, // API field name
+                      icon: getThemeIcon(theme.themeName),
+                      teamCount: theme.teamCount,
+                      enrolledTeams: theme.enrolledTeams,
+                      _id: theme._id,
+                      themeName: theme.themeName, // API field name
+                      status: theme.status
+                    });
+                  }}
                 >
-                  Know More
+                  Read More
                 </button>
               </div>
             </motion.article>
@@ -111,6 +232,78 @@ export default function ThemesSection() {
         onClose={() => setThemeModalOpen(false)}
         themeData={selectedTheme}
       />
+
+      {/* Enrolled Teams Modal */}
+      {isTeamsModalOpen && selectedTeams && (
+        <div className="fixed inset-0 h-screen z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] p-6 overflow-hidden">
+            <button
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
+              onClick={() => setTeamsModalOpen(false)}
+              aria-label="Close"
+            >
+              <AiOutlineClose size={24} />
+            </button>
+
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-2">Enrolled Teams</h2>
+              <p className="text-sm text-gray-600">{selectedTeams.themeName}</p>
+              <div className="h-1 w-full bg-blue-500 rounded mt-4 mb-6"></div>
+
+              <div className="max-h-96 overflow-y-auto">
+                {selectedTeams.enrolledTeams && selectedTeams.enrolledTeams.length > 0 ? (
+                  <div className="space-y-3">
+                    {selectedTeams.enrolledTeams.map((team, index) => (
+                      <div key={index} className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-semibold text-gray-800">
+                              {team.teamName || `Team ${index + 1}`}
+                            </h4>
+                            {team.leaderName && (
+                              <p className="text-sm text-gray-600">
+                                Leader: {team.leaderName}
+                              </p>
+                            )}
+                            {team.memberCount && (
+                              <p className="text-xs text-gray-500">
+                                {team.memberCount} members
+                              </p>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            {team.registrationDate && (
+                              <p className="text-xs text-gray-500">
+                                {new Date(team.registrationDate).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">No team details available</p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      {selectedTeams.teamCount} team{selectedTeams.teamCount !== 1 ? 's' : ''} enrolled
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                onClick={() => setTeamsModalOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

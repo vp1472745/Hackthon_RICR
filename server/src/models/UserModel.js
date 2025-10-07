@@ -47,14 +47,22 @@ const userSchema = new mongoose.Schema({
     },
     GitHubProfile: {
         type: String,
-      
+
+        default: "N/A",
+    },
+    city: {
+        type: String,
+        default: "N/A",
+    },
+    state: {
+        type: String,
         default: "N/A",
     },
 
-   termsAccepted : {
+    termsAccepted: {
         type: Boolean,
         required: true,
-       default: false
+        default: false
     }
 }, { timestamps: true });
 

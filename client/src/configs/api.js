@@ -249,6 +249,10 @@ export const resultAPI = {
 };
 
 
+export const homeAPI = {
+    // Fetch all active themes (for home page)
+    getAllThemes: () => api.get('/home'),
+};
 
 
 

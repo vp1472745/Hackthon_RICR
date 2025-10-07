@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Lightbulb, CheckCircle } from 'lucide-react';
-import { projectThemeAPI } from '../../../configs/api';
+import { Lightbulb, CheckCircle, AlertCircle } from 'lucide-react';
+import { projectThemeAPI, homeAPI } from '../../../configs/api';
 
 const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
 
@@ -8,6 +8,8 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [limitedTheme, setLimitedTheme] = useState(null);
 
   // Get teamId from cookie
   function getCookie(name) {
@@ -30,7 +32,8 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
           return;
         }
         
-        const res = await projectThemeAPI.getAllThemes();
+        // Use homeAPI to get themes with team count
+        const res = await homeAPI.getAllThemes();
         setThemes(res.data.themes || []);
        
         
@@ -57,6 +60,15 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
   }, [teamId]);
 
   const handleThemeSelect = async (themeName) => {
+    // Find the theme and check team count
+    const theme = themes.find(t => t.themeName === themeName);
+    
+    if (theme && theme.teamCount >= 10) {
+      setLimitedTheme(theme);
+      setShowLimitModal(true);
+      return;
+    }
+
     try {
       setLoading(true);
       setSelectedTheme(themeName);
@@ -113,10 +125,16 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
           return (
             <div
               key={theme._id}
-              className={`relative bg-white rounded-xl shadow-sm border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${
+              className={`relative bg-white rounded-xl shadow-sm border-2 transition-all duration-300 ${
+                theme.teamCount >= 10 
+                  ? 'cursor-not-allowed opacity-60' 
+                  : 'cursor-pointer hover:shadow-lg'
+              } ${
                 isSelected
                   ? 'border-green-500 ring-2 ring-green-200'
-                  : 'border-gray-200 hover:border-[#0B2A4A]'
+                  : theme.teamCount >= 10
+                    ? 'border-red-200'
+                    : 'border-gray-200 hover:border-[#0B2A4A]'
               }`}
               onClick={() => handleThemeSelect(theme.themeName)}
             >
@@ -134,7 +152,15 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
                   </div>
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-2">{theme.themeName}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{theme.themeShortDescription}</p>
+                <p className="text-sm text-gray-600 leading-relaxed mb-3">{theme.themeShortDescription}</p>
+                
+                {/* Team Count and Limit */}
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>{theme.teamCount || 0}/10 teams selected</span>
+                  {theme.teamCount >= 10 && (
+                    <span className="text-red-500 font-medium">Full</span>
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -175,6 +201,46 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
           {loading ? 'Selecting...' : 'Next'}
         </button>
       </div>
+
+      {/* Theme Limit Modal */}
+      {showLimitModal && limitedTheme && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+                <AlertCircle className="w-8 h-8 text-red-500" />
+              </div>
+              
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                Theme Selection Limit Reached
+              </h3>
+              
+              <p className="text-gray-600 mb-4">
+                <strong>"{limitedTheme.themeName}"</strong> has reached its maximum capacity of 10 teams. 
+                Please select a different theme.
+              </p>
+              
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-6">
+                <p className="text-sm text-gray-700">
+                  <span className="font-medium">{limitedTheme.teamCount}/10</span> teams have already selected this theme.
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowLimitModal(false);
+                    setLimitedTheme(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  Choose Another Theme
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

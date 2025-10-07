@@ -5,6 +5,8 @@ import {
   User, 
   Mail, 
   Phone, 
+  MapPin,
+  Globe,
   School, 
   BookOpen, 
   GitBranch,
@@ -26,6 +28,8 @@ const EditMember = ({
     fullName: '',
     email: '',
     phone: '',
+    city: '',
+    state: '',
     collegeName: '',
     course: '',
     collegeBranch: '',
@@ -36,39 +40,144 @@ const EditMember = ({
   const [errors, setErrors] = useState({});
   const [isModified, setIsModified] = useState(false);
 
-  // Course options
+  // Course options - expanded to match more variations
   const courseOptions = [
-    'B.Tech', 'M.Tech', 'BCA', 'MCA', 'BSc IT', 'MSc IT', 
-    'BSc Computer Science', 'MSc Computer Science', 'BE', 'ME',
-    'Diploma', 'B.Com', 'M.Com', 'BBA', 'MBA'
+    'N/A',
+    'B.Tech',
+    'B.E',
+    'BCA',
+    'MCA', 
+    'M.Tech',
+    'M.E',
+    'B.Sc',
+    'M.Sc',
+    'BSc IT', 
+    'MSc IT', 
+    'BSc Computer Science', 
+    'MSc Computer Science',
+    'B.Com',
+    'M.Com', 
+    'BBA',
+    'MBA',
+    'Diploma',
+    'Ph.D',
+    'B.Tech (Bachelor of Technology)',
+    'B.E (Bachelor of Engineering)',
+    'BCA (Bachelor of Computer Applications)',
+    'MCA (Master of Computer Applications)',
+    'M.Tech (Master of Technology)',
+    'M.E (Master of Engineering)',
+    'B.Sc (Bachelor of Science)',
+    'M.Sc (Master of Science)',
+    'BBA (Bachelor of Business Administration)',
+    'MBA (Master of Business Administration)',
+    'B.Com (Bachelor of Commerce)',
+    'M.Com (Master of Commerce)',
+    'Ph.D (Doctor of Philosophy)',
+    'Sample Course'
   ];
 
-  // Branch options
+  // Branch options - expanded to match more variations
   const branchOptions = [
-    'Computer Science Engineering', 'Information Technology',
-    'Electronics & Communication', 'Electrical Engineering',
-    'Mechanical Engineering', 'Civil Engineering',
-    'Chemical Engineering', 'Aerospace Engineering',
-    'Biomedical Engineering', 'Software Engineering',
-    'Data Science', 'Artificial Intelligence',
-    'Cyber Security', 'Web Development'
+    'N/A',
+    'Computer Science Engineering',
+    'Computer Science Engineering (CSE)',
+    'Information Technology',
+    'Information Technology (IT)',
+    'Electronics and Communication',
+    'Electronics & Communication',
+    'Electronics and Communication (ECE)',
+    'Electrical Engineering',
+    'Electrical Engineering (EE)',
+    'Mechanical Engineering',
+    'Mechanical Engineering (ME)',
+    'Civil Engineering',
+    'Civil Engineering (CE)',
+    'Chemical Engineering',
+    'Chemical Engineering (ChE)',
+    'Aerospace Engineering',
+    'Aerospace Engineering (AE)',
+    'Biomedical Engineering',
+    'Software Engineering',
+    'Software Engineering (SE)',
+    'Data Science',
+    'Data Science (DS)',
+    'Artificial Intelligence',
+    'Artificial Intelligence (AI)',
+    'Machine Learning',
+    'Machine Learning (ML)',
+    'Cyber Security',
+    'Cyber Security (CS)',
+    'Web Development',
+    'Biotechnology',
+    'Biotechnology (BT)',
+    'Automobile Engineering',
+    'Automobile Engineering (Auto)',
+    'Production Engineering',
+    'Production Engineering (PE)',
+    'Industrial Engineering',
+    'Industrial Engineering (IE)',
+    'Commerce',
+    'Management',
+    'Arts',
+    'Science',
+    'Sample Branch',
+    'Other'
   ];
 
-  // Semester options
-  const semesterOptions = [1, 2, 3, 4, 5, 6, 7, 8];
+  // Semester options - expanded to handle different formats
+  const semesterOptions = [
+    { value: '0', label: 'Select Semester' },
+    { value: '1', label: '1st Semester' },
+    { value: '2', label: '2nd Semester' },
+    { value: '3', label: '3rd Semester' },
+    { value: '4', label: '4th Semester' },
+    { value: '5', label: '5th Semester' },
+    { value: '6', label: '6th Semester' },
+    { value: '7', label: '7th Semester' },
+    { value: '8', label: '8th Semester' },
+    { value: '9', label: 'Pass out' }
+  ];
 
   useEffect(() => {
-    if (member) {
-      setFormData({
-        fullName: member.fullName || '',
-        email: member.email || '',
-        phone: member.phone || '',
-        collegeName: member.collegeName || '',
-        course: member.course || '',
-        collegeBranch: member.collegeBranch || '',
-        collegeSemester: member.collegeSemester || '',
-        GitHubProfile: member.GitHubProfile || ''
-      });
+    if (member && Object.keys(member).length > 0) {
+      console.log("EditMember - Received member data:", member);
+      console.log("EditMember - Member keys:", Object.keys(member));
+      
+      // Handle different possible data structures
+      const memberData = member.user || member.member || member;
+      
+      // Enhanced data extraction with better handling
+      const course = memberData.course || '';
+      const branch = memberData.collegeBranch || memberData.branch || '';
+      const semester = memberData.collegeSemester ? memberData.collegeSemester.toString() : '';
+      
+      console.log("EditMember - Raw course:", course);
+      console.log("EditMember - Raw branch:", branch);  
+      console.log("EditMember - Raw semester:", semester);
+      console.log("EditMember - Available course options:", courseOptions);
+      console.log("EditMember - Available branch options:", branchOptions);
+      
+      const newFormData = {
+        fullName: memberData.fullName || memberData.name || '',
+        email: memberData.email || '',
+        phone: memberData.phone || memberData.phoneNumber || '',
+        city: memberData.city || '',
+        state: memberData.state || '',
+        collegeName: memberData.collegeName || memberData.college || '',
+        course: course,
+        collegeBranch: branch,
+        collegeSemester: semester,
+        GitHubProfile: memberData.GitHubProfile || memberData.github || ''
+      };
+      
+      console.log("EditMember - Processed member data:", memberData);
+      console.log("EditMember - Setting form data:", newFormData);
+      setFormData(newFormData);
+      setErrors({});
+      setIsModified(false);
+    } else {
+      console.log("EditMember - No valid member data received:", member);
     }
   }, [member]);
 
@@ -181,8 +290,36 @@ const EditMember = ({
     }
   };
 
-  if (!isOpen || !member) {
+  if (!isOpen) {
     return null;
+  }
+
+  if (!member || Object.keys(member).length === 0) {
+    console.log("EditMember - No valid member data provided:", member);
+    return (
+      <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-2 md:p-4">
+        <div className="bg-white rounded-xl shadow-xl p-6">
+          <div className="flex items-center gap-3 text-red-600">
+            <AlertCircle className="w-5 h-5" />
+            <div>
+              <p className="font-medium">No member data available</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {!member ? "Member object is null/undefined" : "Member object is empty"}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                Received: {JSON.stringify(member)}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onCancel}
+            className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -192,7 +329,7 @@ const EditMember = ({
         <div className="p-4 md:p-6 border-b border-gray-200 bg-gradient-to-r from-[#0B2A4A] to-[#1e3a5f] text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white font-bold text-lg md:text-xl bg-white bg-opacity-20">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-black font-bold text-lg md:text-xl bg-white bg-opacity-20">
                 {member.fullName ? member.fullName.charAt(0).toUpperCase() : 'M'}
               </div>
               <div>
@@ -202,7 +339,7 @@ const EditMember = ({
             </div>
             <button
               onClick={handleCancel}
-              className="p-1 md:p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              className="p-1 md:p-2 hover:bg-white hover:text-black hover:bg-opacity-20 rounded-lg transition-colors"
               title="Close"
             >
               <X className="w-5 h-5 md:w-6 md:h-6" />
@@ -211,6 +348,7 @@ const EditMember = ({
         </div>
 
         <div className="p-4 md:p-6">
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             {/* Personal Information */}
             <div className="space-y-3 md:space-y-4">
@@ -288,6 +426,31 @@ const EditMember = ({
                   <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
                     {errors.phone}
+                  </p>
+                )}
+              </div>
+
+              {/* City */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City
+                </label>
+                <div className="relative">
+                  <MapPin className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+                  <input
+                    type="text"
+                    value={formData.city}
+                    onChange={(e) => handleInputChange('city', e.target.value)}
+                    className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent text-sm ${
+                      errors.city ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter city"
+                  />
+                </div>
+                {errors.city && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.city}
                   </p>
                 )}
               </div>
@@ -417,9 +580,8 @@ const EditMember = ({
                       errors.collegeSemester ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
-                    <option value="">Select Semester</option>
                     {semesterOptions.map(sem => (
-                      <option key={sem} value={sem}>Semester {sem}</option>
+                      <option key={sem.value} value={sem.value}>{sem.label}</option>
                     ))}
                   </select>
                 </div>
@@ -427,6 +589,67 @@ const EditMember = ({
                   <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
                     {errors.collegeSemester}
+                  </p>
+                )}
+              </div>
+
+              {/* State */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  State
+                </label>
+                <div className="relative">
+                  <Globe className="w-4 h-4 absolute left-3 top-3 text-gray-400 z-10" />
+                  <select
+                    value={formData.state}
+                    onChange={(e) => handleInputChange('state', e.target.value)}
+                    className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent text-sm appearance-none bg-white ${
+                      errors.state ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  >
+                    <option value="">Select State</option>
+                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                    <option value="Assam">Assam</option>
+                    <option value="Bihar">Bihar</option>
+                    <option value="Chhattisgarh">Chhattisgarh</option>
+                    <option value="Goa">Goa</option>
+                    <option value="Gujarat">Gujarat</option>
+                    <option value="Haryana">Haryana</option>
+                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                    <option value="Jharkhand">Jharkhand</option>
+                    <option value="Karnataka">Karnataka</option>
+                    <option value="Kerala">Kerala</option>
+                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Manipur">Manipur</option>
+                    <option value="Meghalaya">Meghalaya</option>
+                    <option value="Mizoram">Mizoram</option>
+                    <option value="Nagaland">Nagaland</option>
+                    <option value="Odisha">Odisha</option>
+                    <option value="Punjab">Punjab</option>
+                    <option value="Rajasthan">Rajasthan</option>
+                    <option value="Sikkim">Sikkim</option>
+                    <option value="Tamil Nadu">Tamil Nadu</option>
+                    <option value="Telangana">Telangana</option>
+                    <option value="Tripura">Tripura</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                    <option value="Uttarakhand">Uttarakhand</option>
+                    <option value="West Bengal">West Bengal</option>
+                    <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                    <option value="Chandigarh">Chandigarh</option>
+                    <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                    <option value="Ladakh">Ladakh</option>
+                    <option value="Lakshadweep">Lakshadweep</option>
+                    <option value="Puducherry">Puducherry</option>
+                  </select>
+                </div>
+                {errors.state && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.state}
                   </p>
                 )}
               </div>
