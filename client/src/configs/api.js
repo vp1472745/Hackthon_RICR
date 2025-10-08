@@ -255,5 +255,18 @@ export const homeAPI = {
 };
 
 
+export const accomodationAPI = {
+    // Create a new accomodation booking
+    createAccomodation: (data) => api.post('/accomodations', data),
+    // Get all accomodation bookings (optionally filter by teamid)
+    getAllAccomodations: (params) => api.get('/accomodations', { params }),
+    // Get a single accomodation by id
+    getAccomodationById: (id) => api.get(`/accomodations/${id}`),
+    // Update an accomodation by id
+    updateAccomodation: (id, data) => api.put(`/accomodations/${id}`, data),
+    // Delete an accomodation by id
+    deleteAccomodation: (id) => api.delete(`/accomodations/${id}`),
+};
+
 
 export default api;

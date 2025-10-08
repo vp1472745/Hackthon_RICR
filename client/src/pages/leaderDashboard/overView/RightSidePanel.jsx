@@ -165,7 +165,7 @@ const RightSidePanel = () => {
   }, []);
 
   return (
-    <div className="space-y-4 sm:space-y-6 p-3 sm:p-4 md:p-6 bg-gray-50 min-h-screen">
+    <div className="sm:space-y-6 p-3 sm:p-4 md:p-6 bg-gray-50 min-h-screen">
       {/* Selected Theme Card */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-5 md:p-6">
         <div className="flex flex-col sm:flex-row items-center gap-3 mb-4 sm:mb-5">

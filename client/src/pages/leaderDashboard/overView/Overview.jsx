@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast';
 import TeamProfileCard from './TeamProfileCard';
 import HackathonTimer from './HackathonTimer';
 import { Users, Target, Award, RefreshCw, AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';
-
+import Accomodation from './accomodation';
 const Overview = () => {
   // Get data from sessionStorage
   const teamData = JSON.parse(sessionStorage.getItem('hackathonUser')) || {};
@@ -47,7 +47,7 @@ const Overview = () => {
       setError('Using offline data');
       const storedProfile = sessionStorage.getItem('leaderProfile');
       const storedMembers = sessionStorage.getItem('apiTeamMembers');
-      
+
       if (storedProfile) {
         const profile = JSON.parse(storedProfile);
         setLeaderProfile(profile);
@@ -103,10 +103,10 @@ const Overview = () => {
     const registrationComplete = !!sessionStorage.getItem('registrationData');
 
     return {
-        totalMembers,
-        teamComplete,
-        themeSelected,
-        registrationComplete
+      totalMembers,
+      teamComplete,
+      themeSelected,
+      registrationComplete
     };
   };
 
@@ -122,7 +122,7 @@ const Overview = () => {
               You're viewing cached data. Some information might not be up to date.
             </p>
           </div>
-          <button 
+          <button
             onClick={handleRefresh}
             className="text-yellow-800 hover:text-yellow-900 text-xs sm:text-sm font-medium flex-shrink-0 ml-2"
           >
@@ -138,19 +138,25 @@ const Overview = () => {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-        {/* Left Side - Team Profiles (2/3 width on large screens) */}
-        <div className="lg:col-span-2">
-          <TeamProfileCard
-            leaderProfile={leaderProfile}
-            teamData={teamData}
-            apiTeamMembers={apiTeamMembers}
-            teamMembers={teamMembers}
-            loading={loading}
-            error={error}
-            fetchLeaderProfile={fetchLeaderProfile}
-          />
-        </div>
 
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+
+          {/* Left Side - Team Profiles (2/3 width on large screens) */}
+          <div >
+            <TeamProfileCard
+              leaderProfile={leaderProfile}
+              teamData={teamData}
+              apiTeamMembers={apiTeamMembers}
+              teamMembers={teamMembers}
+              loading={loading}
+              error={error}
+              fetchLeaderProfile={fetchLeaderProfile}
+            />
+          </div>
+          <div>
+            <Accomodation />
+          </div>
+        </div>
         {/* Right Side Panel (1/3 width on large screens) */}
         <div className="lg:col-span-1">
           <RightSidePanel
@@ -159,6 +165,7 @@ const Overview = () => {
           />
         </div>
       </div>
+
     </div>
   );
 };
