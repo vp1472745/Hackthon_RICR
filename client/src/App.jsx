@@ -11,7 +11,7 @@ import AdminDashboard from "./pages/superAdminDashboard/adminDashboard.jsx"; // 
 import AdminRegister from "./pages/superAdminDashboard/Tab/adminRegister.jsx"; // fixed name
 import SubAdminDashboard from "./pages/subAdminDashboard/subAdminDashboard.jsx";
 import MemberDashboard from "./pages/memberDashboard/memberDashboard.jsx";
-
+import RoadMap from "../src/components/content/roadMap.jsx";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {  Toaster } from "react-hot-toast";
@@ -43,6 +43,7 @@ function App() {
                       <Route path="/dashboard/admin-register" element={<AdminRegister />} />
                       <Route path="/dashboard/sub-admin" element={<SubAdminDashboard />} />
                       <Route path="/member-dashboard" element={<MemberDashboard />} />
+                    <Route path="/roadmap" element={<RoadMap />} />
                     </Routes>
                   </main>
                 </>

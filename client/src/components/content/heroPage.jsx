@@ -30,7 +30,7 @@ function HeroPage() {
             {/* Subheading */}
             <div className="inline-flex items-center bg-[#1D5B9B]/10 px-4 py-2 rounded-full mb-6">
               <span className="text-xs md:text-base font-semibold text-[#1D5B9B] flex items-center gap-2">
-                Conducted by  <span className='font-bold'>NIST</span> <span className='text-red-500 text-2xl'><FaHandshake /></span>  Powered by <span className='font-bold'>RICR</span>
+                Conducted by  <span className='font-bold'>NIIST</span> <span className='text-red-500 text-2xl'><FaHandshake /></span>  Powered by <span className='font-bold'>RICR</span>
               </span>
             </div>
 

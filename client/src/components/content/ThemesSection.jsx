@@ -58,6 +58,7 @@ const getThemeIcon = (themeName) => {
 };
 
 export default function ThemesSection() {
+  const MAX_TEAMS = 10; // maximum teams allowed per theme
   const [isThemeModalOpen, setThemeModalOpen] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [isTeamsModalOpen, setTeamsModalOpen] = useState(false);
@@ -158,7 +159,10 @@ export default function ThemesSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {themes.map((theme, idx) => (
+          {themes.map((theme, idx) => {
+            const enrolled = theme.teamCount ?? 0;
+            const remaining = Math.max(0, MAX_TEAMS - enrolled);
+            return (
             <motion.article
               key={theme._id || idx}
               className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100 group "
@@ -175,7 +179,7 @@ export default function ThemesSection() {
                     {theme.themeName}
                   </h3>
                   <p className="text-xs text-orange-500 mt-1 font-bold">
-                    Max 10 teams can select this theme
+               Only 10 teams can select this theme.
                   </p>
                 </div>
               </div>
@@ -185,19 +189,12 @@ export default function ThemesSection() {
               <div className="flex justify-between items-center mt-4">
                 <div className="flex items-center gap-2 ">
                   {theme.teamCount !== undefined && (
-                    <button
-                      onClick={() => {
-                        setSelectedTeams({
-                          themeName: theme.themeName,
-                          teamCount: theme.teamCount,
-                          enrolledTeams: theme.enrolledTeams || []
-                        });
-                        setTeamsModalOpen(true);
-                      }}
-                      className="text-sm bg-[#0B2A4A] mt-3  text-white py-2 px-3 rounded-lg   cursor-pointer  transition-colors"
-                    >
-                      {theme.teamCount} team{theme.teamCount !== 1 ? 's' : ''} enrolled
-                    </button>
+                    // Show remaining only if at least one team has enrolled; hide when 0 enrolled
+                    enrolled > 0 ? (
+                      <span className={`inline-block text-sm mt-3 text-white py-2 px-3 rounded-lg ${remaining === 0 ? 'bg-red-500' : 'bg-[#0B2A4A]'}`}>
+                        {remaining > 0 ? `${remaining} left` : 'Full'}
+                      </span>
+                    ) : null
                   )}
                 </div>
                 <button
@@ -224,7 +221,8 @@ export default function ThemesSection() {
                 </button>
               </div>
             </motion.article>
-          ))}
+            );
+          })}
         </motion.div>
       </section>
       <HackathonThemeModal
@@ -247,7 +245,13 @@ export default function ThemesSection() {
 
             <div className="mb-6">
               <h2 className="text-xl font-bold text-gray-800 mb-2">Enrolled Teams</h2>
-              <p className="text-sm text-gray-600">{selectedTeams.themeName}</p>
+              {(() => {
+                const enrolled = selectedTeams.teamCount ?? 0;
+                const remaining = Math.max(0, MAX_TEAMS - enrolled);
+                return (
+                  <p className="text-sm text-gray-600">{selectedTeams.themeName} • {remaining > 0 ? `${remaining} left` : 'Full'}</p>
+                );
+              })()}
               <div className="h-1 w-full bg-blue-500 rounded mt-4 mb-6"></div>
 
               <div className="max-h-96 overflow-y-auto">
@@ -286,7 +290,7 @@ export default function ThemesSection() {
                   <div className="text-center py-8">
                     <p className="text-gray-500">No team details available</p>
                     <p className="text-sm text-gray-400 mt-1">
-                      {selectedTeams.teamCount} team{selectedTeams.teamCount !== 1 ? 's' : ''} enrolled
+                      {Math.max(0, MAX_TEAMS - (selectedTeams.teamCount ?? 0)) > 0 ? `${Math.max(0, MAX_TEAMS - (selectedTeams.teamCount ?? 0))} slots left` : 'Full'}
                     </p>
                   </div>
                 )}

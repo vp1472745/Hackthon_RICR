@@ -6,6 +6,7 @@ import ThemesSection from "../components/content/ThemesSection";
 import ContactSection from "../components/content/ContactSection";
 import FAQSection from "../components/content/FAQSection";
 import RegistrationCTASection from "../components/content/RegistrationCTASection";
+import Process from '../components/content/roadMap.jsx';
 
 function Home() {
   return (
@@ -16,6 +17,7 @@ function Home() {
       {/* Main Content */}
       <main className="flex-1 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 lg:space-y-20">
+         <Process />
           <FeaturesSection />
           <EventDetailsSection />
           <ThemesSection />
