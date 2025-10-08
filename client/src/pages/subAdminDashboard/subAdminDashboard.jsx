@@ -5,6 +5,7 @@ import TeamManageTab from './Tab/subTeamManageTab.jsx';
 import ThemeManageTab from './Tab/subThemeManageTab.jsx';
 import ResultManageTab from './Tab/subResultManageTab.jsx';
 import PsManageTab from './Tab/subPSManageTab.jsx';
+import Accomodation from './Tab/subAccomodation.jsx';
 import { usePermissions } from '../../hooks/usePermissions.js';
 
 const Home = ({ onTabChange }) => <div><Overview onTabChange={onTabChange} /></div>;
@@ -13,6 +14,7 @@ const Theme = () => <div><ThemeManageTab /></div>;
 const Result = () => <div><ResultManageTab /></div>;
 const Ps = () => <div><PsManageTab /></div>;
 const AdminAccess = () => <div>Admin Access Tab</div>;
+const AccomodationTab = () => <div><Accomodation /></div>;  
 const LoggedOut = () => <div className="p-8">You are logged out.</div>;
 
 export default function AdminDashboard() {
@@ -27,6 +29,8 @@ export default function AdminDashboard() {
     'Theme': 'manageThemes',
     'Result': 'manageResults',
     'Ps': 'manageProblemStatements'
+    ,
+    'Accomodation': 'manageAccomodations'
   };
 
   // Find first available tab based on permissions
@@ -87,6 +91,8 @@ export default function AdminDashboard() {
     content = <Result />;
   } else if (activeTab === 'Ps' && hasPermission('manageProblemStatements')) {
     content = <Ps />;
+  } else if (activeTab === 'Accomodation' && hasPermission('manageAccomodations')) {
+    content = <AccomodationTab />;
   } else if (activeTab === 'logout') {
     content = <LoggedOut />;
   } else {

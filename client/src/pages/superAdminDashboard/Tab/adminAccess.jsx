@@ -8,6 +8,7 @@ const ALL_PERMISSIONS = [
   { key: 'manageThemes', label: 'Access Theme Management', category: 'Dashboard Tabs' },
   { key: 'manageResults', label: 'Access Result Management', category: 'Dashboard Tabs' },
   { key: 'manageProblemStatements', label: 'Access Problem Statement Management', category: 'Dashboard Tabs' },
+  { key: 'manageAccomodations', label: 'Access Accommodation Management', category: 'Dashboard Tabs' },
 
   // User & Team Permissions
   { key: 'viewUsers', label: 'View Users', category: 'Overview' },

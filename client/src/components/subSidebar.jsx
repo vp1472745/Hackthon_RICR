@@ -44,6 +44,12 @@ const NAV_ITEMS = [
     icon: <FiFileText size={20} />,
     permission: "manageProblemStatements"
   },
+   {
+    key: "Accomodation",
+    label: "Accommodation Manage",
+    icon: <FiFileText size={20} />,
+    permission: "manageAccomodations"
+  },
 ];
 
 const Sidebar = ({ onTabChange = () => { }, activeTab = "Home" }) => {

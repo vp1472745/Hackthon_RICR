@@ -19,6 +19,7 @@ const NAV_ITEMS = [
   { key: "Ps", label: "PS Manage", icon: <FiFileText size={20} /> },
   { key: "Result", label: "Result Manage", icon: <FiAward size={20} /> },
   { key: "Admin Access", label: "Admin Access", icon: <FiUsers size={20} /> },
+  {key:"Accomodation", label:"Accomodation Manage", icon:<FiLayers size={20}/>},
 ];
 
 const Sidebar = ({ onTabChange = () => { }, activeTab = "Home" }) => {
