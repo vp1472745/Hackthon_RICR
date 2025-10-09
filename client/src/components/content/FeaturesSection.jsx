@@ -20,7 +20,7 @@ const FEATURES = [
   {
     icon: <FaHandshake />,
     title: "Industry Collaboration",
-    description: "Partner with NIIST Institute of Technology and connect with industry professionals",
+    description: "Connect with industry professionals",
   },
 ];
 
@@ -28,7 +28,7 @@ export default function FeaturesSection() {
   return (
     <section className="w-full py-6 md:py-10">
       <SectionHeader
-        title="Why Join FutureMaze?"
+        title="Rewards and Benefits"
         subtitle="Discover the unique opportunities that make FutureMaze the premier hackathon experience"
       />
 

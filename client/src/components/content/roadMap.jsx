@@ -1,17 +1,15 @@
 import React from 'react';
 import { Rocket, Target, Zap } from 'lucide-react';
-
+import TimeLine from '../../assets/eventTimeLine.png';
 const RoadMap = () => {
   const steps = [
-    { title: "Register Your Team", description: "Create your team account with basic details", color: "blue" },
-    { title: "Verify Your Account", description: "Confirm your email and phone number (Whatsapp) via OTP", color: "green" },
-    { title: "Complete Payment", description: "Secure your participation with payment", color: "purple" },
-    { title: "Login to Dashboard", description: "Access your personalized team workspace", color: "orange" },
-    { title: "Fill Leader Details", description: "Complete your profile", color: "pink" },
-    { title: "Add Team Members", description: "Invite and manage your teammates", color: "indigo" },
-    { title: "Select Project Theme", description: "Choose your hackathon project focus area", color: "teal" },
-    { title: "Accept Terms & Conditions", description: "Review and agree to competition guidelines", color: "red" },
-    { title: "Access Full Dashboard", description: "Start building your amazing project", color: "yellow" }
+    { title: "Registration Open", date: "6 oct 2025", time: "09:00 AM", color: "blue" },
+    { title: "Registration Close", date: "6 oct 2025", time: "09:15 AM", color: "green" },
+    { title: "Hackathon Begins", date: "6 oct 2025", time: "09:30 AM", color: "purple" },
+    { title: "Hackathon Finales", date: "6 oct 2025", time: "10:00 AM", color: "orange" },
+    { title: "Results Announcement", date: "6 oct 2025", time: "10:15 AM", color: "pink" },
+    { title: "Prizes Distribution", date: "6 oct 2025", time: "10:30 AM", color: "indigo" },
+
   ];
 
   const getColorClasses = (color) => {
@@ -33,10 +31,10 @@ const RoadMap = () => {
     <div className="bg-white rounded-2xl border border-gray-200 shadow-xl p-8 mt-10 w-full">
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-          <Rocket className="w-10 h-10 text-white" />
+        <div className="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-1">
+   <img src={TimeLine} alt="" />
         </div>
-        <h3 className="text-3xl font-bold text-gray-900 mb-4">Start Your Hackathon Journey</h3>
+        <h3 className="text-3xl font-bold text-gray-900 mb-4">Event Time line</h3>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
           Follow these simple steps to join the competition and showcase your skills
         </p>
@@ -45,24 +43,38 @@ const RoadMap = () => {
       {/* Steps Grid - Pure Information */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {steps.map((step, index) => {
+          // Only the first step is clickable
+          const isClickable = index === 0;
+          const handleClick = () => {
+            // You can replace this with navigation or modal logic as needed
+            window.location.href = '/register';
+          };
           return (
-            <div 
+            <div
               key={index}
-              className="group p-6 border border-gray-200 rounded-2xl hover:shadow-2xl transition-all duration-500 hover:scale-105 bg-gradient-to-br from-white to-gray-50"
+              className={
+                `group p-6 border border-gray-200 rounded-2xl hover:shadow-2xl transition-all duration-500 hover:scale-105 bg-gradient-to-br from-white to-gray-50 ` +
+                (isClickable ? 'cursor-pointer ring-2 ring-blue-300 hover:ring-blue-500' : '')
+              }
+              onClick={isClickable ? handleClick : undefined}
+              tabIndex={isClickable ? 0 : undefined}
+              role={isClickable ? 'button' : undefined}
+              aria-pressed={isClickable ? 'false' : undefined}
             >
               <div className="flex flex-col items-center text-center">
                 {/* Number inside colored background (replaces icon) */}
                 <div className={`w-16 h-16 ${getColorClasses(step.color)} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-all duration-300 shadow-lg`}>
                   <span className="text-white font-bold text-2xl">{index + 1}</span>
                 </div>
-                
+
                 {/* Content */}
-                <h4 className="font-bold text-gray-900 text-lg mb-3 group-hover:text-gray-800 transition-colors">
+                <h4 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-gray-800 transition-colors">
                   {step.title}
                 </h4>
-                <p className="text-gray-600 leading-relaxed">
-                  {step.description}
-                </p>
+                <div className="flex flex-row  items-center gap-10">
+                  <span className="text-gray-700 text-sm font-medium">{step.date}</span>
+                  <span className="text-gray-500 text-xs">{step.time}</span>
+                </div>
               </div>
             </div>
           );
