@@ -26,7 +26,7 @@ export function SectionHeader({ title, subtitle }) {
 export function FeatureCard({ icon, title, description }) {
   return (
     <motion.article
-      className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100 group cursor-pointer"
+      className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100 group"
       variants={itemVariants}
       whileHover="hover"
       whileTap={{ scale: 0.98 }}
