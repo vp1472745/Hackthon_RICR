@@ -136,7 +136,7 @@ const Accomodation = () => {
                   <select name="book" value={form.book} onChange={handleChange} className="w-full cursor-pointer border px-3 py-2 rounded appearance-none">
                     <option value="">Select accommodation</option>
                     <option value="RICR Hostel">RICR Hostel</option>
-                    <option value="NIST Hostel">NIST Hostel</option>
+                    <option value="NIST Hostel">NIIST Hostel</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
                     <ChevronDown className="w-4 h-4 text-gray-500" />
