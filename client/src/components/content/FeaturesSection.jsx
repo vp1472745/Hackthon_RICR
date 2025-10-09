@@ -20,7 +20,7 @@ const FEATURES = [
   {
     icon: <FaHandshake />,
     title: "Industry Collaboration",
-    description: "Partner with NRI Institute of Technology and connect with industry professionals",
+    description: "Partner with NIIST Institute of Technology and connect with industry professionals",
   },
 ];
 

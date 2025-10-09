@@ -69,7 +69,7 @@ export default function EventDetailsSection() {
             </InfoCard>
 
             <InfoCard icon={<FaMapMarkerAlt />} heading="Venue">
-              <p className="text-gray-700 font-medium">NRI Institute of Technology</p>
+              <p className="text-gray-700 font-medium">NIIST Institute of Technology</p>
               <a
                 href="https://maps.google.com/?q=NRI+College+Science+Technology+Bhopal"
                 target="_blank"
