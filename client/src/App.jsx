@@ -12,6 +12,7 @@ import AdminRegister from "./pages/superAdminDashboard/Tab/adminRegister.jsx"; /
 import SubAdminDashboard from "./pages/subAdminDashboard/subAdminDashboard.jsx";
 import MemberDashboard from "./pages/memberDashboard/memberDashboard.jsx";
 import RoadMap from "../src/components/content/roadMap.jsx";
+import JuryPanel from "../src/components/content/juryPanel.jsx"
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {  Toaster } from "react-hot-toast";
@@ -44,6 +45,7 @@ function App() {
                       <Route path="/dashboard/sub-admin" element={<SubAdminDashboard />} />
                       <Route path="/member-dashboard" element={<MemberDashboard />} />
                     <Route path="/roadmap" element={<RoadMap />} />
+                    <Route path="/jury-panel" element={<JuryPanel />} />
                     </Routes>
                   </main>
                 </>

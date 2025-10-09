@@ -7,6 +7,7 @@ import ContactSection from "../components/content/ContactSection";
 import FAQSection from "../components/content/FAQSection";
 import RegistrationCTASection from "../components/content/RegistrationCTASection";
 import Process from '../components/content/roadMap.jsx';
+import JuryPanel from '../components/content/juryPanel.jsx';
 
 function Home() {
   return (
@@ -21,6 +22,7 @@ function Home() {
           <FeaturesSection />
           <EventDetailsSection />
           <ThemesSection />
+          <JuryPanel />
           <ContactSection />
           <FAQSection />
           <RegistrationCTASection />

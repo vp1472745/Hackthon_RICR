@@ -189,16 +189,20 @@ export default function ThemesSection() {
               <div className="flex justify-between items-center mt-4">
                 <div className="flex items-center gap-2 ">
                   {theme.teamCount !== undefined && (
-                    // Show remaining only if at least one team has enrolled; hide when 0 enrolled
+                    // Show remaining and total, e.g., '7 left (of 10)' or 'Full (of 10)'
                     enrolled > 0 ? (
-                      <span className={`inline-block text-sm mt-3 text-white py-2 px-3 rounded-lg ${remaining === 0 ? 'bg-red-500' : 'bg-[#0B2A4A]'}`}>
+                      <span className={`inline-block text-sm mt-3 text-white py-2 px-5 rounded-lg ${remaining === 0 ? 'bg-red-500' : 'bg-[#0B2A4A]'}`}>
                         {remaining > 0 ? `${remaining} left` : 'Full'}
                       </span>
-                    ) : null
+                    ) : (
+                      <span className={`inline-block text-sm mt-3 text-white py-2 px-5 rounded-lg bg-[#0B2A4A]`}>
+                        {`${MAX_TEAMS} left`}
+                      </span>
+                    )
                   )}
                 </div>
                 <button
-                  className="text-sm bg-[#0B2A4A]  text-white mt-3   py-2 px-3 rounded-lg   cursor-pointer  transition-colors"
+                  className="text-sm bg-[#0B2A4A]  text-white mt-3   py-2 px-5 rounded-lg   cursor-pointer  transition-colors"
                   type="button"
                   onClick={() => {
                     setThemeModalOpen(true);

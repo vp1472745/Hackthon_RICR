@@ -122,7 +122,7 @@ const LeaderDetails = () => {
               <User className="w-8 h-8 md:w-10 md:h-10 text-[#0B2A4A]" />
             </div>
             <h1 className="text-xl md:text-3xl font-bold text-[#0B2A4A] mb-2">
-              FutureMaze Registration
+          Registration
             </h1>
             <p className="text-gray-600 text-sm md:text-base">
               Enter your details to get started with the registration process

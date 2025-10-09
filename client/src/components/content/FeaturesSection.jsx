@@ -7,11 +7,13 @@ import {
 import { SectionHeader, FeatureCard } from "./SharedComponents";
 
 const FEATURES = [
-  {
-    icon: <FaRocket />,
-    title: "Innovation Challenge",
-    description: "Push the boundaries of technology and create groundbreaking solutions that can change the world",
-  },
+{
+  icon: <FaRocket />,
+  title: "Innovation Challenge",
+  description:
+    "Show your creativity, build something amazing, and get a Certificate of Participation for joining the challenge!",
+}
+,
   {
     icon: <FaTrophy />,
     title: "₹40,000 Prize Pool",
@@ -29,7 +31,7 @@ export default function FeaturesSection() {
     <section className="w-full py-6 md:py-10">
       <SectionHeader
         title="Rewards and Benefits"
-        subtitle="Discover the unique opportunities that make FutureMaze the premier hackathon experience"
+       
       />
 
       <div

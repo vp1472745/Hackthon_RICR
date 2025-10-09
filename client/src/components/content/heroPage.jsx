@@ -62,11 +62,14 @@ function HeroPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#0B2A4A]">
-                  Nov 7<sup>th</sup> - 8<sup>th</sup>
-                </div>
-                <div className="text-xs sm:text-sm text-gray-600 mt-1">
-                  Block Your Calendar
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 text-lg sm:text-xl md:text-2xl font-bold text-[#0B2A4A]">
+                    <FaClock className="text-[#0B2A4A] text-xl md:text-2xl" />
+                    <span>Nov 7<sup>th</sup> - 8<sup>th</sup></span>
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-600 mt-1">
+                    Block Your Calendar
+                  </div>
                 </div>
               </a>
             </div>

@@ -98,12 +98,21 @@ const Navbar = () => {
               Logout
             </button>
           ) : (
-            <Link
-              to="/login"
-              className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-md px-4 py-1 transition-colors duration-200"
-            >
-              Login
-            </Link>
+            <>
+                    <Link
+                to="/register"
+                className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-md px-4 py-1 transition-colors duration-200 mr-2"
+              >
+                Register
+              </Link>
+              <Link
+                to="/login"
+                className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-md px-4 py-1 transition-colors duration-200 mr-2"
+              >
+                Login
+              </Link>
+      
+            </>
           )}
         </div>
 
@@ -216,13 +225,22 @@ const Navbar = () => {
                 Logout
               </button>
             ) : (
-              <Link
-                to="/login"
-                onClick={closeMobileMenu}
-                className="block w-full bg-[#2A6EBB] hover:bg-[#1D5B9B] text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center"
-              >
-                Login
-              </Link>
+              <div className="flex gap-2">
+                <Link
+                  to="/login"
+                  onClick={closeMobileMenu}
+                  className="w-1/2 bg-[#2A6EBB] hover:bg-[#1D5B9B] text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={closeMobileMenu}
+                  className="w-1/2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center"
+                >
+                  Register
+                </Link>
+              </div>
             )}
           </div>
         </div>

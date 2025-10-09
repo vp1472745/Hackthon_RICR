@@ -35,9 +35,7 @@ const RoadMap = () => {
    <img src={TimeLine} alt="" />
         </div>
         <h3 className="text-3xl font-bold text-gray-900 mb-4">Event Time line</h3>
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Follow these simple steps to join the competition and showcase your skills
-        </p>
+    
       </div>
 
       {/* Steps Grid - Pure Information */}
