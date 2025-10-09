@@ -50,7 +50,7 @@ export default function JuryPanel() {
                 {/* Header Section */}
                 <div className="text-center mb-12">
                     <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
-                     <span className="text-indigo-600">Jury Panel</span>
+                     <span className="text-[#0B2A4A]">Jury Panel</span>
                     </h2>
          
                 </div>
@@ -117,7 +117,7 @@ export default function JuryPanel() {
                                             <img
                                                 src={jury.image}
                                                 alt={jury.name}
-                                                className="w-40 h-40 rounded-full object-cover object-top border-4 border-[#e0e7ff] group-hover:border-indigo-400 transition-all duration-300"
+                                                className="w-40 h-40 rounded-full object-cover object-top border-4 border-[#e0e7ff] group-hover:border-[#0B2A4A] transition-all duration-300"
                                                 style={{ objectPosition: 'center top' }}
                                             />
                                         </div>
