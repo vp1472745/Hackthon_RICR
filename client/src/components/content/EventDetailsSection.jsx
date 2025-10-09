@@ -142,7 +142,7 @@ const EventDetailsSection = () => {
                     </li>
                   </ul>
                   <a
-                    href="https://www.google.com/maps/place/NRI+Institute+of+Information+Science+and+Technology+(NIIST)/@23.2686453,77.4568717,17z/"
+                    href="https://www.google.com/maps/dir//Sajjan+Singh+Nagar,+1,+Raisen+Rd,+opposite+Patel+Nagar,+Gopal+Nagar,+Bhopal,+Madhya+Pradesh+462022/@23.2451782,77.4208153,24378m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x397c41b8d60d7f93:0x38dffbf7821e45de!2m2!1d77.5032169!2d23.2451997?entry=ttu&g_ep=EgoyMDI1MTAwNi4wIKXMDSoASAFQAw%3D%3D"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center mt-3 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
