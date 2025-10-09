@@ -32,12 +32,23 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Validate GitHub profile URL: must start with https://github.com/ and have a username after
+  const isValidGithubUrl = (url) => {
+    if (!url) return false;
+    // Must start with https://github.com/ and have at least one character after
+    const pattern = /^https:\/\/github\.com\/[A-Za-z0-9_-]+(\/?)*$/;
+    return pattern.test(url.trim());
+  };
+
   const isFormValid = () => {
     const requiredFields = ['fullName', 'email', 'phone', 'collegeName', 'course', 'collegeBranch', 'collegeSemester', 'GitHubProfile', 'city', 'state'];
-    return requiredFields.every((field) => {
+    const allFilled = requiredFields.every((field) => {
       const v = formData[field];
       return v !== undefined && v !== null && v !== '' && v !== 'N/A' && v !== '0';
     });
+    // Add GitHub URL validation
+    if (!isValidGithubUrl(formData.GitHubProfile)) return false;
+    return allFilled;
   };
 
   // Utility: try to extract userId from multiple sessionStorage shapes
@@ -163,8 +174,14 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
   };
 
   const handleNext = async () => {
+    setErrorMsg('');
     if (!isFormValid()) {
-      toast.error('Please fill all required fields before proceeding.');
+      if (!isValidGithubUrl(formData.GitHubProfile)) {
+        setErrorMsg('GitHub profile must start with https://github.com/ and include your username.');
+        toast.error('Please enter a valid GitHub profile URL.');
+      } else {
+        toast.error('Please fill all required fields before proceeding.');
+      }
       return;
     }
 
@@ -277,12 +294,13 @@ const Step1 = ({ setIsStep1Saved, setStep }) => {
                 value={formData.GitHubProfile || ''}
                 required
                 onChange={handleInputChange}
-                className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300"
+                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent border-gray-300 ${formData.GitHubProfile && formData.GitHubProfile !== 'N/A' && formData.GitHubProfile.length > 0 && !isValidGithubUrl(formData.GitHubProfile) ? 'border-red-500' : ''}`}
                 placeholder="https://github.com/username"
               />
             </div>
-
-
+            {formData.GitHubProfile && formData.GitHubProfile !== 'N/A' && formData.GitHubProfile.length > 0 && !isValidGithubUrl(formData.GitHubProfile) && (
+              <div className="text-red-500 text-xs mt-1">GitHub profile must start with https://github.com/ and include your username.</div>
+            )}
           </div>
 
 
