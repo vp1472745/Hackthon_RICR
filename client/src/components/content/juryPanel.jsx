@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import RajSir from "../../assets/RajSir.png";
-import PranaySir from "../../assets/PranaySir.png";
+import RajSir from "../../assets/rajSir.png";
+import PranaySir from "../../assets/pranaySir.png";
 
 const juryMembers = [
     {
