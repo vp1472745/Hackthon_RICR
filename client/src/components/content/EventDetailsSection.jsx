@@ -116,7 +116,7 @@ const EventDetailsSection = () => {
                     className="inline-flex items-center mt-3 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
                   >
                 <FaMapMarkerAlt className="mr-2" />
-                    View RICR Location
+                 View on Google Maps
                   </a>
                 </div>
 
@@ -166,7 +166,7 @@ const EventDetailsSection = () => {
             </InfoCard>
 
             <InfoCard icon={<FaMapMarkerAlt />} heading="Venue">
-              <p className="text-gray-700 font-medium">NRI Institute of Information Science and Technology (NIIST), located in Bhopal, Madhya Pradesh.</p>
+              <p className="text-gray-700 font-medium">NRI Institute of Information Science and Technology (NIIST), Bhopal, Madhya Pradesh.</p>
               <a
                 href="https://www.google.com/maps/place/NRI+Institute+of+Research+and+Technology+(NIRT),+Bhopal,+M.P/@23.2458624,77.5000911,762m/data=!3m2!1e3!4b1!4m6!3m5!1s0x397c412491bc4217:0x992321e57fea48dc!8m2!3d23.2458575!4d77.502666!16s%2Fg%2F11gj0tht90?entry=ttu&g_ep=EgoyMDI1MTAwNy4wIKXMDSoASAFQAw%3D%3D"
                 target="_blank"
