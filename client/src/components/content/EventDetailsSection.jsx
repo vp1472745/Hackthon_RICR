@@ -100,7 +100,7 @@ const EventDetailsSection = () => {
                     <li>Hostel facility available at RICR</li>
                     <li>
                       <button
-                        className="flex items-center gap-2 font-semibold text-[#0B2A4A] hover:text-green-700 focus:outline-none"
+                        className="flex items-center cursor-pointer gap-2 font-semibold text-[#0B2A4A] hover:text-green-700 focus:outline-none"
                         onClick={() => handlePhoneClick('+916268923703')}
                         type="button"
                       >
@@ -130,7 +130,7 @@ const EventDetailsSection = () => {
                     <li>Hostel facility available at NIIST</li>
                     <li>
                       <button
-                        className="flex items-center gap-2 font-semibold text-[#0B2A4A] hover:text-green-700 focus:outline-none"
+                        className="flex items-center gap-2 cursor-pointer font-semibold text-[#0B2A4A] hover:text-green-700 focus:outline-none"
                         onClick={() => handlePhoneClick('+916268923703')}
                         type="button"
                       >
