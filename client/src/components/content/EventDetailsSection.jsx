@@ -98,14 +98,13 @@ const EventDetailsSection = () => {
                   <ul className="space-y-2 text-gray-700">
                     <li className="font-semibold text-[#0B2A4A]">RICR Hostel</li>
                     <li>Hostel facility available at RICR</li>
-                    <li className="font-semibold text-[#0B2A4A]">₹300/night/person</li>
                     <li>
                       <button
                         className="flex items-center gap-2 font-semibold text-[#0B2A4A] hover:text-green-700 focus:outline-none"
                         onClick={() => handlePhoneClick('+916268923703')}
                         type="button"
                       >
-                        <FaPhoneAlt className="text-green-600" />
+                        <FaPhoneAlt className="text-blue-600" />
                         +91 62689 23703
                       </button>
                     </li>
@@ -114,9 +113,9 @@ const EventDetailsSection = () => {
                     href="https://www.google.com/maps/place/RICR+-+Raj+Institute+of+Coding+%26+Robotics+%7C+Best+Java+Coding+Classes+In+Bhopal/@23.2689676,77.4524774,17z/data=!3m2!4b1!5s0x397c69f43f4807e5:0x6396b47e29fb2ed7!4m6!3m5!1s0x397c6967f58e0dbf:0x65d0724cf8368e2d!8m2!3d23.2689627!4d77.4573483!16s%2Fg%2F11vzch1wzj?entry=ttu"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center mt-3 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+                    className="inline-flex items-center mt-3 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    <FaHome className="mr-2" />
+                <FaMapMarkerAlt className="mr-2" />
                     View RICR Location
                   </a>
                 </div>
@@ -129,27 +128,26 @@ const EventDetailsSection = () => {
                   <ul className="space-y-2 text-gray-700">
                     <li className="font-semibold text-[#0B2A4A]">NIIST Hostel</li>
                     <li>Hostel facility available at NIIST</li>
-                    <li className="font-semibold text-[#0B2A4A]">₹300/night/person</li>
                     <li>
                       <button
                         className="flex items-center gap-2 font-semibold text-[#0B2A4A] hover:text-green-700 focus:outline-none"
                         onClick={() => handlePhoneClick('+916268923703')}
                         type="button"
                       >
-                        <FaPhoneAlt className="text-green-600" />
+                        <FaPhoneAlt className="text-blue-600" />
                         +91 62689 23703
                       </button>
                     </li>
                   </ul>
-                  <a
-                    href="https://www.google.com/maps/dir//Sajjan+Singh+Nagar,+1,+Raisen+Rd,+opposite+Patel+Nagar,+Gopal+Nagar,+Bhopal,+Madhya+Pradesh+462022/@23.2451782,77.4208153,24378m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x397c41b8d60d7f93:0x38dffbf7821e45de!2m2!1d77.5032169!2d23.2451997?entry=ttu&g_ep=EgoyMDI1MTAwNi4wIKXMDSoASAFQAw%3D%3D"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center mt-3 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
-                  >
-                    <FaHome className="mr-2" />
-                    View NIIST Location
-                  </a>
+                 <a
+                href="https://www.google.com/maps/place/NRI+Institute+of+Research+and+Technology+(NIRT),+Bhopal,+M.P/@23.2458624,77.5000911,762m/data=!3m2!1e3!4b1!4m6!3m5!1s0x397c412491bc4217:0x992321e57fea48dc!8m2!3d23.2458575!4d77.502666!16s%2Fg%2F11gj0tht90?entry=ttu&g_ep=EgoyMDI1MTAwNy4wIKXMDSoASAFQAw%3D%3D"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center mt-3 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <FaMapMarkerAlt className="mr-2" />
+                View on Google Maps
+              </a>
                 </div>
               </div>
 
@@ -170,7 +168,7 @@ const EventDetailsSection = () => {
             <InfoCard icon={<FaMapMarkerAlt />} heading="Venue">
               <p className="text-gray-700 font-medium">NRI Institute of Information Science and Technology (NIIST), located in Bhopal, Madhya Pradesh.</p>
               <a
-                href="https://maps.google.com/?q=NRI+College+Science+Technology+Bhopal"
+                href="https://www.google.com/maps/place/NRI+Institute+of+Research+and+Technology+(NIRT),+Bhopal,+M.P/@23.2458624,77.5000911,762m/data=!3m2!1e3!4b1!4m6!3m5!1s0x397c412491bc4217:0x992321e57fea48dc!8m2!3d23.2458575!4d77.502666!16s%2Fg%2F11gj0tht90?entry=ttu&g_ep=EgoyMDI1MTAwNy4wIKXMDSoASAFQAw%3D%3D"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center mt-3 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"

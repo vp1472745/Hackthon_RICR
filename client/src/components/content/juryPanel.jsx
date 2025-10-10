@@ -64,7 +64,7 @@ export default function JuryPanel() {
                                 onClick={prevSlide}
                                 onMouseEnter={() => setIsPaused(true)}
                                 onMouseLeave={() => setIsPaused(false)}
-                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white hover:bg-indigo-600 text-slate-600 hover:text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 border border-slate-200"
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white  text-slate-600 hover:text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all duration-300  border-slate-200"
                                 aria-label="Previous slide"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,14 +110,14 @@ export default function JuryPanel() {
                                     }`}
                                 >
                                     <div
-                                        className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 p-8 flex flex-col items-center text-center border border-slate-200"
+                                        className="group bg-white rounded-lg shadow-md  transition-all duration-300 p-8 flex flex-col items-center text-center border border-slate-200"
                                     >
                                         {/* Image Container */}
                                         <div className="mb-1 h-[170px] mt-2 flex items-center justify-center">
                                             <img
                                                 src={jury.image}
                                                 alt={jury.name}
-                                                className="w-40 h-40 rounded-full object-cover object-top border-4 border-[#e0e7ff] group-hover:border-[#0B2A4A] transition-all duration-300"
+                                                className="w-40 h-40 rounded-full object-cover object-top border-4 border-[#e0e7ff]  transition-all duration-300"
                                                 style={{ objectPosition: 'center top' }}
                                             />
                                         </div>

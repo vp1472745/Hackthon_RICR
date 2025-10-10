@@ -2,9 +2,13 @@ import React from "react";
 import {
   FaRocket,
   FaTrophy,
-  FaHandshake
+  FaHandshake,
+
 } from 'react-icons/fa';
+import { GrCertificate } from "react-icons/gr";
+import Execulsive from "../../assets/exculsive.png";
 import { SectionHeader, FeatureCard } from "./SharedComponents";
+
 
 const FEATURES = [
   {
@@ -13,8 +17,8 @@ const FEATURES = [
     description: "Compete for exciting cash prizes and recognition in our flagship hackathon event",
   },
   {
-    icon: <FaRocket className="text-blue-600" />,
-    title: "Innovation Challenge",
+    icon: <GrCertificate className="text-blue-600" />,
+    title: "Participation Certificate",
     description: "Show your creativity and earn a Certificate of Participation!",
   },
 
@@ -26,7 +30,7 @@ const FEATURES = [
     description: "Connect with industry professionals",
   },
   {
-    icon: <FaRocket className="text-purple-600" />,
+    icon: <img src={Execulsive} alt="Exclusive Swags" className="w-14 h-14 object-contain" />,
     title: "Exclusive SWAGS",
     description: "Top participants will get exclusive SWAGS",
   }
