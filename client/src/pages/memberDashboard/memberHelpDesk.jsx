@@ -261,13 +261,7 @@ const HelpDesk = () => {
                   {filteredFaqs.length} questions in {selectedCategory === 'all' ? 'all categories' : helpCategories.find(cat => cat.id === selectedCategory)?.name.toLowerCase()}
                 </p>
               </div>
-              <button
-                onClick={() => setShowContactForm(true)}
-                className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold whitespace-nowrap"
-              >
-                <MessageCircle className="w-4 sm:w-5 h-4 sm:h-5" />
-                Contact Support
-              </button>
+
             </div>
           </div>
           
@@ -314,79 +308,7 @@ const HelpDesk = () => {
 
       </div>
 
-      {/* Contact Form Modal */}
-      {showContactForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 sm:p-6 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in fade-in-90 zoom-in-90">
-            <div className="p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Contact Support</h3>
-                <button
-                  onClick={() => setShowContactForm(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X className="w-4 sm:w-5 h-4 sm:h-5 text-gray-500" />
-                </button>
-              </div>
-              
-              <div className="space-y-3 sm:space-y-4">
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Category</label>
-                  <select
-                    value={contactForm.category}
-                    onChange={(e) => setContactForm({...contactForm, category: e.target.value})}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-colors"
-                  >
-                    <option value="general">General Inquiry</option>
-                    <option value="technical">Technical Issue</option>
-                    <option value="registration">Registration Help</option>
-                    <option value="team">Team Management</option>
-                    <option value="submission">Submission Question</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Subject</label>
-                  <input
-                    type="text"
-                    value={contactForm.subject}
-                    onChange={(e) => setContactForm({...contactForm, subject: e.target.value})}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-colors"
-                    placeholder="Brief description of your issue"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Message</label>
-                  <textarea
-                    value={contactForm.message}
-                    onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                    rows={3}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-colors"
-                    placeholder="Describe your question or issue in detail..."
-                  />
-                </div>
-              </div>
-              
-              <div className="flex gap-3 mt-4 sm:mt-6">
-                <button
-                  onClick={handleSubmitContact}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold shadow-lg"
-                >
-                  <Send className="w-4 sm:w-5 h-4 sm:h-5" />
-                  Send Message
-                </button>
-                <button
-                  onClick={() => setShowContactForm(false)}
-                  className="px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };
