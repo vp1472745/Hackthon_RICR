@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaPhoneAlt } from 'react-icons/fa';
 import PranaySir from '../../assets/pranaySir.webp';
-import RajSir from '../../assets/rajSir.webp';
+import NRIStudent from '../../assets/nriStudent.jpg';
 import { fadeInUp, containerVariants, itemVariants, THEME } from "./constants";
 
 export default function ContactSection() {
@@ -110,7 +110,7 @@ export default function ContactSection() {
           >
             <div className="w-full relative aspect-[4/4] mt-1">
               <img
-                src={RajSir}
+                src={NRIStudent}
                 alt="Hackathon Coordinator"
                 className="w-full h-full object-cover"
               />
@@ -123,12 +123,12 @@ export default function ContactSection() {
                 aria-hidden={!isVisible('raj')}
               >
                 <div className="text-white text-center px-4 pb-4">
-                  <h3 className="text-xl md:text-2xl font-bold mb-2">Raj Vardhan</h3>
+                  <h3 className="text-xl md:text-2xl font-bold mb-2">Aman Verma </h3>
                   <p className="text-base md:text-lg mb-3 opacity-90">Hackathon Coordinator</p>
                   <div className="flex items-center justify-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg p-2">
                     <FaPhoneAlt className="text-lg" />
-                    <a href="tel:+917340862969" className="hover:text-blue-300 transition-colors text-sm md:text-base">
-                      +91 73408 62969
+                    <a href="tel:+917974716422" className="hover:text-blue-300 transition-colors text-sm md:text-base">
+                      +91 7974716422
                     </a>
                   </div>
                 </div>
