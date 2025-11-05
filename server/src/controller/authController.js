@@ -113,18 +113,18 @@ export const Register = async (req, res, next) => {
         }
 
 
-        // Generate next team code with auto-increment, format: RICR-FM-0001
+        // Generate next team code with auto-increment, format: RICR-NK-0001
 
         // Find the latest team code
         const lastTeam = await Team.findOne({}).sort({ createdAt: -1 });
         let nextNumber = 1;
         if (lastTeam && lastTeam.teamCode) {
-            const match = lastTeam.teamCode.match(/RICR-FM-(\d+)/);
+            const match = lastTeam.teamCode.match(/RICR-NK-(\d+)/);
             if (match) {
                 nextNumber = parseInt(match[1], 10) + 1;
             }
         }
-        const nextTeamCode = `RICR-FM-${nextNumber.toString().padStart(4, '0')}`;
+        const nextTeamCode = `RICR-NK-${nextNumber.toString().padStart(4, '0')}`;
 
         // Create the team
         const newTeam = await Team.create({

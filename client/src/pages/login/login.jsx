@@ -121,7 +121,7 @@ const Login = () => {
                   value={formData.teamCode}
                   onChange={(e) => handleInputChange('teamCode', e.target.value.toUpperCase())}
                   className={`block w-full pl-10 pr-3 py-3 rounded-lg transition-colors duration-150 border ${errors.teamCode ? 'border-red-500 bg-red-50' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-[#1D5B9B]`}
-                  placeholder="Enter your Team Code (e.g., FM001)"
+                  placeholder="Enter your Team Code (e.g., NK001)"
                   autoComplete="username"
                   aria-invalid={Boolean(errors.teamCode)}
                 />

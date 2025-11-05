@@ -24,7 +24,7 @@ function HeroPage() {
         <div className='grid grid-cols-1 md:grid-cols-2 items-center gap-0 md:gap-10 lg:gap-20 mb-12'>
           <div >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#0B2A4A] mb-4 leading-tight">
-              Future<span className="text-[#1D5B9B]">Maze</span>
+              Nav<span className="text-[#1D5B9B]">Kalpana</span>
             </h1>
 
             {/* Subheading */}

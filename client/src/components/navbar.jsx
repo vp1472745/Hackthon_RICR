@@ -53,8 +53,8 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/" onClick={closeMobileMenu}>
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">
-            <span className="text-[#0C2340]">Future</span>
-            <span className="text-[#2A6EBB]">Maze</span>
+            <span className="text-[#0C2340]">Nav</span>
+            <span className="text-[#2A6EBB]">Kalpana</span>
           </h1>
         </Link>
 
