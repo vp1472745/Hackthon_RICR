@@ -26,13 +26,13 @@ const sendEmail = async (to, subject, text) => {
 };
 
 export const sendOTPEmail = async (to, otp) => {
-    const subject = "Your FutureMaze OTP Code ";
+    const subject = "Your Nav Kalpana OTP Code ";
     const text = `
         <!DOCTYPE html>
         <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Your FutureMaze OTP Code</title>
+                <title>Your Nav Kalpana OTP Code</title>
                 <style>
                     body { font-family: Arial, sans-serif; background: #f9f9f9; color: #222; }
                     .container { max-width: 400px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);}
@@ -42,14 +42,14 @@ export const sendOTPEmail = async (to, otp) => {
             </head>
             <body>
                 <div class="container">
-                    <h2>FutureMaze Verification</h2>
+                    <h2>Nav Kalpana Verification</h2>
                     <p>Hello,</p>
                     <p>Your One-Time Password (OTP) is:</p>
                     <div class="otp">${otp}</div>
                     <p>Please enter this code to complete your verification. This code is valid for a limited time and should not be shared with anyone.</p>
                     <div class="footer">
                         If you did not request this, please ignore this email.<br>
-                        &copy; ${new Date().getFullYear()} FutureMaze
+                        &copy; ${new Date().getFullYear()} Nav Kalpana
                     </div>
                 </div>
             </body>
@@ -60,7 +60,7 @@ export const sendOTPEmail = async (to, otp) => {
 
 
 export const sendCredentialsEmail = async (to, credentials) => {
-    const subject = "Your FutureMaze Login Credentials";
+    const subject = "Your Nav Kalpana Login Credentials";
     const email = to;
     const text = `
     
@@ -68,7 +68,7 @@ export const sendCredentialsEmail = async (to, credentials) => {
         <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Your FutureMaze Login Credentials</title>
+                <title>Your Nav Kalpana Login Credentials</title>
                 <style>
                     body { font-family: Arial, sans-serif; background: #f9f9f9; color: #222; }
                     .container { max-width: 400px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);}
@@ -77,7 +77,7 @@ export const sendCredentialsEmail = async (to, credentials) => {
             </head>
             <body>
                 <div class="container">
-                    <h2>Your FutureMaze Login Credentials</h2>
+                    <h2>Your Nav Kalpana Login Credentials</h2>
                     <p>Hello,</p>
                     <p>Your login credentials are as follows:</p>
                     <p>Team Code: ${credentials}</p>
@@ -86,7 +86,7 @@ export const sendCredentialsEmail = async (to, credentials) => {
                     <p>Please keep this information safe and do not share it with anyone.</p>
                     <div class="footer">
                         If you did not request this, please ignore this email.<br>
-                        &copy; ${new Date().getFullYear()} FutureMaze
+                        &copy; ${new Date().getFullYear()} Nav Kalpana
                     </div>
                 </div>
             </body>

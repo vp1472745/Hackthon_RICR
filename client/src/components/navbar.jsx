@@ -101,13 +101,13 @@ const Navbar = () => {
             <>
                     <Link
                 to="/register"
-                className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-md px-4 py-1 transition-colors duration-200 mr-2"
+                className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-lg px-5 py-2 transition-colors duration-200 mr-2"
               >
                 Register
               </Link>
               <Link
                 to="/login"
-                className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-md px-4 py-1 transition-colors duration-200 mr-2"
+                className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-lg px-5 py-2 transition-colors duration-200 mr-2"
               >
                 Login
               </Link>

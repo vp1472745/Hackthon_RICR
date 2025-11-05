@@ -70,7 +70,7 @@ const Payment = () => {
         <div className="bg-white rounded-3xl shadow-2xl p-8">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Complete Your Payment</h2>
-            <p className="text-gray-600">Secure your spot at FutureMaze by completing the payment below.</p>
+            <p className="text-gray-600">Secure your spot at Nav Kalpana by completing the payment below.</p>
           </div>
 
           {!paymentCompleted ? (
@@ -119,7 +119,7 @@ const Payment = () => {
               <CheckCircle className="w-14 h-14 text-green-500 mb-3" />
               <h3 className="text-xl font-bold text-green-700 mb-1">Payment Successful!</h3>
               <p className="text-gray-600 mb-4 text-center">
-                Welcome to FutureMaze! Your registration is complete.
+                Welcome to Nav kalpana! Your registration is complete.
               </p>
               <p className="text-blue-700 font-medium mb-4 text-center">
                 Check your Email for Login Details and Instructions.

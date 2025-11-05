@@ -41,7 +41,7 @@ export default function RegistrationCTASection() {
 
       <div className="w-full relative z-10 px-4 sm:px-6">
         <motion.h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6" variants={fadeInUp}>
-          Ready to Join FutureMaze?
+          Ready to Join Nav Kalpana?
         </motion.h2>
         <motion.p className="text-lg md:text-xl mb-8 md:mb-10 max-w-3xl mx-auto opacity-90" variants={fadeInUp} transition={{ delay: 0.2 }}>
           Don't miss this incredible opportunity to showcase your skills, compete for ₹40,000 in prizes, and build the future of technology!
