@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import RajSir from "../../assets/rajSir.png";
 import PranaySir from "../../assets/pranaySir.png";
-
+import Vadhana from '../../assets/Vadhana.jpeg';
+import Shekhar from '../../assets/Shekar.jpeg';
 const juryMembers = [
     {
         name: "Pranay K Das",
@@ -14,6 +15,18 @@ const juryMembers = [
         role: "Full Stack Trainer",
         // org: "Applogic Networks",
         image: RajSir,
+    },
+       {
+        name: "Dr.Vandana Khare",
+        role: "Dean Academics",
+        // org: "Applogic Networks",
+        image: Vadhana,
+    },
+       {
+        name: "Dr.Shekhar Nigam",
+        role: "Head,MCA and IT",
+        // org: "Applogic Networks",
+        image: Shekhar,
     },
 
 ];
