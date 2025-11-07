@@ -86,7 +86,7 @@ const EventDetailsSection = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#0B2A4A] font-bold">•</span>
-                  <span>Team alterations allowed until Nov 6, 2025</span>
+                  <span>Team alterations allowed until Feb 25, 2026</span>
                 </li>
               </ul>
             </InfoCard>
