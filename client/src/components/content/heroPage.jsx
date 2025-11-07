@@ -58,14 +58,15 @@ function HeroPage() {
             </div>
             <div className="bg-white p-2 sm:p-4 md:p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 cursor-pointer">
               <a
-                href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Hackathon+Event&dates=20251107T033000Z/20251108T113000Z&details=Join+our+Hackathon+and+build+amazing+projects!&location=Online&ctz=Asia/Kolkata"
+                // UPDATED: dates set to Feb 25–26, 2026 (UTC times kept similar to original)
+                href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Hackathon+Event&dates=20260225T033000Z/20260226T113000Z&details=Join+our+Hackathon+and+build+amazing+projects!&location=Online&ctz=Asia/Kolkata"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <div className="flex flex-col items-center">
                   <div className="flex items-center gap-2 text-lg sm:text-xl md:text-2xl font-bold text-[#0B2A4A]">
                     <FaClock className="text-[#0B2A4A] text-xl md:text-2xl" />
-                    <span>Nov 7<sup>th</sup> - 8<sup>th</sup></span>
+                    <span className='text-lg'>Feb 25<sup>th</sup> - 26<sup>th</sup></span>
                   </div>
                   <div className="text-xs sm:text-sm text-gray-600 mt-1">
                     Block Your Calendar
