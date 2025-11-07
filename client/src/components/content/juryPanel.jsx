@@ -77,7 +77,7 @@ export default function JuryPanel() {
                                 onClick={prevSlide}
                                 onMouseEnter={() => setIsPaused(true)}
                                 onMouseLeave={() => setIsPaused(false)}
-                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white  text-slate-600 hover:text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all duration-300  border-slate-200"
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white  text-slate-600 hover:bg-indigo-600 hover:text-white cursor-pointer w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all duration-300  border-slate-200"
                                 aria-label="Previous slide"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@ export default function JuryPanel() {
                                 onClick={nextSlide}
                                 onMouseEnter={() => setIsPaused(true)}
                                 onMouseLeave={() => setIsPaused(false)}
-                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white hover:bg-indigo-600 text-slate-600 hover:text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 border border-slate-200"
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white hover:bg-indigo-600 text-slate-600 hover:text-white cursor-pointer w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 border border-slate-200"
                                 aria-label="Next slide"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
