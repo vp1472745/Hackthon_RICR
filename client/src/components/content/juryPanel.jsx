@@ -41,20 +41,20 @@ export default function JuryPanel() {
         if (!shouldAutoSlide || isPaused) return;
 
         const interval = setInterval(() => {
-            setCurrentIndex((prevIndex) => 
-                prevIndex === juryMembers.length - 1 ? 0 : prevIndex + 1
-            );
+            setCurrentIndex((prevIndex) => {
+                return prevIndex === juryMembers.length - 3 ? 0 : prevIndex + 1;
+            });
         }, 3000);
 
         return () => clearInterval(interval);
     }, [shouldAutoSlide, isPaused, juryMembers.length]);
 
     const nextSlide = () => {
-        setCurrentIndex(currentIndex === juryMembers.length - 1 ? 0 : currentIndex + 1);
+        setCurrentIndex(currentIndex === juryMembers.length - 3 ? 0 : currentIndex + 3);
     };
 
     const prevSlide = () => {
-        setCurrentIndex(currentIndex === 0 ? juryMembers.length - 1 : currentIndex - 1);
+        setCurrentIndex(currentIndex === 0 ? juryMembers.length - 3 : currentIndex - 3);
     };
 
     return (
@@ -118,7 +118,7 @@ export default function JuryPanel() {
                                     key={`${jury.name}-${idx}`}
                                     className={`${
                                         shouldAutoSlide 
-                                            ? 'flex-shrink-0 w-1/3 px-4'
+                                            ? 'flex-shrink-0 w-1/3   px-4'
                                             : ''
                                     }`}
                                 >
