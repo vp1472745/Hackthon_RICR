@@ -3,12 +3,12 @@ import { Rocket, Target, Zap } from 'lucide-react';
 import TimeLine from '../../assets/eventTimeLine.png';
 const RoadMap = () => {
   const steps = [
-    { title: "Registration Open", date: "6 oct 2025", time: "09:00 AM", color: "blue" },
-    { title: "Registration Close", date: "6 oct 2025", time: "09:15 AM", color: "green" },
-    { title: "Hackathon Begins", date: "6 oct 2025", time: "09:30 AM", color: "purple" },
-    { title: "Hackathon Finales", date: "6 oct 2025", time: "10:00 AM", color: "orange" },
-    { title: "Results Announcement", date: "6 oct 2025", time: "10:15 AM", color: "pink" },
-    { title: "Prizes Distribution", date: "6 oct 2025", time: "10:30 AM", color: "indigo" },
+    { title: "Registration Open", date: "1 Feb 2026", time: "09:00 AM", color: "blue" },
+    { title: "Registration Close", date: "24 Feb 2026", time: "09:15 AM", color: "green" },
+    { title: "Hackathon Begins", date: "25 Feb 2026", time: "09:30 AM", color: "purple" },
+    { title: "Hackathon Finales", date: "26 Feb 2026", time: "09:00 AM", color: "orange" },
+    { title: "Results Announcement", date: "26 Feb 2026", time: "12:00 PM", color: "pink" },
+    { title: "Prizes Distribution", date: "26 Feb 2026", time: "02:00 PM", color: "indigo" },
 
   ];
 
