@@ -25,13 +25,13 @@ const juryMembers = [
   },
   {
     name: "Dr.Shekhar Nigam",
-    role: "Head,MCA and IT",
+    role: "Head, MCA and IT",
     // org: "Applogic Networks",
     image: Shekhar,
   },
     {
-    name: "Mr.Shivam Varsai",
-    role: "Head,AIML and CSIT",
+    name: "Mr. Shivam Varshi",
+    role: "Head, AIML and CSIT",
     // org: "Applogic Networks",
     image: Shivam,
   },
