@@ -1,16 +1,11 @@
 import React from "react";
 import RajSir from "../../assets/rajSir.png";
-import PranaySir from "../../assets/pranaySir.png";
 import Vadhana from "../../assets/Vadhana.jpeg";
 import Shekhar from "../../assets/Shekar.jpeg";
 import Shivam from '../../assets/Shivam.jpeg';
 
 const juryMembers = [
-  {
-    name: "Pranay K Das",
-    role: "Senior Java Instructor",
-    image: PranaySir,
-  },
+
   {
     name: "Raj Vardhan",
     role: "Full Stack Trainer",
