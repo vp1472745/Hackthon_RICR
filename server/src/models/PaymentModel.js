@@ -1,37 +1,44 @@
 import mongoose from "mongoose";
 
-const paymentSchema = new mongoose.Schema({
+const paymentSchema = new mongoose.Schema(
+  {
     teamId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Team",
-        required: true,
+      type: String,
+      required: true,
     },
-    amount: {
-        type: Number,
-        required: true,
-        default: 0,
+    name: {
+      type: String,
+      required: true,
     },
-    currency: {
-        type: String,
-        required: true,     
-        default: 'INR',
+    email: {
+      type: String,
+      required: true,
     },
-    paymentMethod: {
-        type: String,
-        required: true,
-        enum: ['Credit Card', 'Debit Card', 'Net Banking', 'UPI'],
+    phone: {
+      type: String,
+      required: true,
     },
-    paymentStatus: {
-        type: String,
-        enum: ['Pending', 'Completed', 'Failed'],
-        required: true,
-        default: 'Pending',
+    referenceId: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    paymentGatewayResponse: {
-        type: Object,
+    transactionId: {
+      type: String,
+      required: true,
     },
-}, { timestamps: true });
-
+    screenshot: {
+      type: String, // store file path or URL
+      required: false,
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "Verified", "Rejected"],
+      default: "Pending",
+    },
+  },
+  { timestamps: true }
+);
 
 const Payment = mongoose.model("Payment", paymentSchema);
 export default Payment;

@@ -59,6 +59,15 @@ export const authAPI = {
     // Refresh user data
     refreshData: () => api.get('/auth/refresh'),
 
+    // Submit payment with screenshot
+    submitPayment: (formData) => api.post('/auth/submit', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+              timeout: 60000, // 60s for heavy uploads
+
+    }),
+    // Get payment by ID
+    getPaymentById: (paymentId) => api.get(`/auth/payment/${paymentId}`),
+
 };
 
 // User API functions

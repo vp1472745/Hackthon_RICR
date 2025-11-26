@@ -1,3 +1,4 @@
+
 import User from '../models/UserModel.js';
 import bcrypt from 'bcryptjs';
 import { sendOTPEmail, sendCredentialsEmail } from '../utils/emailService.js';
@@ -7,7 +8,7 @@ import Team from '../models/TeamModel.js';
 import Theme from '../models/projectTheme.js';
 import ProblemStatement from '../models/problemStatementModel.js';
 import { generateAuthToken } from '../utils/genAuthToken.js';
-
+import Payment from "../models/PaymentModel.js";
 export const SendOTP = async (req, res, next) => {
     try {
         const { fullName, email, phone } = req.body;
@@ -75,19 +76,22 @@ export const Register = async (req, res, next) => {
         }
 
         const emailOTPEntry = await Otp.findOne({ otpfor: email, type: 'email' });
-       
-        
         if (!emailOTPEntry) {
             const error = new Error('Email OTP not found or expired');
             error.statusCode = 400;
             return next(error);
         }
 
+        // Debug log for OTP comparison
+        console.log('Register: Comparing OTP', {
+            enteredOTP: emailOTP,
+            cleanEmailOTP: emailOTP.toString().trim(),
+            storedHashedOTP: emailOTPEntry.otp,
+        });
+
         // Ensure OTP is string and trim any whitespace
         const cleanEmailOTP = emailOTP.toString().trim();
         const isEmailOTPValid = await bcrypt.compare(cleanEmailOTP, emailOTPEntry.otp);
-        
-        
         if (!isEmailOTPValid) {
             const error = new Error('Invalid Email OTP');
             error.statusCode = 400;
@@ -256,5 +260,102 @@ export const refreshData = async (req, res, next) => {
 
     } catch (error) {
         next(error);
+    }
+};
+
+
+
+
+
+
+export const submitPayment = async (req, res) => {
+    try {
+        const { teamId, name, email, phone, referenceId, transactionId } = req.body;
+
+        if (!transactionId) {
+            return res.status(400).json({ message: "Transaction ID is required" });
+        }
+
+        // Prevent duplicate UTR
+        const existingTxn = await Payment.findOne({ transactionId });
+        if (existingTxn) {
+            return res.status(400).json({
+                message: "This Transaction ID is already submitted!",
+            });
+        }
+
+        // Screenshot URL from Cloudinary
+        const screenshotUrl = req.file ? req.file.path : null;
+
+        const payment = await Payment.create({
+            teamId,
+            name,
+            email,
+            phone,
+            referenceId,
+            transactionId,
+            screenshot: screenshotUrl,
+            status: "Pending",
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Payment proof submitted successfully!",
+            payment,
+            screenshotUrl,
+        });
+    } catch (err) {
+        console.error("Payment Submit Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+// Payment verification controller: sets status to Verified and sends credentials email
+export const verifyPayment = async (req, res) => {
+    try {
+        const { paymentId } = req.body;
+        const payment = await Payment.findById(paymentId);
+        if (!payment) return res.status(404).json({ message: "Payment not found" });
+
+        payment.status = "Verified";
+        await payment.save();
+
+        // Find team for credentials
+        const team = await Team.findById(payment.teamId);
+        if (!team) return res.status(404).json({ message: "Team not found" });
+
+        // Send credentials email
+        await sendCredentialsEmail(payment.email, team.teamCode);
+
+        res.status(200).json({ message: "Payment verified and credentials sent." });
+    } catch (err) {
+        console.error("Verify Payment Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+
+
+// Get payment by ID
+export const getPaymentById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const payment = await Payment.findById(id);
+        if (!payment) return res.status(404).json({ message: "Payment not found" });
+        res.status(200).json({ payment });
+    } catch (err) {
+        console.error("Get Payment By ID Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Get all payments
+export const getAllPayments = async (req, res) => {
+    try {
+        const payments = await Payment.find({});
+        res.status(200).json({ payments });
+    } catch (err) {
+        console.error("Get All Payments Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };

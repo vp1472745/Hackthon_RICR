@@ -125,7 +125,14 @@ const Payment = () => {
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append('userId', registrationData._id || registrationData.id || registrationData.team?.teamId || registrationData.teamCode || registrationData.email);
+      const teamId = registrationData.team?._id;
+      console.log('Submitting payment with teamId:', teamId);
+      if (!teamId) {
+        toast.error('Team ID is missing. Please contact support or try again.');
+        setLoading(false);
+        return;
+      }
+      formData.append('teamId', teamId);
       formData.append('name', registrationData.fullName || registrationData.name);
       formData.append('email', registrationData.email);
       formData.append('phone', registrationData.phone);
@@ -133,8 +140,8 @@ const Payment = () => {
       formData.append('transactionId', utr.trim());
       if (screenshotFile) formData.append('screenshot', screenshotFile);
 
-      await authAPI.submitPaymentProof(formData);
-      toast.success('Payment proof submitted. SuperAdmin notified.');
+      await authAPI.submitPayment(formData, { timeout: 30000 });
+      toast.success('Thank you for registering for Nav Kalpana! Your payment is pending admin verification. You will receive your User ID and Password by email within 24 hours after admin approval.');
       setPaymentSubmitted(true);
     } catch (err) {
       console.error(err);
@@ -227,32 +234,7 @@ const Payment = () => {
                   <span className="font-semibold">Amount will be pre-filled to ₹{AMOUNT} (if your app supports it).</span>
                 </p>
 
-                {/* App buttons (mobile only) */}
-                {(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) && (
-                  <div className="mt-4 flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => openUpiApp('googlepay')}
-                      className="bg-[#0B2A4A] text-white px-4 py-2 rounded-md text-sm"
-                    >
-                      Open Google Pay
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openUpiApp('phonepe')}
-                      className="bg-[#1d6b3b] text-white px-4 py-2 rounded-md text-sm"
-                    >
-                      Open PhonePe
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openUpiApp('paytm')}
-                      className="bg-[#0f4f7a] text-white px-4 py-2 rounded-md text-sm"
-                    >
-                      Open Paytm
-                    </button>
-                  </div>
-                )}
+                {/* UPI app buttons removed as requested */}
 
                 <div className="mt-3 text-xs text-gray-500 text-center">
                   <strong>Reference ID:</strong>{' '}
@@ -298,19 +280,21 @@ const Payment = () => {
             </form>
           ) : (
             <div className="flex flex-col items-center py-8">
-              <CheckCircle className="w-14 h-14 text-green-500 mb-3" />
-              <h3 className="text-xl font-bold text-green-700 mb-1">Payment proof submitted!</h3>
+              <CheckCircle className="w-14 h-14 text-blue-500 mb-3" />
+              <h3 className="text-xl font-bold text-blue-700 mb-1">Thank you for registering for Nav Kalpana!</h3>
               <p className="text-gray-600 mb-4 text-center">
-                Humne SuperAdmin ko notification bhej di hai. Approval ke baad aapko login credentials email kar diye jayenge.
+                Your payment is <span className="font-semibold">pending admin verification</span>.<br />
+                You will receive your User ID and Password by email only after admin approval.<br />
+                <span className="font-semibold">You cannot access your dashboard until your payment is verified.</span>
               </p>
               <div className="flex items-center gap-2 bg-blue-100 rounded-lg px-4 py-2 mb-5">
                 <Clock className="w-5 h-5 text-blue-700" />
                 <span className="text-blue-800 text-sm">
-                  Redirecting to login in <span className="font-bold">{countdown}</span> seconds...
+                  Please wait for admin to verify your payment.
                 </span>
               </div>
-              <button onClick={() => navigate('/login')} className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition">
-                Login Now
+              <button onClick={() => navigate('/login')} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                Go to Login
               </button>
             </div>
           )}
