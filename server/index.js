@@ -1,8 +1,6 @@
 import dotenv from 'dotenv';
-dotenv.config();
-
 import express from 'express';
-import connectDB from '../server/src/config/db.js';
+import connectDB from './src/config/db.js';
 import cors from 'cors';
 import AuthRouter from './src/routes/authRoutes.js';
 import UserRoute from './src/routes/userRoute.js';
@@ -15,7 +13,7 @@ import HomeRoute from './src/routes/homeRoutes.js';
 import AccomodationRoute from './src/routes/accomodationRoutes.js';
 import morgan from 'morgan';
 
-
+dotenv.config();
 const app = express();
 
 app.use(cors({

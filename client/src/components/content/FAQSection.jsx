@@ -16,7 +16,7 @@ const FAQS = [
   },
   {
     question: "Until when can teams be updated or altered?",
-    answer: "Team alterations are allowed until November 6, 2025, 11:59 PM IST. After this deadline, no changes will be permitted.",
+    answer: "Team alterations are allowed until Feb 25, 2026, 11:59 PM IST. After this deadline, no changes will be permitted.",
     category: "Team"
   },
   {
