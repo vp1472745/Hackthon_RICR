@@ -1,3 +1,4 @@
+// src/models/Payment.js
 import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema(
@@ -28,7 +29,7 @@ const paymentSchema = new mongoose.Schema(
       required: true,
     },
     screenshot: {
-      type: String, // store file path or URL
+      type: String, // store file path or Cloudinary URL
       required: false,
     },
     status: {
@@ -36,9 +37,21 @@ const paymentSchema = new mongoose.Schema(
       enum: ["Pending", "Verified", "Rejected"],
       default: "Pending",
     },
+
+    // audit & credential fields
+    verifiedAt: { type: Date },
+    verifiedBy: { type: mongoose.Types.ObjectId, ref: "User" },
+
+    rejectedAt: { type: Date },
+    rejectedBy: { type: mongoose.Types.ObjectId, ref: "User" },
+    rejectionReason: { type: String },
+
+    assignedUsername: { type: String },
+    assignedPasswordHash: { type: String }, // hashed password
   },
   { timestamps: true }
 );
 
-const Payment = mongoose.model("Payment", paymentSchema);
+// Prevent model overwrite errors during hot reload
+const Payment = mongoose.models.Payment || mongoose.model("Payment", paymentSchema);
 export default Payment;

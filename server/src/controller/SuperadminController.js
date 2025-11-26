@@ -11,6 +11,7 @@ import { sendOTPEmail } from "../utils/adminemailService.js";
 import { sendOTPPhone } from "../utils/adminPhoneService.js";
 import Otp from "../models/otpModelAdmin.js";
 import jwt from "jsonwebtoken";
+import {  sendCredentialsEmail , sendRejectionEmail } from '../utils/emailService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || "defaultsecret";
 
@@ -396,5 +397,109 @@ export const setAdminPermissions = async (req, res) => {
     res.status(200).json({ message: "Permissions updated successfully.", admin });
   } catch (error) {
     res.status(500).json({ message: "Failed to update permissions", error: error.message });
+  }
+};
+
+
+
+export const verifyPayment = async (req, res) => {
+  try {
+    const paymentId = req.params.id;
+    if (!paymentId) return res.status(400).json({ message: 'Payment id missing in params' });
+
+    // find payment first
+    const payment = await Payment.findById(paymentId);
+    if (!payment) return res.status(404).json({ message: 'Payment not found' });
+
+    // find related team if any
+    const teamId = payment.teamId || payment.userId || payment.user;
+    const team = teamId ? await Team.findById(teamId) : null;
+
+    // ---------- Rejected flow ----------
+    if (req.body.status && String(req.body.status).toLowerCase() === 'rejected') {
+      payment.status = 'Rejected';
+      payment.rejectedAt = new Date();
+      if (req.user && req.user._id) payment.rejectedBy = req.user._id;
+      await payment.save();
+
+      const rejectionMessage =
+        req.body.rejectionMessage ||
+        'Aapka UTR number invalid/unauthorized payee par show hua hai, isliye aapka registration block kar diya gaya hai. Agar aapke paas asli proof hai to support pe contact karein.';
+
+      // send rejection email (HTML)
+      await sendRejectionEmail(payment.email, {
+        name: payment.name,
+        message: rejectionMessage,
+      });
+
+      return res.status(200).json({ message: 'Payment rejected and user notified by email.' });
+    }
+
+    // ---------- Verified / Approve flow ----------
+    payment.status = 'Verified';
+    payment.verifiedAt = new Date();
+    if (req.user && req.user._id) payment.verifiedBy = req.user._id;
+    await payment.save();
+
+    const { username, password } = req.body;
+
+    if (username && password) {
+      // create or update User
+      let user = await User.findOne({ email: payment.email });
+      const hashed = await bcrypt.hash(password, 10);
+
+      if (!user) {
+        user = new User({
+          name: payment.name,
+          email: payment.email,
+          phone: payment.phone,
+          username,
+          password: hashed,
+          isActive: true,
+          role: 'participant',
+          team: team ? team._id : undefined,
+        });
+        await user.save();
+      } else {
+        user.username = username;
+        user.password = hashed;
+        user.isActive = true;
+        await user.save();
+      }
+
+      // save assigned username (hash saved already in user.password)
+      payment.assignedUsername = username;
+      payment.assignedPasswordHash = user.password;
+      await payment.save();
+
+      // send credentials email
+      await sendCredentialsEmail(payment.email, {
+        teamCode: team ? team.teamCode : username,
+        username,
+        password,
+        name: payment.name,
+        email: payment.email,
+      });
+
+      return res.status(200).json({ message: 'Payment verified, user created/updated and credentials emailed.' });
+    }
+
+    // If no username/password provided but team has teamCode
+    if (team && team.teamCode) {
+      await sendCredentialsEmail(payment.email, {
+        teamCode: team.teamCode,
+        username: team.teamCode,
+        password: 'Use your team code',
+        name: payment.name,
+        email: payment.email,
+      });
+      return res.status(200).json({ message: 'Payment verified and team code emailed to user.' });
+    }
+
+    // default success
+    return res.status(200).json({ message: 'Payment verified. Provide credentials to send login details.' });
+  } catch (err) {
+    console.error('Verify Payment Error:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };

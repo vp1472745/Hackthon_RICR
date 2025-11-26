@@ -92,3 +92,49 @@ export const sendCredentialsEmail = async (to, credentials) => {
     `;
     return sendEmail(to, subject, text);
 };
+
+
+export const sendRejectionEmail = async (to, data) => {
+    const subject = "Nav Kalpana - Payment Rejected";
+
+    const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Payment Rejected</title>
+            <style>
+                body { font-family: Arial, sans-serif; background: #f9f9f9; color: #222; }
+                .container { max-width: 400px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 8px; 
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+                .footer { font-size: 0.85em; color: #888; margin-top: 32px; }
+                .reason { color: red; font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h2>Payment Rejected</h2>
+                <p>Hello ${data.name},</p>
+
+                <p>We reviewed the payment information you submitted, but your UPI Transaction ID could not be verified.</p>
+
+                <p class="reason">
+                    Reason: ${data.message}
+                </p>
+
+                <p>
+                    Therefore, your registration has been <strong>blocked</strong> for now.  
+                    If you believe this is a mistake or if you have valid proof of payment,  
+                    please contact our support team immediately.
+                </p>
+
+                <div class="footer">
+                    &copy; ${new Date().getFullYear()} Nav Kalpana
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
+
+    return sendEmail(to, subject, html);
+};

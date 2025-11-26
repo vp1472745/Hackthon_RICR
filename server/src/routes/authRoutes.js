@@ -11,7 +11,7 @@ import {
   submitPayment,
   getAllPayments,
   getPaymentById,
-verifyPayment
+
 } from "../controller/authController.js";
 import { authenticateLeader } from "../middlewares/auth.js";
 import { uploadPaymentScreenshot } from "../utils/multer.js";
@@ -29,5 +29,4 @@ router.post(
 );
 router.get("/payments", getAllPayments);
 router.get("/payment/:id",  getPaymentById);
-router.post("/verifyPayment/:id", verifyPayment);
 export default router;

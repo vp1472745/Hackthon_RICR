@@ -1,6 +1,6 @@
 
 import express from "express";
-import { registerAdmin, sendAdminOTP, verifyAdminOTP, adminLogin, deleteProblemStatement, editProblemStatement, deleteAdmin, adminLogout, getAllUsers, getAllThemes, createTheme, editTheme, deleteTheme, getAllTeams, getAllProblemStatementsAdmin, createProblemStatement } from "../controller/SuperadminController.js";
+import { verifyPayment ,registerAdmin, sendAdminOTP, verifyAdminOTP, adminLogin, deleteProblemStatement, editProblemStatement, deleteAdmin, adminLogout, getAllUsers, getAllThemes, createTheme, editTheme, deleteTheme, getAllTeams, getAllProblemStatementsAdmin, createProblemStatement } from "../controller/SuperadminController.js";
 
 const router = express.Router();
 
@@ -40,6 +40,8 @@ router.delete('/deleteTheme/:id', deleteTheme);
 router.get("/users", getAllUsers);
 // Delete problem statement route
 router.delete('/deleteProblemStatement/:id', deleteProblemStatement);
+// Verify payment route
+router.post("/verifyPayment/:id", verifyPayment);
 
 
 
