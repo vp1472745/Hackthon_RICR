@@ -1,6 +1,6 @@
 
 import express from "express";
-import { verifyPayment ,registerAdmin, sendAdminOTP, verifyAdminOTP, adminLogin, deleteProblemStatement, editProblemStatement, deleteAdmin, adminLogout, getAllUsers, getAllThemes, createTheme, editTheme, deleteTheme, getAllTeams, getAllProblemStatementsAdmin, createProblemStatement } from "../controller/SuperadminController.js";
+import { verifyPayment ,registerAdmin,getAllPayments, getPaymentById, sendAdminOTP, verifyAdminOTP, adminLogin, deleteProblemStatement, editProblemStatement, deleteAdmin, adminLogout, getAllUsers, getAllThemes, createTheme, editTheme, deleteTheme, getAllTeams, getAllProblemStatementsAdmin, createProblemStatement } from "../controller/SuperadminController.js";
 
 const router = express.Router();
 
@@ -42,7 +42,10 @@ router.get("/users", getAllUsers);
 router.delete('/deleteProblemStatement/:id', deleteProblemStatement);
 // Verify payment route
 router.post("/verifyPayment/:id", verifyPayment);
-
+// Get all payments
+router.get("/payments", getAllPayments);    
+// Get payment by ID
+router.get("/payment/:id", getPaymentById);
 
 
 

@@ -503,3 +503,31 @@ export const verifyPayment = async (req, res) => {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
+
+
+// Get payment by ID
+export const getPaymentById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const payment = await Payment.findById(id);
+        if (!payment) return res.status(404).json({ message: "Payment not found" });
+        res.status(200).json({ payment });
+    } catch (err) {
+        console.error("Get Payment By ID Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Get all payments
+export const getAllPayments = async (req, res) => {
+    try {
+        const payments = await Payment.find({});
+        res.status(200).json({ payments });
+    } catch (err) {
+        console.error("Get All Payments Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+

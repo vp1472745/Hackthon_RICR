@@ -9,7 +9,8 @@ import {
   FiLogOut,
   FiChevronLeft,
   FiChevronRight,
-  FiX
+  FiX,
+  FiCreditCard
 } from "react-icons/fi";
 
 const NAV_ITEMS = [
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { key: "Result", label: "Result Manage", icon: <FiAward size={20} /> },
   { key: "Admin Access", label: "Admin Access", icon: <FiUsers size={20} /> },
   {key:"Accomodation", label:"Accomodation Manage", icon:<FiLayers size={20}/>},
+  { key: "Payment", label: "Payment Manage", icon: <FiCreditCard size={20} /> },
 ];
 
 const Sidebar = ({ onTabChange = () => { }, activeTab = "Home" }) => {
