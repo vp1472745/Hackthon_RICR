@@ -190,6 +190,15 @@ export const AdminAPI = {
     deactivateAllProblemStatements: () => api.patch('/problem/deactivate-all'),
     // Activate all problem statements (SuperAdmin) 
     activateAllProblemStatements: () => api.patch('/problem/activate-all'),
+    
+
+
+
+       // payment
+    getAllPayments: () => api.get('/admin/payments'),
+    getPaymentById: (paymentId) => api.get(`/admin/payment/${paymentId}`),
+    verifyPayment: (paymentId) => api.post(`/admin/verifyPayment/${paymentId}`),
+
 };
 
 
