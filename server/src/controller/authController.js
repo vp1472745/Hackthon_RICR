@@ -310,28 +310,95 @@ export const submitPayment = async (req, res) => {
     }
 }
 
-// Payment verification controller: sets status to Verified and sends credentials email
+
 export const verifyPayment = async (req, res) => {
-    try {
-        const { paymentId } = req.body;
-        const payment = await Payment.findById(paymentId);
-        if (!payment) return res.status(404).json({ message: "Payment not found" });
+  try {
+    const paymentId = req.params.id;
+    if (!paymentId) return res.status(400).json({ message: 'Payment id missing in params' });
 
-        payment.status = "Verified";
-        await payment.save();
+    const payment = await Payment.findById(paymentId);
+    if (!payment) return res.status(404).json({ message: 'Payment not found' });
 
-        // Find team for credentials
-        const team = await Team.findById(payment.teamId);
-        if (!team) return res.status(404).json({ message: "Team not found" });
+    // mark verified
+    payment.status = 'Verified';
+    payment.verifiedAt = new Date();
 
-        // Send credentials email
-        await sendCredentialsEmail(payment.email, team.teamCode);
-
-        res.status(200).json({ message: "Payment verified and credentials sent." });
-    } catch (err) {
-        console.error("Verify Payment Error:", err);
-        res.status(500).json({ message: "Internal Server Error" });
+    // set who verified if req.user exists (from admin auth middleware)
+    if (req.user && req.user._id) {
+      payment.verifiedBy = req.user._id;
     }
+
+    await payment.save();
+
+    // find team (or user) to assign credentials
+    // NOTE: your Payment schema earlier had userId. If you're storing teamId, adjust below.
+    const teamId = payment.teamId || payment.userId || payment.user; // try common fields
+    const team = teamId ? await Team.findById(teamId) : null;
+
+    // If admin provided username/password in body, create/update a user account and send that
+    const { username, password } = req.body;
+
+    if (username && password) {
+      // create or update User (prefer by email)
+      let user = await User.findOne({ email: payment.email });
+
+      const hashed = await bcrypt.hash(password, 10);
+      if (!user) {
+        user = new User({
+          name: payment.name,
+          email: payment.email,
+          phone: payment.phone,
+          username,
+          password: hashed,
+          isActive: true,
+          role: 'participant',
+          team: team ? team._id : undefined,
+        });
+        await user.save();
+      } else {
+        user.username = username;
+        user.password = hashed;
+        user.isActive = true;
+        await user.save();
+      }
+
+      // Save assigned username in payment doc (do NOT save plain password)
+      payment.assignedUsername = username;
+      payment.assignedPasswordHash = user.password;
+      await payment.save();
+
+      // send credentials by email (sends plain password once)
+            await sendCredentialsEmail(payment.email, {
+                teamCode: team ? team.teamCode : '',
+                username,
+                password,
+                name: payment.name,
+                email: payment.email
+            });
+
+      return res.status(200).json({ message: 'Payment verified, user created/updated and credentials emailed.' });
+    }
+
+    // If admin didn't provide credentials, try to use team.teamCode or notify that admin must enter credentials
+    if (team && team.teamCode) {
+      // send an informational email with teamCode (if that's used as credential)
+            await sendCredentialsEmail(payment.email, {
+                teamCode: team ? team.teamCode : '',
+                username: team ? team.teamCode : '',
+                password: 'Use your team code',
+                name: payment.name,
+                email: payment.email
+            });
+
+      return res.status(200).json({ message: 'Payment verified and team code emailed to user.' });
+    }
+
+    // Otherwise just respond success; admin can later create credentials
+    return res.status(200).json({ message: 'Payment verified. Provide credentials to send login details.' });
+  } catch (err) {
+    console.error('Verify Payment Error:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
 };
 
 

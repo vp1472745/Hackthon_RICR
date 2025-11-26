@@ -63,7 +63,6 @@ export const sendCredentialsEmail = async (to, credentials) => {
     const subject = "Your Nav Kalpana Login Credentials";
     const email = to;
     const text = `
-    
         <!DOCTYPE html>
         <html>
             <head>
@@ -80,9 +79,8 @@ export const sendCredentialsEmail = async (to, credentials) => {
                     <h2>Your Nav Kalpana Login Credentials</h2>
                     <p>Hello,</p>
                     <p>Your login credentials are as follows:</p>
-                    <p>Team Code: ${credentials}</p>
-                    <p>Email: ${email}</p>
-               
+                    <p><strong>Team Code:</strong> ${credentials.teamCode}</p>
+                    <p><strong>Password:</strong> ${credentials.email}</p>
                     <p>Please keep this information safe and do not share it with anyone.</p>
                     <div class="footer">
                         If you did not request this, please ignore this email.<br>
