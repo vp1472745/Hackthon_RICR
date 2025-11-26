@@ -90,14 +90,7 @@ const Payment = () => {
     if (referenceId) createQr();
   }, [referenceId]);
 
-  useEffect(() => {
-    if (paymentSubmitted && countdown > 0) {
-      const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
-      return () => clearTimeout(t);
-    } else if (paymentSubmitted && countdown === 0) {
-      navigate('/login');
-    }
-  }, [paymentSubmitted, countdown, navigate]);
+  // Removed countdown timer after payment submission as per request
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
