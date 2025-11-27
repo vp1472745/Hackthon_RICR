@@ -41,6 +41,8 @@ const Payment = () => {
 
   // form state
   const [utr, setUtr] = useState('');
+  const utrPattern = /^\d{12,16}$/;
+  const isUtrValid = utrPattern.test(utr.trim());
   const [screenshotFile, setScreenshotFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -252,8 +254,11 @@ const Payment = () => {
                   value={utr}
                   onChange={(e) => setUtr(e.target.value)}
                   placeholder="Example: 123456789012"
-                  className="w-full rounded-lg border px-4 py-2 mb-3"
+                  className={`w-full rounded-lg border px-4 py-2 mb-3 ${utr.length > 0 && !isUtrValid ? 'border-red-500 focus:border-red-600 outline-red-500' : ''}`}
                 />
+                {utr.length > 0 && !isUtrValid && (
+                  <div className="text-xs text-red-600 mb-2">Enter a valid UPI Transaction ID (12-16 digits)</div>
+                )}
 
                 <label className="block text-sm text-gray-700 mb-1">Upload Screenshot (optional but recommended)</label>
                 <div className="flex items-center gap-3">
