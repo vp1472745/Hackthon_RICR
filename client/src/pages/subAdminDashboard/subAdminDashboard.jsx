@@ -6,6 +6,7 @@ import ThemeManageTab from './Tab/subThemeManageTab.jsx';
 import ResultManageTab from './Tab/subResultManageTab.jsx';
 import PsManageTab from './Tab/subPSManageTab.jsx';
 import Accomodation from './Tab/subAccomodation.jsx';
+import PaymentManager from './Tab/subPaymentManagerTab.jsx';
 import { usePermissions } from '../../hooks/usePermissions.js';
 
 const Home = ({ onTabChange }) => <div><Overview onTabChange={onTabChange} /></div>;
@@ -28,9 +29,9 @@ export default function AdminDashboard() {
     'Team': 'manageTeams', 
     'Theme': 'manageThemes',
     'Result': 'manageResults',
-    'Ps': 'manageProblemStatements'
-    ,
-    'Accomodation': 'manageAccomodations'
+    'Ps': 'manageProblemStatements',
+    'Accomodation': 'manageAccomodations',
+    'Payment': 'viewPayments'
   };
 
   // Find first available tab based on permissions
@@ -93,6 +94,8 @@ export default function AdminDashboard() {
     content = <Ps />;
   } else if (activeTab === 'Accomodation' && hasPermission('manageAccomodations')) {
     content = <AccomodationTab />;
+  } else if (activeTab === 'Payment' && hasPermission('viewPayments')) {
+    content = <PaymentManager />;
   } else if (activeTab === 'logout') {
     content = <LoggedOut />;
   } else {

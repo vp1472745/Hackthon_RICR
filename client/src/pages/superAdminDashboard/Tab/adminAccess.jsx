@@ -40,6 +40,14 @@ const ALL_PERMISSIONS = [
   { key: 'viewResultStatistics', label: 'View Result Statistics', category: 'Results' },
   { key: 'searchSortResults', label: 'Search & Sort Results', category: 'Results' },
 
+//Permission for PaymentManager features
+  { key: 'viewPayments', label: 'View Payments Tab', category: 'Payments' },
+  { key: 'viewPaymentDetails', label: 'View Payment Details', category: 'Payments' },
+  { key: 'reviewPayments', label: 'Open Review Modal', category: 'Payments' },
+  { key: 'verifyPayments', label: 'Verify Payments', category: 'Payments' },
+  { key: 'rejectPayments', label: 'Reject Payments', category: 'Payments' },
+  { key: 'seePaymentStats', label: 'View Payment Stats', category: 'Payments' },
+
 ];
 
 const AdminAccess = () => {
@@ -121,11 +129,14 @@ const AdminAccess = () => {
     setMsg('');
     setError('');
     try {
-      await subAdminAPI.setAdminPermissions(email, selected);
+      console.log('Assigning permissions:', { email, selected });
+      const setRes = await subAdminAPI.setAdminPermissions(email, selected);
+      console.log('Set permissions response:', setRes.data);
       setMsg('Permissions updated successfully');
 
       // Refresh the permissions for this admin
-      await fetchAdminPermissions(email);
+      const refreshed = await fetchAdminPermissions(email);
+      console.log('Refreshed permissions for', email, ':', refreshed);
 
       setEmail('');
       setSelected([]);

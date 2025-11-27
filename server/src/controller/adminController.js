@@ -683,3 +683,137 @@ export const declareResults = async (req, res, next) => {
 };
 
 
+
+export const verifyPayment = async (req, res) => {
+  try {
+    const paymentId = req.params.id;
+    if (!paymentId) return res.status(400).json({ message: 'Payment id missing in params' });
+
+    // find payment first
+    const payment = await Payment.findById(paymentId);
+    if (!payment) return res.status(404).json({ message: 'Payment not found' });
+
+    // find related team if any
+    const teamId = payment.teamId || payment.userId || payment.user;
+    const team = teamId ? await Team.findById(teamId) : null;
+
+    // ---------- Rejected flow ----------
+    if (req.body.status && String(req.body.status).toLowerCase() === 'rejected') {
+      // Permission check for rejectPayments
+      const admin = req.admin || req.user;
+      if (!admin || !admin.permissions || !admin.permissions.includes('rejectPayments')) {
+        return res.status(403).json({ message: 'Missing required permission: rejectPayments' });
+      }
+      payment.status = 'Rejected';
+      payment.rejectedAt = new Date();
+      if (admin && admin._id) payment.rejectedBy = admin._id;
+      await payment.save();
+
+      const rejectionMessage =
+        req.body.rejectionMessage ||
+        'Aapka UTR number invalid/unauthorized payee par show hua hai, isliye aapka registration block kar diya gaya hai. Agar aapke paas asli proof hai to support pe contact karein.';
+
+      // send rejection email (HTML)
+      await sendRejectionEmail(payment.email, {
+        name: payment.name,
+        message: rejectionMessage,
+      });
+
+      return res.status(200).json({ message: 'Payment rejected and user notified by email.' });
+    }
+
+    // ---------- Verified / Approve flow ----------
+    payment.status = 'Verified';
+    payment.verifiedAt = new Date();
+    if (req.user && req.user._id) payment.verifiedBy = req.user._id;
+    await payment.save();
+
+    const { username, password } = req.body;
+
+    if (username && password) {
+      // create or update User
+      let user = await User.findOne({ email: payment.email });
+      const hashed = await bcrypt.hash(password, 10);
+
+      if (!user) {
+        user = new User({
+          name: payment.name,
+          email: payment.email,
+          phone: payment.phone,
+          username,
+          password: hashed,
+          isActive: true,
+          role: 'participant',
+          team: team ? team._id : undefined,
+        });
+        await user.save();
+      } else {
+        user.username = username;
+        user.password = hashed;
+        user.isActive = true;
+        await user.save();
+      }
+
+      // save assigned username (hash saved already in user.password)
+      payment.assignedUsername = username;
+      payment.assignedPasswordHash = user.password;
+      await payment.save();
+
+      // send credentials email
+      await sendCredentialsEmail(payment.email, {
+        teamCode: team ? team.teamCode : username,
+        username,
+        password,
+        name: payment.name,
+        email: payment.email,
+      });
+
+      return res.status(200).json({ message: 'Payment verified, user created/updated and credentials emailed.' });
+    }
+
+    // If no username/password provided but team has teamCode
+    if (team && team.teamCode) {
+      await sendCredentialsEmail(payment.email, {
+        teamCode: team.teamCode,
+        username: team.teamCode,
+        password: 'Use your team code',
+        name: payment.name,
+        email: payment.email,
+      });
+      return res.status(200).json({ message: 'Payment verified and team code emailed to user.' });
+    }
+
+    // default success
+    return res.status(200).json({ message: 'Payment verified. Provide credentials to send login details.' });
+  } catch (err) {
+    console.error('Verify Payment Error:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
+
+// Get payment by ID
+export const getPaymentById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const payment = await Payment.findById(id);
+        if (!payment) return res.status(404).json({ message: "Payment not found" });
+        res.status(200).json({ payment });
+    } catch (err) {
+        console.error("Get Payment By ID Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Get all payments
+export const getAllPayments = async (req, res) => {
+    try {
+        const payments = await Payment.find({});
+        res.status(200).json({ payments });
+    } catch (err) {
+        console.error("Get All Payments Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+

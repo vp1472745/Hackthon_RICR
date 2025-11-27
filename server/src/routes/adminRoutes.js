@@ -20,7 +20,10 @@ import {
 			deleteResult,
 			deleteAllResults,
 			importResultsExcel,
-			declareResults
+			declareResults,
+			getAllPayments,
+			getPaymentById,
+			verifyPayment
 
 } from '../controller/adminController.js';
 import multer from 'multer';
@@ -68,7 +71,14 @@ router.delete('/all/delete-all', authenticateAdmin, deleteAllResults);
 router.post('/import-excel', authenticateAdmin, upload.single('file'), importResultsExcel);
 router.patch('/declare-results', authenticateAdmin,	 declareResults);
 
-
-
+router.get('/payments', requireAdminPermission('seePaymentStats'), getAllPayments);
+router.get('/payment/:id', requireAdminPermission('viewPaymentDetails'), getPaymentById);
+// Review modal permission (for opening review UI, not backend logic)
+router.post('/reviewPayment/:id', requireAdminPermission('reviewPayments'), (req, res) => {
+	// This is a placeholder. You can add review logic here if needed.
+	res.status(200).json({ message: 'Review permission granted.' });
+});
+// Verify payment
+router.post('/verifyPayment/:id', requireAdminPermission('verifyPayments'), verifyPayment);
 
 export default router;

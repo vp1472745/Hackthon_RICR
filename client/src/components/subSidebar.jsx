@@ -50,13 +50,19 @@ const NAV_ITEMS = [
     icon: <FiFileText size={20} />,
     permission: "manageAccomodations"
   },
+{
+  key: "Payment",
+  label: "Payment Manage",
+  icon: <FiFileText size={20} />,
+  permission: "viewPayments"
+}
 ];
 
 const Sidebar = ({ onTabChange = () => { }, activeTab = "Home" }) => {
   const [open, setOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
-  const { hasPermission, loading, error } = usePermissions();
+  const { hasPermission, loading, error, refetchPermissions } = usePermissions();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -138,6 +144,16 @@ const Sidebar = ({ onTabChange = () => { }, activeTab = "Home" }) => {
               );
             })}
           </ul>
+          {/* Refresh Permissions Button */}
+          <div className={`mt-6 ${open ? "px-4" : "px-2"}`}>
+            <button
+              type="button"
+              onClick={refetchPermissions}
+              className="w-full bg-blue-800 hover:bg-blue-900 text-white py-2 rounded-lg font-medium text-sm transition-colors"
+            >
+              Refresh Permissions
+            </button>
+          </div>
         </nav>
 
 

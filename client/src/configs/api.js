@@ -110,9 +110,13 @@ export const projectThemeAPI = {
     // Fetch all themes for admin (active + inactive)
     getAllThemesAdmin: () => api.get('/theme/admin/all'),
     // Select a theme for a team
-    selectThemeForTeam: (teamId, themeName) => api.put(`/theme/select/${teamId}`, { themeName }),
-    // Activate all themes (SuperAdmin)
-    activateAllThemes: () => api.patch('/theme/activate-all'),
+    // Granular payment management actions
+    getAllPayments: () => api.get('/s/admin/payments'), // seePaymentStats
+    getPaymentStats: () => api.get('/s/admin/payment-stats'), // seePaymentStats (if separate)
+    getPaymentById: (paymentId) => api.get(`/s/admin/payment/${paymentId}`), // viewPaymentDetails
+    reviewPayment: (paymentId, reviewData) => api.post(`/s/admin/reviewPayment/${paymentId}`, reviewData), // reviewPayments
+    verifyPayment: (paymentId) => api.post(`/s/admin/verifyPayment/${paymentId}`), // verifyPayments
+    rejectPayment: (paymentId, reason) => api.post(`/s/admin/rejectPayment/${paymentId}`, { reason }), // rejectPayments
     // Deactivate all themes (SuperAdmin)
     deactivateAllThemes: () => api.patch('/theme/deactivate-all'),
 };
@@ -243,7 +247,10 @@ export const subAdminAPI = {
     },
     declareAllResults: () => api.patch('/s/admin/declare-results'),
 
-
+    // payment
+    getAllPayments: () => api.get('/s/admin/payments'),
+    getPaymentById: (paymentId) => api.get(`/s/admin/payment/${paymentId}`),
+    verifyPayment: (paymentId) => api.post(`/s/admin/verifyPayment/${paymentId}`),
 
 
 };
