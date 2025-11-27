@@ -11,7 +11,7 @@ import QRCode from 'qrcode';
 /*
   CONFIG - Update these with your actual payee details
 */
-const PAYEE_VPA = '6268923703@ibl';       // <-- replace with real VPA if needed
+const PAYEE_VPA = 'eazypay.WDQMX31RXF4I1DT@icici';       // <-- replace with real VPA if needed
 const PAYEE_NAME = 'Nav Kalpana';         // <-- merchant name
 const AMOUNT = '1500';                    // fixed fee ₹1,500
 const TRANSACTION_NOTE = 'Nav Kalpana Fee';
