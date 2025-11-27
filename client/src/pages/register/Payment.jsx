@@ -134,7 +134,7 @@ const Payment = () => {
       if (screenshotFile) formData.append('screenshot', screenshotFile);
 
       await authAPI.submitPayment(formData, { timeout: 30000 });
-      toast.success('Thank you for registering for Nav Kalpana! Your payment is pending admin verification. You will receive your User ID and Password by email within 24 hours after admin approval.');
+      toast.success('Thank you for registering for Nav Kalpana! Your payment is pending super admin verification. You will receive your User ID and Password by email within 24 hours after super admin approval.');
       setPaymentSubmitted(true);
     } catch (err) {
       console.error(err);
@@ -276,8 +276,8 @@ const Payment = () => {
               <CheckCircle className="w-14 h-14 text-blue-500 mb-3" />
               <h3 className="text-xl font-bold text-blue-700 mb-1">Thank you for registering for Nav Kalpana!</h3>
               <p className="text-gray-600 mb-4 text-center">
-                Your payment is <span className="font-semibold">pending admin verification</span>.<br />
-                You will receive your User ID and Password by email only after admin approval.<br />
+                Your payment is <span className="font-semibold">pending super admin verification</span>.<br />
+                You will receive your User ID and Password by email within <span className="font-semibold">24 hours</span> after super admin approval.<br />
                 <span className="font-semibold">You cannot access your dashboard until your payment is verified.</span>
               </p>
               <div className="flex items-center gap-2 bg-blue-100 rounded-lg px-4 py-2 mb-5">
