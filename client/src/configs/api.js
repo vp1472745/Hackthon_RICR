@@ -62,7 +62,7 @@ export const authAPI = {
     // Submit payment with screenshot
     submitPayment: (formData) => api.post('/auth/submit', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-              timeout: 10000, // 60s for heavy uploads
+              timeout: 5000, // 60s for heavy uploads
 
     }),
     // Get payment by ID
