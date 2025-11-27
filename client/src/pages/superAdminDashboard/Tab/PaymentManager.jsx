@@ -1,6 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
 import { AdminAPI } from '../../../configs/api';
+import { toast } from 'react-hot-toast';
 
 const PaymentManager = () => {
   const [payments, setPayments] = useState([]);
@@ -47,9 +48,11 @@ const PaymentManager = () => {
     try {
       await AdminAPI.verifyPayment(paymentId, { status: 'Verified' });
       setPayments(payments.map(p => p._id === paymentId ? { ...p, status: 'Verified' } : p));
+      toast.success('Payment verified and user notified by email.');
       resetModal();
     } catch {
       setError('Failed to verify payment');
+      toast.error('Failed to verify payment.');
     } finally {
       setActionLoading(false);
     }
@@ -60,9 +63,11 @@ const PaymentManager = () => {
     try {
       await AdminAPI.verifyPayment(paymentId, { status: 'Rejected', rejectionMessage });
       setPayments(payments.map(p => p._id === paymentId ? { ...p, status: 'Rejected' } : p));
+      toast.success('Payment rejected and user notified by email.');
       resetModal();
     } catch {
       setError('Failed to reject payment');
+      toast.error('Failed to reject payment.');
     } finally {
       setActionLoading(false);
     }

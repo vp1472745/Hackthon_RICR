@@ -132,7 +132,7 @@ export const adminLogin = async (req, res) => {
       },
     });
   } catch (error) {
-    handleError(res, error, "Error during admin login");
+    res.status(500).json({ message: "Error during admin login", error: error.message });
   }
 };
 
@@ -405,46 +405,108 @@ export const setAdminPermissions = async (req, res) => {
 export const verifyPayment = async (req, res) => {
   try {
     const paymentId = req.params.id;
-    if (!paymentId) return res.status(400).json({ message: 'Payment id missing in params' });
+    if (!paymentId) {
+      return res.status(400).json({
+        status: 'error',
+        httpCode: 400,
+        message: 'Payment id missing in params',
+      });
+    }
 
     // find payment first
     const payment = await Payment.findById(paymentId);
-    if (!payment) return res.status(404).json({ message: 'Payment not found' });
+    if (!payment) {
+      return res.status(404).json({
+        status: 'error',
+        httpCode: 404,
+        message: 'Payment not found',
+      });
+    }
 
     // find related team if any
     const teamId = payment.teamId || payment.userId || payment.user;
     const team = teamId ? await Team.findById(teamId) : null;
 
+    // actor performing action (populated by your auth middleware)
+    const admin = req.admin || req.user || null;
+
     // ---------- Rejected flow ----------
     if (req.body.status && String(req.body.status).toLowerCase() === 'rejected') {
+
+        // Removed permission check for rejectPayments
+
       payment.status = 'Rejected';
       payment.rejectedAt = new Date();
-      if (req.user && req.user._id) payment.rejectedBy = req.user._id;
-      await payment.save();
+      if (admin && admin._id) payment.rejectedBy = admin._id;
 
       const rejectionMessage =
         req.body.rejectionMessage ||
         'Aapka UTR number invalid/unauthorized payee par show hua hai, isliye aapka registration block kar diya gaya hai. Agar aapke paas asli proof hai to support pe contact karein.';
 
-      // send rejection email (HTML)
-      await sendRejectionEmail(payment.email, {
-        name: payment.name,
-        message: rejectionMessage,
-      });
+      // persist rejection reason
+      payment.rejectionReason = rejectionMessage;
+      await payment.save();
 
-      return res.status(200).json({ message: 'Payment rejected and user notified by email.' });
+      // send rejection email and capture result
+      let emailResult = { to: payment.email, template: 'payment_rejection', sent: false };
+      try {
+        const sentInfo = await sendRejectionEmail(payment.email, {
+          name: payment.name,
+          message: rejectionMessage,
+        });
+        emailResult.sent = true;
+        emailResult.messageId = sentInfo?.messageId || sentInfo || 'unknown';
+      } catch (emailErr) {
+        emailResult.sent = false;
+        emailResult.error = emailErr?.message || String(emailErr);
+      }
+
+      return res.status(200).json({
+        status: emailResult.sent ? 'success' : 'warning',
+        httpCode: 200,
+        action: 'payment_rejected',
+        payment: {
+          _id: payment._id,
+          referenceId: payment.referenceId,
+          transactionId: payment.transactionId,
+          status: payment.status,
+          rejectionReason: payment.rejectionReason,
+          rejectedBy: payment.rejectedBy || null,
+          rejectedAt: payment.rejectedAt ? payment.rejectedAt.toISOString() : null,
+        },
+        email: {
+          to: emailResult.to,
+          template: emailResult.template,
+          subject: 'Payment Rejected — Nav Kalpana',
+          sent: emailResult.sent,
+          messageId: emailResult.messageId,
+          error: emailResult.error,
+        },
+        message: emailResult.sent
+          ? 'Payment rejected and user notified by email.'
+          : 'Payment rejected. Failed to send notification email — please retry or notify user manually.',
+      });
     }
 
     // ---------- Verified / Approve flow ----------
     payment.status = 'Verified';
     payment.verifiedAt = new Date();
-    if (req.user && req.user._id) payment.verifiedBy = req.user._id;
+    if (admin && admin._id) payment.verifiedBy = admin._id;
     await payment.save();
 
     const { username, password } = req.body;
 
+    const paymentSnippet = {
+      _id: payment._id,
+      referenceId: payment.referenceId,
+      transactionId: payment.transactionId,
+      status: payment.status,
+      verifiedBy: payment.verifiedBy || null,
+      verifiedAt: payment.verifiedAt ? payment.verifiedAt.toISOString() : null,
+    };
+
+    // If admin provided username & password -> create/update user + email creds
     if (username && password) {
-      // create or update User
       let user = await User.findOne({ email: payment.email });
       const hashed = await bcrypt.hash(password, 10);
 
@@ -467,44 +529,119 @@ export const verifyPayment = async (req, res) => {
         await user.save();
       }
 
-      // save assigned username (hash saved already in user.password)
+      // save assigned username and hashed password on payment record
       payment.assignedUsername = username;
       payment.assignedPasswordHash = user.password;
       await payment.save();
 
-      // send credentials email
-      await sendCredentialsEmail(payment.email, {
-        teamCode: team ? team.teamCode : username,
-        username,
-        password,
-        name: payment.name,
-        email: payment.email,
-      });
+      // send credentials email (capture success/failure)
+      let emailResult = { to: payment.email, template: 'credentials_email', sent: false };
+      try {
+        const sentInfo = await sendCredentialsEmail(payment.email, {
+          teamCode: team ? team.teamCode : username,
+          username,
+          password, // plaintext only inside email
+          name: payment.name,
+          email: payment.email,
+        });
+        emailResult.sent = true;
+        emailResult.messageId = sentInfo?.messageId || sentInfo || 'unknown';
+      } catch (emailErr) {
+        emailResult.sent = false;
+        emailResult.error = emailErr?.message || String(emailErr);
+      }
 
-      return res.status(200).json({ message: 'Payment verified, user created/updated and credentials emailed.' });
+      return res.status(200).json({
+        status: emailResult.sent ? 'success' : 'warning',
+        httpCode: 200,
+        action: 'payment_verified',
+        payment: {
+          ...paymentSnippet,
+          assignedUsername: payment.assignedUsername,
+          assignedPasswordHash: payment.assignedPasswordHash,
+        },
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          username: user.username,
+          isActive: user.isActive,
+          role: user.role,
+          teamId: user.team || null,
+        },
+        email: {
+          to: emailResult.to,
+          template: emailResult.template,
+          subject: 'Your Nav Kalpana Login Credentials',
+          sent: emailResult.sent,
+          messageId: emailResult.messageId,
+          error: emailResult.error,
+        },
+        message: emailResult.sent
+          ? 'Payment verified, user created/updated and credentials emailed.'
+          : 'Payment verified and user created/updated. Failed to send credentials email — please retry sending email.',
+      });
     }
 
-    // If no username/password provided but team has teamCode
+    // If no username/password provided but team has teamCode -> email team code
     if (team && team.teamCode) {
-      await sendCredentialsEmail(payment.email, {
-        teamCode: team.teamCode,
-        username: team.teamCode,
-        password: 'Use your team code',
-        name: payment.name,
-        email: payment.email,
+      let emailResult = { to: payment.email, template: 'teamcode_email', sent: false };
+      try {
+        const sentInfo = await sendCredentialsEmail(payment.email, {
+          teamCode: team.teamCode,
+          username: team.teamCode,
+          password: 'Use your team code',
+          name: payment.name,
+          email: payment.email,
+        });
+        emailResult.sent = true;
+        emailResult.messageId = sentInfo?.messageId || sentInfo || 'unknown';
+      } catch (emailErr) {
+        emailResult.sent = false;
+        emailResult.error = emailErr?.message || String(emailErr);
+      }
+
+      return res.status(200).json({
+        status: emailResult.sent ? 'success' : 'warning',
+        httpCode: 200,
+        action: 'payment_verified',
+        payment: paymentSnippet,
+        team: {
+          _id: team._id,
+          teamCode: team.teamCode,
+        },
+        email: {
+          to: emailResult.to,
+          template: emailResult.template,
+          subject: 'Nav Kalpana — Login Instructions',
+          sent: emailResult.sent,
+          messageId: emailResult.messageId,
+          error: emailResult.error,
+        },
+        message: emailResult.sent
+          ? 'Payment verified and team code emailed to user.'
+          : 'Payment verified. Failed to send team code email — please retry.',
       });
-      return res.status(200).json({ message: 'Payment verified and team code emailed to user.' });
     }
 
-    // default success
-    return res.status(200).json({ message: 'Payment verified. Provide credentials to send login details.' });
+    // default success if no credentials and no team code
+    return res.status(200).json({
+      status: 'success',
+      httpCode: 200,
+      action: 'payment_verified',
+      payment: paymentSnippet,
+      message: 'Payment verified. Provide credentials to send login details.',
+    });
   } catch (err) {
     console.error('Verify Payment Error:', err);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return res.status(500).json({
+      status: 'error',
+      httpCode: 500,
+      message: 'Internal Server Error',
+      error: err?.message || String(err),
+    });
   }
 };
-
-
 
 // Get payment by ID
 export const getPaymentById = async (req, res) => {

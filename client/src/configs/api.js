@@ -205,7 +205,7 @@ export const AdminAPI = {
 
 };
 
-
+//super admin
 export const subAdminAPI = {
     // Admin permissions
     setAdminPermissions: (email, permissions) => api.put(`/s/admin/set-permissions/${email}`, { permissions }),

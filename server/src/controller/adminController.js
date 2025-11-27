@@ -6,6 +6,7 @@ import Admin from "../models/adminRegisterModel.js";
 import User from "../models/UserModel.js";
 import Theme from "../models/projectTheme.js";
 import Payment from "../models/PaymentModel.js";
+import {  sendCredentialsEmail , sendRejectionEmail } from '../utils/emailService.js';
 
 import Result from '../models/resultModel.js';
 
