@@ -111,8 +111,11 @@ const Payment = () => {
 
   const handleSubmitProof = async (e) => {
     e.preventDefault();
-    if (!utr || utr.trim().length < 3) {
-      toast.error('Please enter a valid UPI Transaction ID (UTR).');
+    const utrTrimmed = utr.trim();
+    // UTR validation: 12-16 digits, all numbers
+    const utrPattern = /^\d{12,16}$/;
+    if (!utrTrimmed || !utrPattern.test(utrTrimmed)) {
+      toast.error('Please enter a valid UPI Transaction ID (UTR) — 12 to 16 digits.');
       return;
     }
     if (!registrationData) {
@@ -135,7 +138,7 @@ const Payment = () => {
       formData.append('email', registrationData.email);
       formData.append('phone', registrationData.phone);
       formData.append('referenceId', referenceId);
-      formData.append('transactionId', utr.trim());
+      formData.append('transactionId', utrTrimmed);
       if (screenshotFile) formData.append('screenshot', screenshotFile);
 
       await authAPI.submitPayment(formData, { timeout: 30000 });
