@@ -128,7 +128,7 @@ const HelpDesk = () => {
     {
       type: 'Email Support',
       icon: Mail,
-      value: 'contact@ricr.in',
+      value: 'ashish@ricr.in',
       description: 'General inquiries and detailed questions',
       response: '24-48 hours',
       buttonText: 'Send Email',
@@ -137,7 +137,7 @@ const HelpDesk = () => {
         // consider changing this to open the modal first and then call openMailCompose with contactForm contents.
         const subject = 'Support Request';
         const body = `Hello team,%0D%0A%0D%0AI have a question regarding...%0D%0A%0D%0ARegards,`;
-        openMailCompose({ to: 'contact@ricr.in', subject, body });
+        openMailCompose({ to: 'ashish@ricr.in', subject, body });
       }
     },
     {
@@ -160,7 +160,7 @@ const HelpDesk = () => {
     // If you want the contact form modal to open the user's mailbox with form contents,
     // replace the alert and setShowContactForm(false) with a call to openMailCompose using contactForm.
     // Example:
-    // openMailCompose({ to: 'contact@ricr.in', subject: contactForm.subject, body: contactForm.message });
+    // openMailCompose({ to: 'ashish@ricr.in', subject: contactForm.subject, body: contactForm.message });
     alert('Your message has been sent successfully! We will get back to you within 24-48 hours.');
     setContactForm({ category: 'general', subject: '', message: '' });
     setShowContactForm(false);

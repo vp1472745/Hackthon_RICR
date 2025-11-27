@@ -191,8 +191,8 @@ function Footer() {
               transition={{ type: "spring", stiffness: 400 }}
             >
               <HiOutlineMail className="text-xl flex-shrink-0" />
-              <a href="mailto:contact@ricr.in" className="hover:text-gray-300">
-                contact@ricr.in
+              <a href="mailto:ashish@ricr.in" className="hover:text-gray-300">
+               ashish@ricr.in
               </a>
             </motion.li>
             <motion.li 

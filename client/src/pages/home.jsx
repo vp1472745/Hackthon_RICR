@@ -43,7 +43,7 @@ function Home() {
             <a href="/terms" className="hover:underline mb-2 sm:mb-0">
               Terms of Service
             </a>
-            <a href="mailto:contact@ricrhackathon.com" className="hover:underline">
+            <a href="mailto:ashish@ricr.in" className="hover:underline">
               Contact
             </a>
           </div>
