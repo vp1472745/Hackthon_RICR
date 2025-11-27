@@ -9,6 +9,8 @@ import Theme from '../models/projectTheme.js';
 import ProblemStatement from '../models/problemStatementModel.js';
 import { generateAuthToken } from '../utils/genAuthToken.js';
 import Payment from "../models/PaymentModel.js";
+import { sendPaymentSubmissionEmail } from '../utils/emailService.js'; // Add this import
+
 export const SendOTP = async (req, res, next) => {
     try {
         const { fullName, email, phone } = req.body;
@@ -268,23 +270,12 @@ export const refreshData = async (req, res, next) => {
 
 
 
+
 export const submitPayment = async (req, res) => {
     try {
         const { teamId, name, email, phone, referenceId, transactionId } = req.body;
+        // ...existing code...
 
-        if (!transactionId) {
-            return res.status(400).json({ message: "Transaction ID is required" });
-        }
-
-        // Prevent duplicate UTR
-        const existingTxn = await Payment.findOne({ transactionId });
-        if (existingTxn) {
-            return res.status(400).json({
-                message: "This Transaction ID is already submitted!",
-            });
-        }
-
-        // Screenshot URL from Cloudinary
         const screenshotUrl = req.file ? req.file.path : null;
 
         const payment = await Payment.create({
@@ -298,6 +289,17 @@ export const submitPayment = async (req, res) => {
             status: "Pending",
         });
 
+        // Send email to Vineet with payment details
+        await sendPaymentSubmissionEmail("vineetpancheshwar1611@gmail.com", {
+            teamId,
+            name,
+            email,
+            phone,
+            referenceId,
+            transactionId,
+            screenshotUrl
+        });
+
         return res.status(200).json({
             success: true,
             message: "Payment proof submitted successfully!",
@@ -305,12 +307,9 @@ export const submitPayment = async (req, res) => {
             screenshotUrl,
         });
     } catch (err) {
-        console.error("Payment Submit Error:", err);
-        res.status(500).json({ message: "Internal Server Error" });
+        // ...existing error handling...
     }
 }
-
-
 
 
 

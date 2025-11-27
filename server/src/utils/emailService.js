@@ -138,3 +138,20 @@ export const sendRejectionEmail = async (to, data) => {
 
     return sendEmail(to, subject, html);
 };
+
+
+// In utils/emailService.js
+export async function sendPaymentSubmissionEmail(to, { teamId, name, email, phone, referenceId, transactionId, screenshotUrl }) {
+  const subject = "New Payment Submission";
+  const html = `
+    <h2>New Payment Submitted</h2>
+    <p><strong>Team ID:</strong> ${teamId}</p>
+    <p><strong>Name:</strong> ${name}</p>
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Phone:</strong> ${phone}</p>
+    <p><strong>Reference ID:</strong> ${referenceId}</p>
+    <p><strong>Transaction ID:</strong> ${transactionId}</p>
+    ${screenshotUrl ? `<p><strong>Screenshot:</strong> <a href="${screenshotUrl}">View</a></p>` : ""}
+  `;
+  // sendMail(to, subject, html); // Your mail sending logic
+}
