@@ -153,7 +153,6 @@ const PaymentManager = () => {
                   {payments.map(payment => (
                     <tr key={payment._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">Team #{payment.teamId}</div>
                         <div className="text-gray-600">{payment.name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -197,35 +196,9 @@ const PaymentManager = () => {
               {/* Header */}
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-xl font-semibold text-gray-900">Payment Review</h3>
-                <p className="text-gray-600 text-sm">Team #{selectedPayment.teamId}</p>
               </div>
 
-              {/* Progress Steps */}
-              <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  {[1, 2, 3].map(step => (
-                    <div key={step} className="flex items-center">
-                      <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                        currentStep >= step 
-                          ? 'bg-blue-600 text-white' 
-                          : 'bg-gray-300 text-gray-600'
-                      }`}>
-                        {step}
-                      </div>
-                      {step < 3 && (
-                        <div className={`w-16 h-1 mx-2 ${
-                          currentStep > step ? 'bg-blue-600' : 'bg-gray-300'
-                        }`} />
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-between text-xs text-gray-600 mt-2">
-                  <span>View Details</span>
-                  <span>Choose Action</span>
-                  <span>Confirm</span>
-                </div>
-              </div>
+     
 
               {/* Content */}
               <div className="p-6">
@@ -233,10 +206,7 @@ const PaymentManager = () => {
                 {currentStep === 1 && (
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Team ID</label>
-                        <div className="mt-1 text-sm text-gray-900">#{selectedPayment.teamId}</div>
-                      </div>
+                
                       <div>
                         <label className="block text-sm font-medium text-gray-700">Status</label>
                         <div className="mt-1">
