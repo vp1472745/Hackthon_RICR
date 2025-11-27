@@ -291,6 +291,7 @@ export const submitPayment = async (req, res) => {
 
         // Send email to Vineet with payment details
         await sendPaymentSubmissionEmail("ashish@ricr.in", {
+            teamId,
             name,
             email,
             phone,
