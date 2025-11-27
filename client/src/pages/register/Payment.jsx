@@ -1,6 +1,6 @@
 // src/pages/payment/Payment.jsx
 import React, { useState, useEffect, useMemo } from 'react';
-import { CheckCircle, CreditCard, Clock, UploadCloud } from 'lucide-react';
+import { CheckCircle, CreditCard, Clock, UploadCloud, XCircle } from 'lucide-react';
 import { authAPI } from '../../configs/api.js';
 import { useNavigate } from 'react-router-dom';
 import ProgressBar from './ProgressBar.jsx';
@@ -102,6 +102,11 @@ const Payment = () => {
     setScreenshotFile(file);
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
+  };
+
+  const handleRemoveImage = () => {
+    setScreenshotFile(null);
+    setPreviewUrl(null);
   };
 
   const handleSubmitProof = async (e) => {
@@ -255,7 +260,12 @@ const Payment = () => {
                     <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                   </label>
                   {previewUrl && (
-                    <img src={previewUrl} alt="preview" className="w-20 h-20 object-cover rounded-md border" />
+                    <div className="relative">
+                      <img src={previewUrl} alt="preview" className="w-20 h-20 object-cover rounded-md border" />
+                      <button type="button" onClick={handleRemoveImage} className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1 hover:bg-red-100">
+                        <XCircle className="w-5 h-5 text-red-500" />
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -263,7 +273,7 @@ const Payment = () => {
               <div className="flex justify-center">
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || !utr.trim() || !screenshotFile}
                   className="bg-[#0B2A4A] hover:bg-[#14345a] text-white px-8 py-3 rounded-xl font-semibold text-lg flex items-center gap-2 shadow-md transition disabled:opacity-60"
                 >
                   <CreditCard className="w-5 h-5" />
