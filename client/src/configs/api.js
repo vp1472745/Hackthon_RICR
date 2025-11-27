@@ -201,7 +201,8 @@ export const AdminAPI = {
        // payment
     getAllPayments: () => api.get('/admin/payments'),
     getPaymentById: (paymentId) => api.get(`/admin/payment/${paymentId}`),
-    verifyPayment: (paymentId) => api.post(`/admin/verifyPayment/${paymentId}`),
+    // Accepts optional body for status/rejectionMessage
+    verifyPayment: (paymentId, body = {}) => api.post(`/admin/verifyPayment/${paymentId}`, body),
 
 };
 
