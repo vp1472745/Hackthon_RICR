@@ -2,19 +2,20 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "../configs/authContext"; // adjust path if needed
+import LOGO from "../../public/navlogo.png";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { 
-    isAuthenticated, 
-    leaderName, 
+  const {
+    isAuthenticated,
+    leaderName,
     userRole,
     logout,
     isAdminAuthenticated,
     adminEmail,
     adminType,
-    adminLogout 
+    adminLogout,
   } = useAuth();
   const navigate = useNavigate();
 
@@ -35,12 +36,12 @@ const Navbar = () => {
 
   // Get appropriate dashboard route based on user role
   const getDashboardRoute = () => {
-    if (userRole === 'Leader') {
-      return '/leader-dashboard';
-    } else if (userRole === 'Member') {
-      return '/member-dashboard';
+    if (userRole === "Leader") {
+      return "/leader-dashboard";
+    } else if (userRole === "Member") {
+      return "/member-dashboard";
     }
-    return '/leader-dashboard'; // Default fallback
+    return "/leader-dashboard"; // Default fallback
   };
 
   return (
@@ -51,16 +52,24 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" onClick={closeMobileMenu}>
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">
-            <span className="text-[#0C2340]">Nav</span>
-            <span className="text-[#2A6EBB]">Kalpana</span>
-          </h1>
+        <Link to="/" onClick={closeMobileMenu} className="flex items-center">
+          <div className="">
+            <img
+              src={LOGO}
+              className="w-8 sm:w-10 md:w-12 lg:w-14"
+              alt="Nav Kalpana Logo"
+            />
+          </div>
+          <div className="ml-2 justify-center items-center flex">
+            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-wide">
+              <span className="text-[#0C2340]">Nav</span>
+              <span className="text-[#2A6EBB]">Kalpana</span>
+            </h1>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex justify-center items-center gap-3">
-
           {/* Normal User Authentication */}
           {isAuthenticated && leaderName && (
             <button
@@ -76,7 +85,7 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
-                  if (adminType === 'superadmin') {
+                  if (adminType === "superadmin") {
                     navigate("/superadmin-dashboard");
                   } else {
                     navigate("/admin-dashboard");
@@ -84,13 +93,14 @@ const Navbar = () => {
                 }}
                 className="text-[#2A6EBB] cursor-pointer font-semibold mr-2 hover:underline transition-colors"
               >
-                {adminType === 'superadmin' ? 'Super Admin' : 'Admin'}: {adminEmail}
+                {adminType === "superadmin" ? "Super Admin" : "Admin"}:{" "}
+                {adminEmail}
               </button>
             </div>
           )}
 
           {/* Show logout if either user or admin is authenticated */}
-          {(isAuthenticated || isAdminAuthenticated) ? (
+          {isAuthenticated || isAdminAuthenticated ? (
             <button
               onClick={isAdminAuthenticated ? adminLogout : logout}
               className="bg-red-500 hover:bg-red-600 text-white cursor-pointer rounded-md px-4 py-1 transition-colors duration-200"
@@ -99,7 +109,7 @@ const Navbar = () => {
             </button>
           ) : (
             <>
-                    <Link
+              <Link
                 to="/register"
                 className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-lg px-5 py-2 transition-colors duration-200 mr-2"
               >
@@ -111,7 +121,6 @@ const Navbar = () => {
               >
                 Login
               </Link>
-      
             </>
           )}
         </div>
@@ -132,7 +141,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
           onClick={closeMobileMenu}
         />
@@ -141,7 +150,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
       <div
         className={`fixed top-0 right-0 h-full w-80 max-w-sm bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 md:hidden ${
-          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Mobile Menu Header */}
@@ -162,7 +171,11 @@ const Navbar = () => {
           {isAuthenticated && leaderName && (
             <div className="p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-gray-600 mb-2">
-                {userRole === 'Leader' ? 'Team Leader' : userRole === 'Member' ? 'Team Member' : 'Welcome back!'}
+                {userRole === "Leader"
+                  ? "Team Leader"
+                  : userRole === "Member"
+                  ? "Team Member"
+                  : "Welcome back!"}
               </p>
               <button
                 onClick={() => handleNavigation(getDashboardRoute())}
@@ -176,10 +189,16 @@ const Navbar = () => {
           {isAdminAuthenticated && adminEmail && (
             <div className="p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-gray-600 mb-2">
-                {adminType === 'superadmin' ? 'Super Admin' : 'Admin'}
+                {adminType === "superadmin" ? "Super Admin" : "Admin"}
               </p>
               <button
-                onClick={() => handleNavigation(adminType === 'superadmin' ? "/superadmin-dashboard" : "/admin-dashboard")}
+                onClick={() =>
+                  handleNavigation(
+                    adminType === "superadmin"
+                      ? "/superadmin-dashboard"
+                      : "/admin-dashboard"
+                  )
+                }
                 className="text-[#2A6EBB] font-semibold hover:underline transition-colors break-all"
               >
                 {adminEmail}
@@ -196,11 +215,16 @@ const Navbar = () => {
             >
               Home
             </Link>
-            
-  
+
             {isAdminAuthenticated && (
               <button
-                onClick={() => handleNavigation(adminType === 'superadmin' ? "/superadmin-dashboard" : "/admin-dashboard")}
+                onClick={() =>
+                  handleNavigation(
+                    adminType === "superadmin"
+                      ? "/superadmin-dashboard"
+                      : "/admin-dashboard"
+                  )
+                }
                 className="block w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 font-medium"
               >
                 Admin Dashboard
@@ -210,7 +234,7 @@ const Navbar = () => {
 
           {/* Action Buttons */}
           <div className="pt-4 border-t border-gray-200">
-            {(isAuthenticated || isAdminAuthenticated) ? (
+            {isAuthenticated || isAdminAuthenticated ? (
               <button
                 onClick={() => {
                   if (isAdminAuthenticated) {
