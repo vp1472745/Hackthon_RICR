@@ -26,7 +26,7 @@ const WebsiteSeeder = [
     roadMap: [
       {
         title: "Registration Open",
-        date: "1 Feb 2026",
+        date: "10 Dec 2025",
         time: "09:00 AM",
         color: "blue",
       },
