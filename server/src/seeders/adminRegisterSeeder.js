@@ -25,7 +25,20 @@ const adminData = [
     username: "superadmin",
     email: "superadmin@example.com",
     phone: "9425706872",
-    password: "superadmin123",
+    password: "
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ",
     role: "superadmin",
   },
 ];

@@ -110,6 +110,7 @@ export const projectThemeAPI = {
     // Fetch all themes for admin (active + inactive)
     getAllThemesAdmin: () => api.get('/theme/admin/all'),
     // Select a theme for a team
+    selectThemeForTeam: (teamId, themeName) => api.put(`/theme/select/${teamId}`, { themeName }),
     // Granular payment management actions
     getAllPayments: () => api.get('/s/admin/payments'), // seePaymentStats
     getPaymentStats: () => api.get('/s/admin/payment-stats'), // seePaymentStats (if separate)
@@ -117,6 +118,9 @@ export const projectThemeAPI = {
     reviewPayment: (paymentId, reviewData) => api.post(`/s/admin/reviewPayment/${paymentId}`, reviewData), // reviewPayments
     verifyPayment: (paymentId) => api.post(`/s/admin/verifyPayment/${paymentId}`), // verifyPayments
     rejectPayment: (paymentId, reason) => api.post(`/s/admin/rejectPayment/${paymentId}`, { reason }), // rejectPayments
+    // Deactivate all themes (SuperAdmin)
+    // Activate all themes (SuperAdmin)
+    activateAllThemes: () => api.patch('/theme/activate-all'),
     // Deactivate all themes (SuperAdmin)
     deactivateAllThemes: () => api.patch('/theme/deactivate-all'),
 };
