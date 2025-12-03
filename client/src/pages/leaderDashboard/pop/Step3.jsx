@@ -19,7 +19,7 @@ const Step3 = ({ setIsStep3Saved, handleBack, handleNext }) => {
     return null;
   }
   const teamId = getCookie('teamId');
-// oijoijiojoi
+
   useEffect(() => {
     const fetchThemes = async () => {
       try {
