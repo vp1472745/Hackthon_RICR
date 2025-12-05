@@ -177,7 +177,8 @@ export const Login = async (req, res, next) => {
             return next(error);
         }
 
-        const existingUser = await User.findOne({ email: email.toLowerCase() });
+        const normalizedEmail = email.toLowerCase();
+        const existingUser = await User.findOne({ email: normalizedEmail });
         if (!existingUser) {
             const error = new Error('Invalid credentials');
             error.statusCode = 401;
