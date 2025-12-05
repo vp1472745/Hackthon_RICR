@@ -41,7 +41,7 @@ const AddMember = ({
           <input
             type="email"
             value={newMember.email}
-            onChange={(e) => setNewMember({...newMember, email: e.target.value})}
+            onChange={(e) => setNewMember({...newMember, email: e.target.value.toLowerCase()})}
             className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0B2A4A] focus:border-transparent ${
               errors.email ? 'border-red-500' : 'border-gray-300'
             }`}
