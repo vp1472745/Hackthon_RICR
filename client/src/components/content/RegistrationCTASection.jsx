@@ -62,7 +62,7 @@ export default function RegistrationCTASection() {
         </motion.div>
 
         <motion.p className="text-sm opacity-80" variants={fadeInUp} transition={{ delay: 0.6 }}>
-          Registration fee: ₹1,500 (Non-refundable) | Team alterations allowed until Nov 6, 2025
+          Registration fee: ₹1,500 (Non-refundable) | Team alterations allowed until Feb 25, 2026, 11:59 PM IST
         </motion.p>
       </div>
     </motion.section>

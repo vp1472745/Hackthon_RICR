@@ -277,7 +277,7 @@ const ProjectTheme = () => {
               <Calendar className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-blue-600 flex-shrink-0" />
               <span className="text-xs sm:text-sm font-medium text-gray-700">
                 <span className="hidden sm:inline">Theme deadline: </span>
-                <strong className="text-blue-600">Nov 6, 2025</strong>
+                <strong className="text-blue-600">Feb 25, 2026</strong>
               </span>
             </div>
           </div>
@@ -515,7 +515,7 @@ const ProjectTheme = () => {
                   <Info className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm md:text-base text-yellow-800 font-medium break-words">
-                      You can change your theme until November 6, 2025
+                      You can change your theme until Feb 25, 2026, 11:59 PM IST
                     </p>
                   </div>
                 </div>

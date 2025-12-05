@@ -27,6 +27,28 @@ const Navbar = () => {
   }, []);
 
   // Close mobile menu when clicking outside or on links
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('keydown', handleEscape);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [isMobileMenuOpen]);
+
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   const handleNavigation = (path) => {
@@ -45,99 +67,104 @@ const Navbar = () => {
   };
 
   return (
-    <nav
-      className={`bg-white sticky top-0 z-50 transition-all duration-300  ${
-        isScrolled ? "shadow-lg py-2" : "shadow-md py-3"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 flex justify-between items-center">
-        {/* Logo */}
-        <Link to="/" onClick={closeMobileMenu} className="flex items-center">
-          <div className="">
-            <img
-              src={LOGO}
-              className="w-8 sm:w-10 md:w-12 lg:w-14"
-              alt="Nav Kalpana Logo"
-            />
-          </div>
-          <div className="ml-2 justify-center items-center flex">
-            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-wide">
-              <span className="text-[#0C2340]">Nav</span>
-              <span className="text-[#2A6EBB]">Kalpana</span>
-            </h1>
-          </div>
-        </Link>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex justify-center items-center gap-3">
-          {/* Normal User Authentication */}
-          {isAuthenticated && leaderName && (
-            <button
-              onClick={() => navigate(getDashboardRoute())}
-              className="text-[#2A6EBB] cursor-pointer font-semibold mr-2 hover:underline transition-colors"
-            >
-              Welcome, {leaderName}
-            </button>
-          )}
-
-          {/* Admin Authentication */}
-          {isAdminAuthenticated && adminEmail && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  if (adminType === "superadmin") {
-                    navigate("/superadmin-dashboard");
-                  } else {
-                    navigate("/admin-dashboard");
-                  }
-                }}
-                className="text-[#2A6EBB] cursor-pointer font-semibold mr-2 hover:underline transition-colors"
-              >
-                {adminType === "superadmin" ? "Super Admin" : "Admin"}:{" "}
-                {adminEmail}
-              </button>
+    <>
+      <nav
+        className={`bg-white sticky top-0 z-50 transition-all duration-300 ${
+          isScrolled ? "shadow-lg py-1" : "shadow-md py-1"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8 flex justify-between items-center">
+          {/* Logo */}
+          <Link to="/" onClick={closeMobileMenu} className="flex items-center shrink-0">
+            <div className="">
+              <img
+                src={LOGO}
+                className="w-8 sm:w-10 md:w-12 lg:w-14 h-auto"
+                alt="Nav Kalpana Logo"
+              />
             </div>
-          )}
+            <div className="ml-2 sm:ml-3 flex items-center">
+              <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-wide whitespace-nowrap">
+                <span className="text-[#0C2340]">Nav</span>
+                <span className="text-[#2A6EBB]">Kalpana</span>
+              </h1>
+            </div>
+          </Link>
 
-          {/* Show logout if either user or admin is authenticated */}
-          {isAuthenticated || isAdminAuthenticated ? (
-            <button
-              onClick={isAdminAuthenticated ? adminLogout : logout}
-              className="bg-red-500 hover:bg-red-600 text-white cursor-pointer rounded-md px-4 py-1 transition-colors duration-200"
-            >
-              Logout
-            </button>
-          ) : (
-            <>
-              <Link
-                to="/register"
-                className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-lg px-5 py-2 transition-colors duration-200 mr-2"
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
+            {/* Normal User Authentication */}
+            {isAuthenticated && leaderName && (
+              <button
+                onClick={() => navigate(getDashboardRoute())}
+                className="text-[#2A6EBB] cursor-pointer font-semibold text-sm lg:text-base hover:underline transition-colors whitespace-nowrap px-2"
               >
-                Register
-              </Link>
-              <Link
-                to="/login"
-                className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-lg px-5 py-2 transition-colors duration-200 mr-2"
+                Welcome, {leaderName}
+              </button>
+            )}
+
+            {/* Admin Authentication */}
+            {isAdminAuthenticated && adminEmail && (
+              <div className="flex items-center">
+                <button
+                  onClick={() => {
+                    if (adminType === "superadmin") {
+                      navigate("/superadmin-dashboard");
+                    } else {
+                      navigate("/admin-dashboard");
+                    }
+                  }}
+                  className="text-[#2A6EBB] cursor-pointer font-semibold text-sm lg:text-base hover:underline transition-colors whitespace-nowrap px-2"
+                >
+                  {adminType === "superadmin" ? "Super Admin" : "Admin"}:{" "}
+                  <span className="text-gray-700 font-normal">
+                    {adminEmail.split('@')[0]}
+                  </span>
+                </button>
+              </div>
+            )}
+
+            {/* Show logout if either user or admin is authenticated */}
+            {isAuthenticated || isAdminAuthenticated ? (
+              <button
+                onClick={isAdminAuthenticated ? adminLogout : logout}
+                className="bg-red-500 hover:bg-red-600 text-white cursor-pointer rounded-md px-4 py-2 transition-colors duration-200 text-sm lg:text-base whitespace-nowrap"
               >
-                Login
-              </Link>
-            </>
-          )}
+                Logout
+              </button>
+            ) : (
+              <div className="flex items-center space-x-3 lg:space-x-4">
+                <Link
+                  to="/login"
+                  className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-lg px-4 lg:px-5 py-2 transition-colors duration-200 text-sm lg:text-base whitespace-nowrap"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-[#2A6EBB] hover:bg-[#1D5B9B] cursor-pointer text-white rounded-lg px-4 lg:px-5 py-2 transition-colors duration-200 text-sm lg:text-base whitespace-nowrap"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
+            aria-label="Toggle mobile menu"
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-6 h-6 text-gray-700" />
+            ) : (
+              <Menu className="w-6 h-6 text-gray-700" />
+            )}
+          </button>
         </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          aria-label="Toggle mobile menu"
-        >
-          {isMobileMenuOpen ? (
-            <X className="w-6 h-6 text-gray-700" />
-          ) : (
-            <Menu className="w-6 h-6 text-gray-700" />
-          )}
-        </button>
-      </div>
+      </nav>
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
@@ -149,28 +176,37 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 max-w-sm bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 md:hidden ${
+        className={`fixed top-0 right-0 h-full w-full max-w-xs sm:max-w-sm bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 md:hidden ${
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Mobile Menu Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-200">
+          <div className="flex items-center">
+            <img
+              src={LOGO}
+              className="w-8 h-8 mr-3"
+              alt="Nav Kalpana Logo"
+            />
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+              NavKalpana
+            </h2>
+          </div>
           <button
             onClick={closeMobileMenu}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none"
             aria-label="Close menu"
           >
-            <X className="w-5 h-5 text-gray-600" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
           </button>
         </div>
 
         {/* Mobile Menu Content */}
-        <div className="p-4 space-y-4">
+        <div className="p-4 sm:p-5 space-y-4 sm:space-y-5 overflow-y-auto h-[calc(100%-73px)]">
           {/* User/Admin Info */}
           {isAuthenticated && leaderName && (
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1">
                 {userRole === "Leader"
                   ? "Team Leader"
                   : userRole === "Member"
@@ -179,7 +215,7 @@ const Navbar = () => {
               </p>
               <button
                 onClick={() => handleNavigation(getDashboardRoute())}
-                className="text-[#2A6EBB] font-semibold hover:underline transition-colors"
+                className="text-[#2A6EBB] font-semibold text-sm sm:text-base hover:underline transition-colors text-left w-full"
               >
                 {leaderName}
               </button>
@@ -187,8 +223,8 @@ const Navbar = () => {
           )}
 
           {isAdminAuthenticated && adminEmail && (
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1">
                 {adminType === "superadmin" ? "Super Admin" : "Admin"}
               </p>
               <button
@@ -199,7 +235,7 @@ const Navbar = () => {
                       : "/admin-dashboard"
                   )
                 }
-                className="text-[#2A6EBB] font-semibold hover:underline transition-colors break-all"
+                className="text-[#2A6EBB] font-semibold text-sm sm:text-base hover:underline transition-colors text-left w-full break-words"
               >
                 {adminEmail}
               </button>
@@ -207,14 +243,23 @@ const Navbar = () => {
           )}
 
           {/* Navigation Links */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Link
               to="/"
               onClick={closeMobileMenu}
-              className="block p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 font-medium"
+              className="block p-3 sm:p-4 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 font-medium text-sm sm:text-base"
             >
               Home
             </Link>
+
+            {isAuthenticated && leaderName && (
+              <button
+                onClick={() => handleNavigation(getDashboardRoute())}
+                className="block w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 font-medium text-sm sm:text-base"
+              >
+                Dashboard
+              </button>
+            )}
 
             {isAdminAuthenticated && (
               <button
@@ -225,7 +270,7 @@ const Navbar = () => {
                       : "/admin-dashboard"
                   )
                 }
-                className="block w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 font-medium"
+                className="block w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 font-medium text-sm sm:text-base"
               >
                 Admin Dashboard
               </button>
@@ -233,7 +278,7 @@ const Navbar = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-4 border-t border-gray-200">
+          <div className="pt-4 sm:pt-5 border-t border-gray-200 space-y-3">
             {isAuthenticated || isAdminAuthenticated ? (
               <button
                 onClick={() => {
@@ -244,23 +289,23 @@ const Navbar = () => {
                   }
                   closeMobileMenu();
                 }}
-                className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-sm sm:text-base"
               >
                 Logout
               </button>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Link
                   to="/login"
                   onClick={closeMobileMenu}
-                  className="w-1/2 bg-[#2A6EBB] hover:bg-[#1D5B9B] text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center"
+                  className="flex-1 bg-[#2A6EBB] hover:bg-[#1D5B9B] text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center text-sm sm:text-base"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
                   onClick={closeMobileMenu}
-                  className="w-1/2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center"
+                  className="flex-1 bg-[#2A6EBB] hover:bg-[#1D5B9B] text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center text-sm sm:text-base"
                 >
                   Register
                 </Link>
@@ -269,7 +314,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 

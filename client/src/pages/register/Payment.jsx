@@ -207,7 +207,6 @@ const Payment = () => {
         <div className="bg-white rounded-3xl shadow-2xl p-8">
           <div className="text-center mb-6">
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Complete Your Payment</h2>
-            <p className="text-gray-600">Amount: <strong>₹{AMOUNT}</strong>. Scan QR or open your UPI app below.</p>
           </div>
 
           {!paymentSubmitted ? (
@@ -294,9 +293,8 @@ const Payment = () => {
               <CheckCircle className="w-14 h-14 text-blue-500 mb-3" />
               <h3 className="text-xl font-bold text-blue-700 mb-1">Thank you for registering for Nav Kalpana!</h3>
               <p className="text-gray-600 mb-4 text-center">
-                Your payment is <span className="font-semibold">pending super admin verification</span>.<br />
-                You will receive your User ID and Password by email within <span className="font-semibold">24 hours</span> after super admin approval.<br />
-                <span className="font-semibold">You cannot access your dashboard until your payment is verified.</span>
+                You will receive your login credentials by email within <span className="font-semibold">24 hours</span> after admin approval.<br />
+                <span className="font-semibold">You cannot access your dashboard until your payment is unverified.</span>
               </p>
               <div className="flex items-center gap-2 bg-blue-100 rounded-lg px-4 py-2 mb-5">
                 <Clock className="w-5 h-5 text-blue-700" />
@@ -310,9 +308,7 @@ const Payment = () => {
             </div>
           )}
 
-          <div className="mt-7 p-4 bg-blue-50 rounded-xl text-blue-900 text-xs text-center">
-            <strong>Note:</strong> Amount prefill depends on UPI app support. Even if amount pre-fills, user can change it — isliye UTR + screenshot submit karna zaroori hai for manual verification.
-          </div>
+         
         </div>
       </div>
     </div>

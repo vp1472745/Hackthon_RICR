@@ -304,15 +304,15 @@ const ManageTeam = () => {
             <div className="space-y-3 text-sm sm:text-base">
               <div className="flex justify-between py-2 border-b border-orange-100">
                 <span>Team Finalization</span>
-                <span className="font-semibold text-orange-600">Nov 6, 2025</span>
+                <span className="font-semibold text-orange-600">Feb 25, 2025</span>
               </div>
               <div className="flex justify-between py-2 border-b border-orange-100">
                 <span>Member Confirmation</span>
-                <span className="font-semibold text-orange-600">Nov 5, 2025</span>
+                <span className="font-semibold text-orange-600">Feb 25, 2025</span>
               </div>
               <div className="flex justify-between py-2">
                 <span>Late Additions Close</span>
-                <span className="font-semibold text-orange-600">Nov 6, 11:59 PM IST</span>
+                <span className="font-semibold text-orange-600">Feb 25, 11:59 PM IST</span>
               </div>
             </div>
           </div>

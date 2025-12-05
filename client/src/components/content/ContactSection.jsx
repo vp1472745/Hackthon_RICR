@@ -37,7 +37,7 @@ export default function ContactSection() {
           {contacts.map((contact, idx) => (
             <div
               key={`${contact.name}-${idx}`}
-              className="bg-white rounded-lg shadow-md transition-all duration-300 p-4 sm:p-6   flex flex-col items-center text-center border border-slate-200 w-full xs:w-[280px] sm:w-[300px] h-[300px] sm:h-[300px] "
+              className="bg-white rounded-lg cursor-default shadow-md transition-all duration-300 p-4 sm:p-6   flex flex-col items-center text-center border border-slate-200 w-full xs:w-[280px] sm:w-[300px] h-[300px] sm:h-[300px] "
             >
               {/* Image */}
               <div className="mt-[-28px] h-[180px] sm:h-[220px] w-full flex items-center justify-center overflow-hidden rounded-xl">

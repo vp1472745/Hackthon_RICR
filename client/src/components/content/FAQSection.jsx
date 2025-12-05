@@ -46,22 +46,22 @@ const FAQS = [
   },
   {
     question: "What happens if the payment is rejected?",
-    answer: "You will receive a rejection email with the reason (e.e., invalid UTR). If allowed, you may re-submit the payment receipt.",
+    answer: "You will receive a rejection email with the reason (e.g. invalid UTR). If allowed, you may re-submit the payment receipt.",
     category: "Payment"
   },
   {
     question: "Where can teams log in?",
-    answer: "Teams can log in at /hackathon-login using their Team ID and password. A CAPTCHA will also be required for security.",
+    answer: "Teams can log in at https://hackathon.ricr.in/login using their Team ID and password.",
     category: "Login"
   },
   {
     question: "When will the Team ID and password be provided?",
-    answer: "After payment verification, the admin will confirm registration, update the database, and send an email containing: Team ID (HACK-XXXX format) and auto-generated password (8–12 alphanumeric characters).",
+    answer: "After payment verification, the admin will confirm registration, update the database, and send an email containing: Team ID (RICR-NK-XXXX format) and email address.",
     category: "Login"
   },
   {
     question: "Until when can teams edit their dashboard details?",
-    answer: "Teams can edit their details only during the alteration window (until November 6, 2025, 11:59 PM IST). After this, edits will be disabled.",
+    answer: "Teams can edit their details only during the alteration window (until Feb 25, 2026, 11:59 PM IST, 11:59 PM IST). After this, edits will be disabled.",
     category: "Team"
   }
 ];

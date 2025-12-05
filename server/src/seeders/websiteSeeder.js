@@ -146,7 +146,7 @@ const WebsiteSeeder = [
         "Don't miss this incredible opportunity to showcase your skills, compete for ₹40,000 in prizes, and build the future of technology!",
       buttonText: "Register Now",
       feeDetails:
-        "Registration fee: ₹1,500 (Non-refundable) | Team alterations allowed until Nov 6, 2025",
+        "Registration fee: ₹1,500 (Non-refundable) | Team alterations allowed until Feb 25, 2026, 11:59 PM IST",
     },
     faqSection: [
       {
@@ -163,7 +163,7 @@ const WebsiteSeeder = [
       {
         question: "Until when can teams be updated or altered?",
         answer:
-          "Team alterations are allowed until November 6, 2025, 11:59 PM IST. After this deadline, no changes will be permitted.",
+          "Team alterations are allowed until Feb 25, 2026, 11:59 PM IST. After this deadline, no changes will be permitted.",
         category: "Team",
       },
       {
@@ -216,7 +216,7 @@ const WebsiteSeeder = [
       {
         question: "Until when can teams edit their dashboard details?",
         answer:
-          "Teams can edit their details only during the alteration window (until November 6, 2025, 11:59 PM IST). After this, edits will be disabled.",
+          "Teams can edit their details only during the alteration window until Feb 25, 2026, 11:59 PM IST. After this, edits will be disabled.",
         category: "Team",
       },
     ],

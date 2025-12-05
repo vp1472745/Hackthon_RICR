@@ -400,15 +400,15 @@ const ManageTeam = () => {
             <div className="space-y-2 sm:space-y-3">
               <div className="flex flex-col xs:flex-row xs:justify-between items-start xs:items-center py-1 sm:py-2 border-b border-orange-100 gap-1">
                 <span className="text-gray-700 text-xs sm:text-sm md:text-base">Team Finalization</span>
-                <span className="font-semibold text-orange-600 text-xs sm:text-sm">Nov 6, 2025</span>
+                <span className="font-semibold text-orange-600 text-xs sm:text-sm">Feb 25, 2025</span>
               </div>
               <div className="flex flex-col xs:flex-row xs:justify-between items-start xs:items-center py-1 sm:py-2 border-b border-orange-100 gap-1">
                 <span className="text-gray-700 text-xs sm:text-sm md:text-base">Member Confirmation</span>
-                <span className="font-semibold text-orange-600 text-xs sm:text-sm">Nov 5, 2025</span>
+                <span className="font-semibold text-orange-600 text-xs sm:text-sm">Feb 25, 2025</span>
               </div>
               <div className="flex flex-col xs:flex-row xs:justify-between items-start xs:items-center py-1 sm:py-2 gap-1">
                 <span className="text-gray-700 text-xs sm:text-sm md:text-base">Late Additions Close</span>
-                <span className="font-semibold text-orange-600 text-xs sm:text-sm">Nov 6, 11:59 PM IST</span>
+                <span className="font-semibold text-orange-600 text-xs sm:text-sm">Feb 25, 11:59 PM IST</span>
               </div>
             </div>
           </div>

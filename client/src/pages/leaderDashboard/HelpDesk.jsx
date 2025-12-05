@@ -52,7 +52,7 @@ const HelpDesk = () => {
       id: 3,
       category: 'team',
       question: 'Can I change team members after registration?',
-      answer: 'Yes, you can modify your team composition until November 6, 2025, 11:59 PM IST. After this deadline, no changes to team membership will be allowed.'
+      answer: 'Yes, you can modify your team composition until Feb 25, 2026, 11:59 PM IST. After this deadline, no changes to team membership will be allowed.'
     },
     {
       id: 4,

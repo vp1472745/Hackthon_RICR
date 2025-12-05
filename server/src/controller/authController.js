@@ -1,4 +1,3 @@
-
 import User from '../models/UserModel.js';
 import bcrypt from 'bcryptjs';
 import { sendOTPEmail, sendCredentialsEmail } from '../utils/emailService.js';
@@ -21,7 +20,7 @@ export const SendOTP = async (req, res, next) => {
             return next(error);
         }
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email: email.toLowerCase() });
         if (existingUser && existingUser.role === 'Leader') {
             const error = new Error('You are already registered as a Leader');
             error.statusCode = 400;
@@ -38,11 +37,11 @@ export const SendOTP = async (req, res, next) => {
         
 
         // Delete any existing OTPs for this email and phone before creating new ones
-        await Otp.deleteMany({ otpfor: email, type: 'email' });
+        await Otp.deleteMany({ otpfor: email.toLowerCase(), type: 'email' });
         await Otp.deleteMany({ otpfor: phone.toString(), type: 'phone' });
 
         // Send OTPs to user
-        await sendOTPEmail(email, emailOTP);
+        await sendOTPEmail(email.toLowerCase(), emailOTP);
         await sendOTPPhone(phone.toString(), phoneOTP);
 
         const hashedEmailOTP = await bcrypt.hash(emailOTP, 10);
@@ -56,7 +55,7 @@ export const SendOTP = async (req, res, next) => {
         });
 
         const newEmailOTPentry = await Otp.create({
-            otpfor: email,
+            otpfor: email.toLowerCase(),
             otp: hashedEmailOTP,
             type: 'email',
         });
@@ -77,19 +76,14 @@ export const Register = async (req, res, next) => {
             return next(error);
         }
 
-        const emailOTPEntry = await Otp.findOne({ otpfor: email, type: 'email' });
+        const emailOTPEntry = await Otp.findOne({ otpfor: email.toLowerCase(), type: 'email' });
         if (!emailOTPEntry) {
             const error = new Error('Email OTP not found or expired');
             error.statusCode = 400;
             return next(error);
         }
 
-        // Debug log for OTP comparison
-        console.log('Register: Comparing OTP', {
-            enteredOTP: emailOTP,
-            cleanEmailOTP: emailOTP.toString().trim(),
-            storedHashedOTP: emailOTPEntry.otp,
-        });
+       
 
         // Ensure OTP is string and trim any whitespace
         const cleanEmailOTP = emailOTP.toString().trim();
@@ -140,7 +134,7 @@ export const Register = async (req, res, next) => {
 
         const newUser = await User.create({
             fullName,
-            email,
+            email: email.toLowerCase(),
             phone: phone.toString(),
             role: 'Leader',
             teamId: newTeam._id
@@ -183,7 +177,7 @@ export const Login = async (req, res, next) => {
             return next(error);
         }
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email: email.toLowerCase() });
         if (!existingUser) {
             const error = new Error('Invalid credentials');
             error.statusCode = 401;

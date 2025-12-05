@@ -40,9 +40,9 @@ export default function JuryPanel() {
         </div>
 
         {/* Jury Members Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 ">
           {juryMembers.map((jury, idx) => (
-            <div key={`${jury.name}-${idx}`} className="bg-white rounded-lg shadow-md p-8 flex flex-col items-center text-center border border-slate-200">
+            <div key={`${jury.name}-${idx}`} className="bg-white rounded-lg cursor-default shadow-md p-8 flex flex-col items-center text-center border border-slate-200">
               {/* Image Container */}
               <div className="mb-1 h-[170px] mt-2 flex items-center justify-center">
                 <img

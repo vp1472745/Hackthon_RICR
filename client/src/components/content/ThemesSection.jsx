@@ -76,7 +76,7 @@ export default function ThemesSection() {
       setLoading(true);
       setError(null);
       const response = await homeAPI.getAllThemes();
-      console.log('API Response:', response.data);
+     // console.log('API Response:', response.data);
 
       // Extract themes from response
       const themesData = response.data?.themes || [];

@@ -80,7 +80,7 @@ export const sendCredentialsEmail = async (to, credentials) => {
                     <p>Hello,</p>
                     <p>Your login credentials are as follows:</p>
                     <p><strong>Team Code:</strong> ${credentials.teamCode}</p>
-                    <p><strong>Password:</strong> ${credentials.email}</p>
+                    <p><strong>Email:</strong> ${credentials.email}</p>
                     <p>Please keep this information safe and do not share it with anyone.</p>
                     <div class="footer">
                         If you did not request this, please ignore this email.<br>
